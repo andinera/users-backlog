@@ -66,19 +66,11 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   }
 
   public postVote(up: boolean) {
-    this._authenticationService.innovator.pipe(
-      tap((innovator: Innovator) => {
-        this._implementationService.postVote(this.implementation.id, innovator.id, up).pipe(
-          first(),
-          tap((votes: number) => {
-            this.implementation.votes = votes;
-          }),
-          catchError((error: any) => {
-            console.log(error);
-            return of(null);
-          }),
-          takeUntil(this._destroyed$)
-        ).subscribe();
+    const innovator = this._authenticationService.innovator$.value;
+    this._implementationService.postVote(this.implementation.id, innovator.id, up).pipe(
+      first(),
+      tap((votes: number) => {
+        this.implementation.votes = votes;
       }),
       catchError((error: any) => {
         console.log(error);
@@ -86,9 +78,6 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this._destroyed$)
     ).subscribe();
-
-
-
   }
 
   public postRecommendation(recommendationForm: FormGroup): void {
@@ -96,63 +85,47 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     if (recommendationForm.controls.message.value.length === 0) {
       recommendationForm.markAllAsTouched();
     } else {
-      this._authenticationService.innovator.pipe(
-        tap((innovator: Innovator) => {
-          recommendation.innovator = innovator;
-          recommendation.implementation = this.implementation;
-          this._implementationService.postRecommendation(recommendation).pipe(
-            first(),
-            tap((returnedRecommendation: Recommendation) => {
-              recommendationForm.reset();
-              if (recommendation.id > 0) {
-                const filteredRecommendations = this.implementation.recommendations.filter(r => r.id === recommendation.id);
-                const index = this.implementation.recommendations.indexOf(filteredRecommendations[0]);
-                this.implementation.recommendations.splice(index, 1, returnedRecommendation);
-                this.editedRecommendation = undefined;
-              } else {
-                this.implementation.recommendations.push(returnedRecommendation);
-              }
-              returnedRecommendation.dateTimeCreated = new Date(Date.parse(returnedRecommendation.dateTimeCreated.toString()));
-            }),
-            takeUntil(this._destroyed$),
-            catchError((e: any) => {
-              console.log(e);
-              return of(null);
-            })
-          ).subscribe();
+      const innovator = this._authenticationService.innovator$.value;
+      recommendation.innovator = innovator;
+      recommendation.implementation = this.implementation;
+      this._implementationService.postRecommendation(recommendation).pipe(
+        first(),
+        tap((returnedRecommendation: Recommendation) => {
+          recommendationForm.reset();
+          if (recommendation.id > 0) {
+            const filteredRecommendations = this.implementation.recommendations.filter(r => r.id === recommendation.id);
+            const index = this.implementation.recommendations.indexOf(filteredRecommendations[0]);
+            this.implementation.recommendations.splice(index, 1, returnedRecommendation);
+            this.editedRecommendation = undefined;
+          } else {
+            this.implementation.recommendations.push(returnedRecommendation);
+          }
+          returnedRecommendation.dateTimeCreated = new Date(Date.parse(returnedRecommendation.dateTimeCreated.toString()));
         }),
-        catchError((error: any) => {
-          console.log(error);
+        takeUntil(this._destroyed$),
+        catchError((e: any) => {
+          console.log(e);
           return of(null);
-        }),
-        takeUntil(this._destroyed$)
+        })
       ).subscribe();
     }
   }
 
   public postRecommendationVote(recommendation: Recommendation, up: boolean) {
     recommendation.implementation = this.implementation;
-    this._authenticationService.innovator.pipe(
-      tap((innovator: Innovator) => {
-        recommendation.innovator = innovator;
-        recommendation.implementation = this.implementation;
-        this._implementationService.postRecommendationVote(recommendation.id, innovator.id, up).pipe(
-          first(),
-          tap((votes: number) => {
-            recommendation.votes = votes;
-          }),
-          takeUntil(this._destroyed$),
-          catchError((e: any) => {
-            console.log(e);
-            return of(null);
-          })
-        ).subscribe();
+    const innovator = this._authenticationService.innovator$.value;
+    recommendation.innovator = innovator;
+    recommendation.implementation = this.implementation;
+    this._implementationService.postRecommendationVote(recommendation.id, innovator.id, up).pipe(
+      first(),
+      tap((votes: number) => {
+        recommendation.votes = votes;
       }),
-      catchError((error: any) => {
-        console.log(error);
+      takeUntil(this._destroyed$),
+      catchError((e: any) => {
+        console.log(e);
         return of(null);
-      }),
-      takeUntil(this._destroyed$)
+      })
     ).subscribe();
   }
 
@@ -170,65 +143,49 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     if (!replyForm.controls.message.value) {
       replyForm.markAllAsTouched();
     } else {
-      this._authenticationService.innovator.pipe(
-        tap((innovator: Innovator) => {
-          reply.innovator = innovator;
-          reply.recommendation = recommendation;
-          this._implementationService.postRecommendationReply(reply).pipe(
-            first(),
-            tap((returnedReply: Reply) => {
-              replyForm.reset();
-              if (reply.id > 0) {
-                const filteredReplies = recommendation.replies.filter(r => r.id === reply.id);
-                const index = recommendation.replies.indexOf(filteredReplies[0]);
-                recommendation.replies.splice(index, 1, returnedReply);
-                this.editedRecommendation = undefined;
-              } else {
-                if (!recommendation.replies) {
-                  recommendation.replies = [];
-                }
-                recommendation.replies.push(returnedReply);
-              }
-              returnedReply.dateTimeCreated = new Date(Date.parse(returnedReply.dateTimeCreated.toString()));
-            }),
-            takeUntil(this._destroyed$),
-            catchError((e: any) => {
-              console.log(e);
-              return of(null);
-            })
-          ).subscribe();
+      const innovator = this._authenticationService.innovator$.value;
+      reply.innovator = innovator;
+      reply.recommendation = recommendation;
+      this._implementationService.postRecommendationReply(reply).pipe(
+        first(),
+        tap((returnedReply: Reply) => {
+          replyForm.reset();
+          if (reply.id > 0) {
+            const filteredReplies = recommendation.replies.filter(r => r.id === reply.id);
+            const index = recommendation.replies.indexOf(filteredReplies[0]);
+            recommendation.replies.splice(index, 1, returnedReply);
+            this.editedRecommendation = undefined;
+          } else {
+            if (!recommendation.replies) {
+              recommendation.replies = [];
+            }
+            recommendation.replies.push(returnedReply);
+          }
+          returnedReply.dateTimeCreated = new Date(Date.parse(returnedReply.dateTimeCreated.toString()));
         }),
-        catchError((error: any) => {
-          console.log(error);
+        takeUntil(this._destroyed$),
+        catchError((e: any) => {
+          console.log(e);
           return of(null);
-        }),
-        takeUntil(this._destroyed$)
+        })
       ).subscribe();
     }
   }
 
   public claimOwnership(): void {
-    this._authenticationService.innovator.pipe(
-      tap((innovator: Innovator) => {
-        this.implementation.innovator = innovator;
-        this._implementationService.postImplementation(this.implementation).pipe(
-          first(),
-          tap((implementation: Implementation) => {
-            console.log('test2');
-            this.implementation = implementation;
-          }),
-          takeUntil(this._destroyed$),
-          catchError((e: any) => {
-            console.log(e);
-            return of(null);
-          })
-        ).subscribe();
+    const innovator = this._authenticationService.innovator$.value;
+    this.implementation.innovator = innovator;
+    this._implementationService.postImplementation(this.implementation).pipe(
+      first(),
+      tap((implementation: Implementation) => {
+        console.log('test2');
+        this.implementation = implementation;
       }),
-      catchError((error: any) => {
-        console.log(error);
+      takeUntil(this._destroyed$),
+      catchError((e: any) => {
+        console.log(e);
         return of(null);
-      }),
-      takeUntil(this._destroyed$)
+      })
     ).subscribe();
   }
 }

@@ -20,15 +20,13 @@ export class LogInGuard implements CanActivate {
   
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      return this._authenticationService.innovator.pipe(
-        map((innovator: Innovator) => {
-          if (innovator) {
-            return true;
-          } else {
-            this._router.navigate(['Log In']);
-          }
-      }))
+    state: RouterStateSnapshot): boolean {
+      const innovator = this._authenticationService.innovator$.value;
+      if (innovator) {
+        return true;
+      } else {
+        this._router.navigate(['Log In']);
+      }
     }
   
 }

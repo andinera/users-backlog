@@ -23,15 +23,12 @@ export class RecommendationService extends Service {
   }
 
   postRecommendation(recommendation: Recommendation): Observable<Recommendation> {
-    return this._authenticationService.innovator.pipe(
-      flatMap((innovator: Innovator) => {
-        if (innovator) {
-          recommendation.innovator = innovator;
-          return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation);
-        } else {
-          return of(null);
-        }
-      })
-    );
+    const innovator = this._authenticationService.innovator$.value;
+    if (innovator) {
+      recommendation.innovator = innovator;
+      return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation);
+    } else {
+      return of(null);
+    }
   }
 }

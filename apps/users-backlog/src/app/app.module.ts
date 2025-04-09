@@ -61,7 +61,7 @@ import { URLService } from './services/url.service';
     {
       provide: APP_INITIALIZER,
       useFactory: appInitFactory,
-      deps: [AuthenticationService],
+      deps: [URLService],
       multi: true
     }
   ],
@@ -69,10 +69,6 @@ import { URLService } from './services/url.service';
 })
 export class AppModule { }
 
-export function appInitFactory(authenticationService: AuthenticationService, urlService: URLService): () => Promise<any> {
-  return () => new Promise((resolve, reject) => {
-    authenticationService.innovator.pipe(first()).subscribe((innovator) => {
-      resolve(true);
-    });
-  });
+export function appInitFactory(urlService: URLService) {
+  return () => undefined;
 }

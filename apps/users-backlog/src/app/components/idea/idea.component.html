@@ -14,7 +14,7 @@
             </a>
         </mat-nav-list>
         <mat-accordion>
-            <mat-expansion-panel [disabled]="!(authenticationService.innovator | async)">
+            <mat-expansion-panel [disabled]="!(authenticationService.innovator$ | async)">
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         New Implementation

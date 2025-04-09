@@ -68,18 +68,18 @@ public class ImplementationController {
         @RequestParam final Boolean up,
         HttpServletRequest request
     ) {
-        String idToken = request.getHeader("ID-TOKEN");
-        if (idToken != null) {
-            String emailAddress = firebaseService.verifyToken(idToken);
-            if (emailAddress != null) {
-                if (innovatorService.getInnovator(emailAddress) != null) {
-                    return new ResponseEntity<Long>(implementationService.postVote(implementationId, innovatorId, up), HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<Long>(0L, HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-            }
+        String emailAddress;
+        try {
+            emailAddress = firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+        } catch (Exception e) {
+            return new ResponseEntity<Long>(0L, HttpStatus.UNAUTHORIZED);
         }
-        return new ResponseEntity<Long>(0L, HttpStatus.UNAUTHORIZED);
+        
+        if (innovatorService.getInnovator(emailAddress) != null) {
+            return new ResponseEntity<Long>(implementationService.postVote(implementationId, innovatorId, up), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Long>(0L, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping(path = "postRecommendation")

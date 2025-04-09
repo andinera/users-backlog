@@ -22,15 +22,13 @@ export class RedirectGuard implements CanActivate {
   
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      return this._authenticationService.innovator.pipe(
-        map((innovator: Innovator) => {
-          if (innovator) {
-            this._router.navigate([this._urlService.previousURL]);
-          } else {
-            return true;
-          }
-      }))
+    state: RouterStateSnapshot): boolean {
+      const innovator = this._authenticationService.innovator$.value;
+      if (innovator) {
+        this._router.navigate([this._urlService.previousURL]);
+      } else {
+        return true;
+      }
     }
   
 }

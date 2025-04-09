@@ -31,16 +31,13 @@ export class IdeaService extends Service {
   }
 
   postIdea(idea: Idea): Observable<Idea> {
-    return this._authenticationService.innovator.pipe(
-      flatMap((innovator: Innovator) => {
-        if (innovator) {
-          idea.innovator = innovator;
-          return this._http.post<Idea>(`${this._serviceURL}postIdea`, idea);
-        } else {
-          return of(null);
-        }
-      })
-    );
+    const innovator = this._authenticationService.innovator$.value;
+    if (innovator) {
+      idea.innovator = innovator;
+      return this._http.post<Idea>(`${this._serviceURL}postIdea`, idea);
+    } else {
+      return of(null);
+    }
   }
 
   deleteIdea(id: number) {

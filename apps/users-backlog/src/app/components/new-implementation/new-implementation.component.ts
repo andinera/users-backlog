@@ -29,7 +29,7 @@ export class NewImplementationComponent implements OnInit {
   constructor(
     private readonly _formBuilder: FormBuilder,
     private readonly _implementationService: ImplementationService,
-    private readonly authenticationService: AuthenticationService,
+    private readonly _authenticationService: AuthenticationService,
     private readonly _route: ActivatedRoute,
     private readonly _router: Router
   ) { }
@@ -69,32 +69,25 @@ export class NewImplementationComponent implements OnInit {
       implementationForm.markAllAsTouched();
     } else {
       const implementation = implementationForm.value;
-      this.authenticationService.innovator.pipe(
-        tap((innovator: Innovator) => {
-          if (implementationForm.controls.isOwner.value) {
-            implementation.innovator = innovator;
-          } else {
-            implementation.innovator = null;
+      const innovator = this._authenticationService.innovator$.value;
+      if (implementationForm.controls.isOwner.value) {
+        const innovator = this._authenticationService.innovator$.value;
+        implementation.innovator = innovator;
+      } else {
+        implementation.innovator = null;
+      }
+      this._implementationService.postImplementation(implementation).pipe(
+        first(),
+        tap((newImplementation: Implementation) => {
+          if (newImplementation) {
+            this._router.navigate([`/Implementation/${newImplementation.name}`])
           }
-          this._implementationService.postImplementation(implementation).pipe(
-            first(),
-            tap((newImplementation: Implementation) => {
-              if (newImplementation) {
-                this._router.navigate([`/Implementation/${newImplementation.name}`])
-              }
-            }),
-            takeUntil(this._destroyed$),
-            catchError((e: any) => {
-              console.log(e);
-              return of(null);
-            })
-          ).subscribe();
         }),
-        catchError((error: any) => {
-          console.log(error);
+        takeUntil(this._destroyed$),
+        catchError((e: any) => {
+          console.log(e);
           return of(null);
-        }),
-        takeUntil(this._destroyed$)
+        })
       ).subscribe();
     }
   }

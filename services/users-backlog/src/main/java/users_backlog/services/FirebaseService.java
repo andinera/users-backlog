@@ -29,12 +29,15 @@ public class FirebaseService {
         }
     }
 
-    public String verifyToken(String idToken) {
-        try {
-            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
-            return decodedToken.getEmail();
-        } catch (Exception e) {
-            log.severe(e.getMessage());
+    public String verifyToken(String idToken) throws Exception {
+        if (idToken != null) {
+            try {
+                FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
+                return decodedToken.getEmail();
+            } catch (Exception e) {
+                log.warning(e.getMessage());
+                throw e;
+            }
         }
         return null;
     }

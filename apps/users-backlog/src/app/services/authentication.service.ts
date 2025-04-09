@@ -1,5 +1,5 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
-import { Observable, of, ReplaySubject} from 'rxjs';
+import { of, ReplaySubject, BehaviorSubject} from 'rxjs';
 import { tap, catchError, takeUntil } from 'rxjs/operators';
 
 import { InnovatorService } from './innovator.service';
@@ -14,12 +14,9 @@ declare var firebase: any;
 })
 export class AuthenticationService implements OnDestroy {
 
-  get innovator(): Observable<Innovator> {
-    return this._innovator$.asObservable();
-  }
+  public innovator$ = new BehaviorSubject<Innovator>(null);
 
   private readonly _googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-  private _innovator$ = new ReplaySubject<Innovator>(1);
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
@@ -69,7 +66,7 @@ export class AuthenticationService implements OnDestroy {
           if (innovator) {
                 user.getIdToken().then(idToken => {
                 innovator.idToken = idToken;
-                this._innovator$.next(innovator);
+                this.innovator$.next(innovator);
                 });
           } else {
             const innovator = {
@@ -80,7 +77,7 @@ export class AuthenticationService implements OnDestroy {
               tap((postedInnovator: Innovator) => {
                 user.getIdToken().then(idToken => {
                   postedInnovator.idToken = idToken;
-                  this._innovator$.next(postedInnovator);
+                  this.innovator$.next(postedInnovator);
                 });
               }),
               catchError((error: any) => {
@@ -98,7 +95,7 @@ export class AuthenticationService implements OnDestroy {
         takeUntil(this._destroyed$)
       ).subscribe();
     } else {
-      this._innovator$.next(null);
+      this.innovator$.next(null);
     }
   }
 

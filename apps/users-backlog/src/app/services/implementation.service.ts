@@ -43,19 +43,10 @@ export class ImplementationService extends Service {
   }
 
   postVote(implementationId: number, innovatorId: number, up: boolean): Observable<number> {
+    const innovator = this._authenticationService.innovator$.value;
+    const headers = {'ID-TOKEN': innovator.idToken};
     const parameters = `implementationId=${implementationId}&innovatorId=${innovatorId}&up=${up}`;
-    return this._authenticationService.innovator.pipe(
-      flatMap((innovator: Innovator) => {
-        if (innovator) {
-          const headers = {
-            'ID-TOKEN': innovator.idToken
-          };
-          return this._http.post<number>(`${this._serviceURL}postVote?${parameters}`, null, {headers});
-        } else {
-          return of(null);
-        }
-      })
-    );
+    return this._http.post<number>(`${this._serviceURL}postVote?${parameters}`, null, {headers});
   }
 
   postRecommendation(recommendation: Recommendation): Observable<Recommendation> {
@@ -63,18 +54,10 @@ export class ImplementationService extends Service {
   }
 
   postRecommendationVote(recommendationId: number, innovatorId: number, up: boolean): Observable<number> {
+    const innovator = this._authenticationService.innovator$.value;
+    const headers = {'ID-TOKEN': innovator.idToken};
     const parameters = `recommendationId=${recommendationId}&innovatorId=${innovatorId}&up=${up}`;
-    return this._authenticationService.innovator.pipe(
-      flatMap((innovator: Innovator) => {
-        if (innovator) {
-          const headers = new HttpHeaders();
-          headers.set('ID-TOKEN', innovator.idToken);
-          return this._http.post<number>(`${this._serviceURL}postRecommendationVote?${parameters}`, headers);
-        } else {
-          return of(null);
-        }
-      })
-    );
+    return this._http.post<number>(`${this._serviceURL}postRecommendationVote?${parameters}`, headers);
   }
 
   postRecommendationReply(reply: Reply): Observable<Reply> {
