@@ -6,18 +6,21 @@ import { flatMap } from 'rxjs/operators';
 import { Idea } from '../models/idea.model';
 import { AuthenticationService } from './authentication.service';
 import { Innovator } from '../models/innovator.model';
+import { Service } from './service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class IdeaService {
+export class IdeaService extends Service {
 
-  private _serviceURL = "http://localhost:8080/idea/";
+  private _serviceURL = `${this.endpointURL}/idea/`;
 
   constructor(
     private readonly _http: HttpClient,
     private readonly _authenticationService: AuthenticationService
-  ) { }
+  ) {
+    super();
+  }
 
   getIdeas(categoryName: string): Observable<Idea[]> {
     return this._http.get<Idea[]>(`${this._serviceURL}getIdeas?categoryName=${categoryName}`);

@@ -5,25 +5,28 @@ import { Observable } from 'rxjs';
 import { Implementation } from '../models/implementation.model';
 import { Recommendation } from '../models/recommendation.model';
 import { Reply } from '../models/reply.model';
+import { Service } from './service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ImplementationService {
+export class ImplementationService extends Service {
 
   public implementationForEditing: Implementation;
 
-  private _serviceURL = "http://localhost:8080/implementation/";
+  private _serviceURL = `${this.endpointURL}/implementation/`;
 
   constructor(
     private readonly _http: HttpClient
-  ) { }
+  ) {
+    super();
+  }
 
   getImplementations(categoryName?: string): Observable<Implementation[]> {
     let urlParameters = '';
     if (categoryName) {
       urlParameters += `categoryName=${categoryName}`;
-    }  
+    }
     return this._http.get<Implementation[]>(`${this._serviceURL}getImplementations?${urlParameters}`);
   }
 

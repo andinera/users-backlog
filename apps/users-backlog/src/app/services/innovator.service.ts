@@ -3,15 +3,18 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 
 import { Innovator } from '../models/innovator.model';
+import { Service } from './service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class InnovatorService {
+export class InnovatorService extends Service {
 
-  private _serviceURL = "http://localhost:8080/innovator/";
+  private _serviceURL = `${this.endpointURL}/innovator/`;
 
-  constructor(private readonly _http: HttpClient) { }
+  constructor(private readonly _http: HttpClient) {
+    super();
+  }
 
   getInnovator(id?: string, emailAddress?: string): Observable<Innovator> {
     let parameters: string;

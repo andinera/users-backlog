@@ -1,6 +1,5 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, of, ReplaySubject} from 'rxjs';
+import { Observable, of, ReplaySubject} from 'rxjs';
 import { tap, catchError, takeUntil } from 'rxjs/operators';
 
 import { InnovatorService } from './innovator.service';
@@ -28,6 +27,21 @@ export class AuthenticationService implements OnDestroy {
   ) {
 
     gapi.load('client', this.initializeGoogleApi.bind(this));
+
+    var firebaseConfig = {
+      apiKey: "AIzaSyDOFYhFxBWj-Ro2Vh4lEjPDMCKo-YTZ8SE",
+      authDomain: "users-backlog.firebaseapp.com",
+      databaseURL: "https://users-backlog.firebaseio.com",
+      projectId: "users-backlog",
+      storageBucket: "users-backlog.appspot.com",
+      messagingSenderId: "809333411313",
+      appId: "1:809333411313:web:ba1fd4400b4146986a4850",
+      measurementId: "G-XK4M2PBMTM"
+    };
+    // Initialize Firebase
+    var app = firebase.initializeApp(firebaseConfig);
+    firebase.analytics(app);
+    firebase.auth(app);
 
     firebase.auth().useDeviceLanguage();
     firebase.auth().onAuthStateChanged(user => {

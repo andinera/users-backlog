@@ -6,18 +6,21 @@ import { flatMap } from 'rxjs/operators';
 import { AuthenticationService } from './authentication.service';
 import { Innovator } from '../models/innovator.model';
 import { Recommendation } from '../models/recommendation.model';
+import { Service } from './service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class RecommendationService {
+export class RecommendationService extends Service {
 
-  private _serviceURL = "http://localhost:8080/recommendation/";
+  private _serviceURL = `${this.endpointURL}/recommendation/`;
 
   constructor(
     private readonly _http: HttpClient,
     private readonly _authenticationService: AuthenticationService
-  ) { }
+  ) {
+    super();
+  }
 
   postRecommendation(recommendation: Recommendation): Observable<Recommendation> {
     return this._authenticationService.innovator.pipe(

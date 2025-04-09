@@ -26,6 +26,7 @@ import { NewImplementationComponent } from './components/new-implementation/new-
 import { RecommendationComponent } from './components/recommendation/recommendation.component';
 import { ImplementationsComponent } from './components/implementations/implementations.component';
 import { AuthenticationService } from './services/authentication.service';
+import { URLService } from './services/url.service';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,7 @@ import { AuthenticationService } from './services/authentication.service';
 })
 export class AppModule { }
 
-export function appInitFactory(authenticationService: AuthenticationService): () => Promise<any> {
+export function appInitFactory(authenticationService: AuthenticationService, urlService: URLService): () => Promise<any> {
   return () => new Promise((resolve, reject) => {
     authenticationService.innovator.pipe(first()).subscribe((innovator) => {
       resolve(true);

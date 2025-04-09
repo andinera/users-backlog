@@ -1,0 +1,36 @@
+runtime: python27
+api_version: '1'
+env: standard
+threadsafe: true
+instance_class: F1
+handlers:
+  - url: /
+    application_readable: false
+    static_files: dist/users-backlog/index.html
+    require_matching_file: false
+    upload: dist/users-backlog/index.html
+  - url: /(.*\.js)
+    redirect_http_response_code: 301
+    static_files: dist/users-backlog/\1
+    upload: dist/users-backlog/.*\.js
+  - url: /(.*\.css)
+    redirect_http_response_code: 301
+    static_files: dist/users-backlog/\1
+    mime_type: text/css
+    upload: dist/users-backlog/.*\.css
+  - url: /(.*\.(.+))$
+    static_files: dist/users-backlog/\1
+    upload: dist/users-backlog/(.*\.(.+))$
+  - url: /(.*)
+    application_readable: false
+    static_files: dist/users-backlog/index.html
+    require_matching_file: false
+    upload: dist/users-backlog/index.html
+skip_files:
+  - (?!^dist)
+automatic_scaling:
+  min_idle_instances: automatic
+  max_idle_instances: automatic
+  min_pending_latency: automatic
+  max_pending_latency: automatic
+network: {}

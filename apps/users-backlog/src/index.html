@@ -6,10 +6,9 @@
   <base href="/">
 
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, minimum-scale=1, shrink-to-fit=no">
-  <meta name="description" content="Share software ideas.">
-  <meta name="keywords" content="software idea ideas">
+  <meta name="description" content="Share ideas for new and improved software.">
+  <meta name="keywords" content="software idea ideas user users backlog ticket defect bug new feature">
   <meta name="author" content="Shane Lockwood">
-  <!-- <meta name="google-signin-client_id" content="865769440255-da35s1tbfpd21focregj0nsstscj0hv0.apps.googleusercontent.com"> -->
 
   <link rel="icon" type="image/x-icon" href="assets/bree-serif-dark.ico">
 
@@ -23,35 +22,21 @@
 </head>
 <body>
   <app-root></app-root>
-  
+
+  <!-- Initialize Firebase -->
+  <!-- <script src="/__/firebase/init.js"></script> -->
+
   <!-- The core Firebase JS SDK is always required and must be listed first -->
-  <script src="https://www.gstatic.com/firebasejs/7.15.0/firebase-app.js"></script>
-  
+  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+
   <!-- TODO: Add SDKs for Firebase products that you want to use
-       https://firebase.google.com/docs/web/setup#available-libraries -->
-  <script src="https://www.gstatic.com/firebasejs/7.15.0/firebase-analytics.js"></script>
+      https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-analytics.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.15.0/firebase-auth.js"></script>
-  
-  <script>
-    // Your web app's Firebase configuration
-    var firebaseConfig = {
-      apiKey: "AIzaSyDHn1gTbTbZYrUzPaYThJBYx_EUIqXlSys",
-      authDomain: "i-equals.firebaseapp.com",
-      databaseURL: "https://i-equals.firebaseio.com",
-      projectId: "i-equals",
-      storageBucket: "i-equals.appspot.com",
-      messagingSenderId: "865769440255",
-      appId: "1:865769440255:web:4a4d97a2c01327f1e4ddca",
-      measurementId: "G-04QMY4XP80"
-    };
-    // Initialize Firebase
-    var app = firebase.initializeApp(firebaseConfig);
-    firebase.analytics(app);
-    firebase.auth(app);
-  </script>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
 </body>
 </html>
