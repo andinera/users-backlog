@@ -1,40 +1,28 @@
 package idea_service.models;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class Recommendation extends Model {
+public class Reply extends Model {
 
-    private Idea idea;
-    private Implementation implementation;
+    private Recommendation recommendation;
     private String message;
     private ZonedDateTime dateTimeCreated;
     private ZonedDateTime dateTimeModified;
     private Innovator innovator;
-    private Long votes;
-    private List<Reply> replies;
 
-    public Recommendation() {
+    public Reply() {
     }
 
-    public Idea getIdea() {
-        return this.idea;
+    public Recommendation getRecommendation() {
+        return this.recommendation;
     }
 
-    public void setIdea(Idea idea) {
-        this.idea = idea;
-    }
-
-    public Implementation getImplementation() {
-        return this.implementation;
-    }
-
-    public void setImplementation(Implementation implementation) {
-        this.implementation = implementation;
+    public void setRecommendation(Recommendation recommendation) {
+        this.recommendation = recommendation;
     }
 
     public String getMessage() {
@@ -67,22 +55,6 @@ public class Recommendation extends Model {
 
     public void setInnovator(Innovator innovator) {
         this.innovator = innovator;
-    }
-
-    public Long getVotes() {
-        return this.votes;
-    }
-
-    public void setVotes(final Long votes) {
-        this.votes = votes;
-    }
-
-    public List<Reply> getReplies() {
-        return this.replies;
-    }
-
-    public void setReplies(final List<Reply> replies) {
-        this.replies = replies;
     }
 
 }

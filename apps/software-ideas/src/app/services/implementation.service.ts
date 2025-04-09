@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { Implementation } from '../models/implementation.model';
 import { Recommendation } from '../models/recommendation.model';
+import { Reply } from '../models/reply.model';
 
 @Injectable({
   providedIn: 'root'
@@ -41,5 +42,14 @@ export class ImplementationService {
 
   postRecommendation(recommendation: Recommendation): Observable<Recommendation> {
     return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation);
+  }
+
+  postRecommendationVote(recommendation: Recommendation, up: boolean): Observable<number> {
+    const parameters = `recommendationId=${recommendation.id}&innovatorId=${recommendation.innovator.id}&up=${up}`;
+    return this._http.post<number>(`${this._serviceURL}postRecommendationVote?${parameters}`, null);
+  }
+
+  postRecommendationReply(reply: Reply): Observable<Reply> {
+    return this._http.post<Reply>(`${this._serviceURL}postRecommendationReply`, reply);
   }
 }

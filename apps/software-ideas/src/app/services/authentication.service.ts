@@ -49,7 +49,7 @@ export class AuthenticationService implements OnDestroy {
 
   private _setInnovator(user) {
     if (user) {
-      this._innovatorService.getInnovator(user.email).pipe(
+      this._innovatorService.getInnovator(undefined, user.email).pipe(
         tap((innovator: Innovator) => {
           if (innovator) {
             this._innovator$.next(innovator);

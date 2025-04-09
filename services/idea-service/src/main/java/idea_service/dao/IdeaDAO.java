@@ -1,5 +1,6 @@
 package idea_service.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class IdeaDAO extends DAO {
 
     public List<Idea> getIdeas(final String categoryName) {
         List<Idea> ideas = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEAS_BY_CATEGORY)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_IDEAS_BY_CATEGORY)) {
             ps.setString(1, categoryName);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -59,7 +60,7 @@ public class IdeaDAO extends DAO {
 
     public List<Idea> getIdeas(final Implementation implementation) {
         List<Idea> ideas = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEAS_BY_IMPLEMENTATION)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_IDEAS_BY_IMPLEMENTATION)) {
             ps.setLong(1, implementation.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -81,7 +82,7 @@ public class IdeaDAO extends DAO {
 
     public List<Idea> getIdeas(final Innovator innovator) {
         List<Idea> ideas = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEAS_BY_INNOVATOR)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_IDEAS_BY_INNOVATOR)) {
             ps.setLong(1, innovator.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -103,7 +104,7 @@ public class IdeaDAO extends DAO {
 
     public Idea getIdea(final String summary) {
         Idea idea = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEA_BY_SUMMARY)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_IDEA_BY_SUMMARY)) {
             ps.setString(1, summary);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -124,7 +125,7 @@ public class IdeaDAO extends DAO {
 
     public Idea getIdea(final long id) {
         Idea idea = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEA_BY_ID)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_IDEA_BY_ID)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -157,7 +158,7 @@ public class IdeaDAO extends DAO {
         } else {
             sql = UPDATE_IDEA;
         }
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             int i = 1;
             ps.setString(i++, idea.getSummary());
             ps.setString(i++, idea.getDescription());
@@ -182,7 +183,7 @@ public class IdeaDAO extends DAO {
 
     private boolean disassociateCategoriesWithIdea(final Idea idea) {
         boolean deleted = false;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(DISASSOCIATE_IDEA_WITH_CATEGORY)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(DISASSOCIATE_IDEA_WITH_CATEGORY)) {
             ps.setLong(1, idea.getId());
             deleted = (ps.executeUpdate() != 0);
         } catch (final Exception e) {
@@ -198,7 +199,7 @@ public class IdeaDAO extends DAO {
         "VALUES (?, ?)";
 
     private Idea associateCategoriesWithIdea(final Idea idea) {
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(ASSOCIATE_IDEA_WITH_CATEGORY)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(ASSOCIATE_IDEA_WITH_CATEGORY)) {
             for (Category category : idea.getCategories()) {
                 int i = 1;
                 ps.setLong(i++, idea.getId());
@@ -220,7 +221,7 @@ public class IdeaDAO extends DAO {
 
     public boolean deleteIdea(final long id) {
         boolean deleted = false;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(DELETE_IDEA)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(DELETE_IDEA)) {
             ps.setLong(1, id);
             deleted = (ps.executeUpdate() != 0);
         } catch (final Exception e) {

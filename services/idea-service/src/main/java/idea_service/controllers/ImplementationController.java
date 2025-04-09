@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import idea_service.models.Implementation;
 import idea_service.models.Recommendation;
+import idea_service.models.Reply;
 import idea_service.services.ImplementationService;
 
 @CrossOrigin
@@ -64,5 +65,21 @@ public class ImplementationController {
         @RequestBody final Recommendation recommendation
     ) {
         return implementationService.postRecommendation(recommendation);
+    }
+
+    @PostMapping(path = "postRecommendationVote")
+    public Long postRecommendationVote(
+        @RequestParam final Long recommendationId,
+        @RequestParam final Long innovatorId,
+        @RequestParam final Boolean up
+    ) {
+        return implementationService.postRecommendationVote(recommendationId, innovatorId, up);
+    }
+
+    @PostMapping(path = "postRecommendationReply")
+    public Reply postRecommendationReply(
+        @RequestBody final Reply reply
+    ) {
+        return implementationService.postRecommendationReply(reply);
     }
 }

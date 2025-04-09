@@ -1,5 +1,6 @@
 package idea_service.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class CategoryDAO extends DAO {
 
     public List<Category> getAllCategories() {
         List<Category> categories = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_ALL_CATEGORIES)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_ALL_CATEGORIES)) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     categories.add(categoryMapper(rs));
@@ -44,7 +45,7 @@ public class CategoryDAO extends DAO {
 
     public List<Category> getCategories(final Idea idea) {
         List<Category> categories = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_CATEGORIES_BY_IDEA)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_CATEGORIES_BY_IDEA)) {
             ps.setLong(1, idea.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -67,7 +68,7 @@ public class CategoryDAO extends DAO {
 
     public List<Category> getCategories(final Implementation implementation) {
         List<Category> categories = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_CATEGORIES_BY_IMPLEMENTATION)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_CATEGORIES_BY_IMPLEMENTATION)) {
             ps.setLong(1, implementation.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -88,7 +89,7 @@ public class CategoryDAO extends DAO {
 
     public Category getCategoryByName(final String name) {
         Category category = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_CATEGORY_BY_NAME)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_CATEGORY_BY_NAME)) {
             ps.setString(1, name);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -109,7 +110,7 @@ public class CategoryDAO extends DAO {
 
     public List<Category> postCategories(final List<Category> categories) {
         List<Category> queriedCategories = this.getAllCategories();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(POST_CATEGORY)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(POST_CATEGORY)) {
             for (Category category : categories) {
                 if (queriedCategories.stream().noneMatch(cat -> cat.getName().equals(category.getName()))) {
                     ps.setString(1, category.getName());

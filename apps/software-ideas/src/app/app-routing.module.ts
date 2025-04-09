@@ -55,7 +55,7 @@ const routes: Routes = [
         }
     },
     {
-        path: 'Innovator/:emailAddress',
+        path: 'Innovator/:id',
         component: InnovatorComponent,
         resolve: {
             innovator: InnovatorResolver

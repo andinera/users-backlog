@@ -1,5 +1,6 @@
 package idea_service.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -23,7 +24,7 @@ public class InnovatorDAO extends DAO {
 
     public Innovator getInnovator(final long id) {
         Innovator innovator = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_INNOVATOR_BY_ID)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_INNOVATOR_BY_ID)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -47,7 +48,7 @@ public class InnovatorDAO extends DAO {
 
     public Innovator getInnovator(final String emailAddress) {
         Innovator innovator = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_INNOVATOR_BY_EMAIL_ADDRESS)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_INNOVATOR_BY_EMAIL_ADDRESS)) {
             ps.setString(1, emailAddress);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -75,7 +76,7 @@ public class InnovatorDAO extends DAO {
 
     public Innovator postInnovator(final Innovator innovator) throws Exception {
         Innovator updatedInnovator = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(POST_INNOVATOR)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(POST_INNOVATOR)) {
             if (innovator.getDisplayName() == null) {
                 innovator.setDisplayName(innovator.getEmailAddress());
             }

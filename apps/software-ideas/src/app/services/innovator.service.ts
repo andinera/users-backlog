@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { Innovator } from '../models/innovator.model';
 
@@ -13,8 +13,16 @@ export class InnovatorService {
 
   constructor(private readonly _http: HttpClient) { }
 
-  getInnovator(emailAddress: string): Observable<Innovator> {
-    return this._http.get<Innovator>(`${this._serviceURL}getInnovator?emailAddress=${encodeURIComponent(emailAddress)}`);
+  getInnovator(id?: string, emailAddress?: string): Observable<Innovator> {
+    let parameters: string;
+    if (id) {
+      parameters = `getInnovator?id=${encodeURIComponent(id)}`;
+    } else if (emailAddress) {
+      parameters = `getInnovator?emailAddress=${encodeURIComponent(emailAddress)}`;
+    } else {
+      return of(null);
+    }
+    return this._http.get<Innovator>(`${this._serviceURL}${parameters}`);
   }
 
   postInnovator(innovator: Innovator) {

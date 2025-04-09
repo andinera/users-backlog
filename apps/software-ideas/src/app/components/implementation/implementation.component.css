@@ -16,8 +16,21 @@
     width: 100%;
 }
 
-.message {
+.left-container {
+    display: inline-block;
+}
 
+.recommendation-votes {
+    text-align: center;
+}
+
+.right-container {
+    display: inline-block;
+    margin-left: 16px;
+}
+
+.message {
+    font-size: 16px;
 }
 
 .recommendation-footer {
@@ -25,11 +38,11 @@
 }
 
 .date-time-created {
-    display: inline-block;
+    display: inline-flex;
 }
 
 .display-name {
-    display: inline-block;
+    display: inline-flex;
     float: right;
 }
 

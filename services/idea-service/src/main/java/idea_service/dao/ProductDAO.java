@@ -1,5 +1,6 @@
 package idea_service.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class ProductDAO extends DAO {
 
     public List<Product> getProducts(final Implementation implementation) {
         List<Product> products = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_PRODUCTS_BY_IMPLEMENTATION)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_PRODUCTS_BY_IMPLEMENTATION)) {
             ps.setLong(1, implementation.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

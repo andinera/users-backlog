@@ -19,7 +19,7 @@ export class InnovatorResolver implements Resolve<Innovator> {
   ) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Innovator> {
-    return this._innovatorService.getInnovator(route.paramMap.get('emailAddress')).pipe(
+    return this._innovatorService.getInnovator(route.paramMap.get('id')).pipe(
       first(),
       map((innovator: Innovator) => {
         if (innovator) {

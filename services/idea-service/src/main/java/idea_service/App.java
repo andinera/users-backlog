@@ -8,7 +8,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import oracle.jdbc.pool.OracleDataSource;
+// import oracle.jdbc.pool.OracleDataSource;
+import com.mysql.cj.jdbc.MysqlDataSource;
 
 @SpringBootApplication
 public class App {
@@ -19,13 +20,10 @@ public class App {
 
     @Bean
     DataSource dataSource() throws SQLException {
-        final OracleDataSource dataSource = new OracleDataSource();
-        dataSource.setServerName("localhost");
-        dataSource.setUser("SYSTEM");
-        dataSource.setPassword("Go0b3r23Drowsap321");
-        dataSource.setDatabaseName("orcl");
-        dataSource.setPortNumber(1521);
-        dataSource.setDriverType("thin");
+        final MysqlDataSource dataSource = new MysqlDataSource();
+        dataSource.setUser("root");
+        dataSource.setPassword("Go0b3r@#Drowsap3@1");
+        dataSource.setDatabaseName("iequals");
         return dataSource;
     }
 }

@@ -10,6 +10,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Recommendation } from 'src/app/models/recommendation.model';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { Innovator } from 'src/app/models/innovator.model';
+import { ReplyForm } from 'src/app/models/forms/reply.form';
+import { Reply } from 'src/app/models/reply.model';
 
 @Component({
   selector: 'app-implementation',
@@ -19,7 +21,10 @@ import { Innovator } from 'src/app/models/innovator.model';
 export class ImplementationComponent implements OnInit, OnDestroy {
 
   implementation: Implementation;
+  editedRecommendation: Recommendation;
   recommendationForm: FormGroup;
+  editRecommendationForm: FormGroup;
+  replyForm: FormGroup;
     
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -32,7 +37,9 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.recommendationForm = this._formBuilder.group(new RecommendationForm())
+    this.recommendationForm = this._formBuilder.group(new RecommendationForm());
+    this.editRecommendationForm = this._formBuilder.group(new RecommendationForm());
+    this.replyForm = this._formBuilder.group(new ReplyForm());
 
     this._route.data.pipe(
       first(),
@@ -72,9 +79,10 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     ).subscribe();
   }
 
-  public addRecommendation(recommendation: Recommendation): void {
-    if (this.recommendationForm.controls.message.value.length === 0) {
-      this.recommendationForm.markAllAsTouched();
+  public postRecommendation(recommendationForm: FormGroup): void {
+    const recommendation = recommendationForm.value;
+    if (recommendationForm.controls.message.value.length === 0) {
+      recommendationForm.markAllAsTouched();
     } else {
       this._authenticationService.innovator.pipe(
         tap((innovator: Innovator) => {
@@ -82,11 +90,17 @@ export class ImplementationComponent implements OnInit, OnDestroy {
           recommendation.implementation = this.implementation;
           this._implementationService.postRecommendation(recommendation).pipe(
             first(),
-            tap((recommendation: Recommendation) => {
-              this.recommendationForm.reset();
-              this.implementation.recommendations.push(recommendation);
-              recommendation.dateTimeCreated = new Date(Date.parse(recommendation.dateTimeCreated.toString()));
-
+            tap((returnedRecommendation: Recommendation) => {
+              recommendationForm.reset();
+              if (recommendation.id > 0) {
+                const filteredRecommendations = this.implementation.recommendations.filter(r => r.id === recommendation.id);
+                const index = this.implementation.recommendations.indexOf(filteredRecommendations[0]);
+                this.implementation.recommendations.splice(index, 1, returnedRecommendation);
+                this.editedRecommendation = undefined;
+              } else {
+                this.implementation.recommendations.push(returnedRecommendation);
+              }
+              returnedRecommendation.dateTimeCreated = new Date(Date.parse(returnedRecommendation.dateTimeCreated.toString()));
             }),
             takeUntil(this._destroyed$),
             catchError((e: any) => {
@@ -104,4 +118,77 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     }
   }
 
+  public postRecommendationVote(recommendation: Recommendation, up: boolean) {
+    recommendation.implementation = this.implementation;
+    this._authenticationService.innovator.pipe(
+      tap((innovator: Innovator) => {
+        recommendation.innovator = innovator;
+        recommendation.implementation = this.implementation;
+        this._implementationService.postRecommendationVote(recommendation, up).pipe(
+          first(),
+          tap((votes: number) => {
+            recommendation.votes = votes;
+          }),
+          takeUntil(this._destroyed$),
+          catchError((e: any) => {
+            console.log(e);
+            return of(null);
+          })
+        ).subscribe();
+      }),
+      catchError((error: any) => {
+        console.log(error);
+        return of(null);
+      }),
+      takeUntil(this._destroyed$)
+    ).subscribe();
+  }
+
+  public cancelEditRecommendtion() {
+    this.editedRecommendation = undefined;
+  }
+
+  public openEdit(recommendation) {
+    this.editedRecommendation = recommendation;
+    this.editRecommendationForm.patchValue(recommendation);
+  }
+
+  public postReply(replyForm: FormGroup, recommendation: Recommendation) {
+    const reply = replyForm.value;
+    if (!replyForm.controls.message.value) {
+      replyForm.markAllAsTouched();
+    } else {
+      this._authenticationService.innovator.pipe(
+        tap((innovator: Innovator) => {
+          reply.innovator = innovator;
+          reply.recommendation = recommendation;
+          this._implementationService.postRecommendationReply(reply).pipe(
+            first(),
+            tap((returnedReply: Reply) => {
+              replyForm.reset();
+              if (reply.id > 0) {
+                const filteredReplies = recommendation.replies.filter(r => r.id === reply.id);
+                const index = recommendation.replies.indexOf(filteredReplies[0]);
+                recommendation.replies.splice(index, 1, returnedReply);
+                this.editedRecommendation = undefined;
+              } else {
+                recommendation.replies.push(returnedReply);
+              }
+              returnedReply.dateTimeCreated = new Date(Date.parse(returnedReply.dateTimeCreated.toString()));
+            }),
+            takeUntil(this._destroyed$),
+            catchError((e: any) => {
+              console.log(e);
+              return of(null);
+            })
+          ).subscribe();
+        }),
+        catchError((error: any) => {
+          console.log(error);
+          return of(null);
+        }),
+        takeUntil(this._destroyed$)
+      ).subscribe();
+    }
+  }
 }

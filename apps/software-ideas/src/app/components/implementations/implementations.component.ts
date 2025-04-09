@@ -26,7 +26,6 @@ export class ImplementationsComponent implements OnInit {
       first(),
       tap((data: {implementations: Implementation[]}) => {
         this.implementations = data.implementations;
-        console.log(this.implementations);
       }),
       catchError((error: any) => {
         return of(null);

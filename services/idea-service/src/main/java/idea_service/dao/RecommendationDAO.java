@@ -1,5 +1,6 @@
 package idea_service.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
@@ -35,7 +36,7 @@ public class RecommendationDAO extends DAO {
 
     public Recommendation getRecommendation(final long id) {
         Recommendation recommendation = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_RECOMMENDATION_BY_ID)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_RECOMMENDATION_BY_ID)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -55,7 +56,7 @@ public class RecommendationDAO extends DAO {
 
     public List<Recommendation> getRecommendations(final Idea idea) {
         List<Recommendation> recommendations = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_RECOMMENDATIONS_BY_IDEA)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_RECOMMENDATIONS_BY_IDEA)) {
             ps.setLong(1, idea.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -77,7 +78,7 @@ public class RecommendationDAO extends DAO {
 
     public Recommendation getRecommendation(final Innovator innovator, final ZonedDateTime dateTime) {
         Recommendation recommendation = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_RECOMMENDATION_BY_INNOVATOR_AND_DATETIME)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_RECOMMENDATION_BY_INNOVATOR_AND_DATETIME)) {
             int i = 1;
             ps.setLong(i++, innovator.getId());
             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -110,7 +111,7 @@ public class RecommendationDAO extends DAO {
         } else {
             sql = UPDATE_RECOMMENDATION;
         }
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             int i = 1;
             ps.setLong(i++, recommendation.getIdea().getId());
             ps.setString(i++, recommendation.getMessage());

@@ -18,8 +18,8 @@
 
     <div class="row">
         <div class="innovator">
-            <a routerLink="/Innovator/{{implementation.innovator.emailAddress}}">
-                {{implementation.innovator.emailAddress}}
+            <a [routerLink]="['/Innovator', implementation.innovator.id]">
+                {{implementation.innovator.displayName}}
             </a>
         </div>
     </div>
@@ -49,25 +49,111 @@
     <div class="row">
         <ul class="list-group">
             <div class="recommendation" *ngFor="let recommendation of implementation.recommendations">
-                <li class="list-group-item">
-                    <div class="message">
-                        {{recommendation.message}}
-                    </div>
-                </li>
-                <div class="recommendation-footer">
-                    <div class="date-time-created">
-                        {{recommendation.dateTimeCreated}}
-                    </div>
-                    <div class="display-name">
-                        {{recommendation.innovator.displayName}}
-                    </div>
+                <div>
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-2 text-center">
+                                <div class="row">
+                                    <div class="col">
+                                        <a mat-button (click)="postRecommendationVote(recommendation, true)">i++</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        {{recommendation.votes}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <a mat-button (click)="postRecommendationVote(recommendation, false)">i--</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div *ngIf="editedRecommendation !== recommendation">
+                                    <div class="row">
+                                        <div class="col">
+                                            {{recommendation.message}}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-right">
+                                            {{recommendation.dateTimeCreated}}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-right">
+                                            <a [routerLink]="['/Innovator', recommendation.innovator.id]">
+                                                {{recommendation.innovator.displayName}}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <a mat-button (click)="openEdit(recommendation)">Edit</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="editedRecommendation === recommendation">
+                                    <form (ngSubmit)="postRecommendation(editRecommendationForm)">
+                            
+                                        <mat-form-field appearance="fill">
+                                            <textarea matInput [formControl]="editRecommendationForm.controls.message"></textarea>
+                                        </mat-form-field>
+                            
+                                        <div class="row">
+                                            <div class="col">
+                                                <button mat-flat-button color="primary" type="submit">Submit</button>
+                                            </div>
+                                            <div class="col">
+                                                <button mat-flat-button color="secondary" type="button" (click)="cancelEditRecommendtion()">Cancel</button>
+                                            </div>
+                                        </div>
+                            
+                                    </form>
+                                </div>
+                                <div class="reply" *ngFor="let reply of recommendation.replies">
+                                    <div class="row">
+                                        <div class="col">
+                                            <hr>
+                                            {{reply.message}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="collapse" [attr.id]="'reply' + recommendation.id">
+                                    <div class="row">
+                                        <div class="col">
+                                            <form (ngSubmit)="postReply(replyForm, recommendation)">
+                                    
+                                                <mat-form-field appearance="fill">
+                                                    <textarea matInput [formControl]="replyForm.controls.message"></textarea>
+                                                </mat-form-field>
+                                    
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <button mat-flat-button color="primary" type="submit" data-toggle="collapse" [attr.data-target]="'#reply' + recommendation.id">Submit</button>
+                                                    </div>
+                                                </div>
+                                    
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <a mat-button data-toggle="collapse" [attr.data-target]="'#reply' + recommendation.id">Reply</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
                 </div>
             </div>
         </ul>
     </div>
 
     <div class="row">
-        <form (ngSubmit)="addRecommendation(recommendationForm.value)">
+        <form (ngSubmit)="postRecommendation(recommendationForm)">
 
             <mat-form-field appearance="fill">
                 <textarea matInput [formControl]="recommendationForm.controls.message"></textarea>

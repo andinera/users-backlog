@@ -1,5 +1,6 @@
 package idea_service.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
@@ -17,6 +18,7 @@ import idea_service.models.Idea;
 import idea_service.models.Implementation;
 import idea_service.models.Innovator;
 import idea_service.models.Recommendation;
+import idea_service.models.Reply;
 
 @Repository
 public class ImplementationDAO extends DAO {
@@ -30,6 +32,7 @@ public class ImplementationDAO extends DAO {
             "impl.description, " +
             "inv.id AS innovator_id, " +
             "inv.email_address, " +
+            "inv.display_name, " +
             "iv.votes " +
         "FROM implementation impl " +
         "INNER JOIN innovator inv " +
@@ -59,7 +62,7 @@ public class ImplementationDAO extends DAO {
                 "ON ic.implementation_id = impl.id";
         }
         List<Implementation> implementations = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     final Implementation implementation = implementationMapper(rs);
@@ -80,7 +83,7 @@ public class ImplementationDAO extends DAO {
 
     public Implementation getImplementation(final String name) {
         Implementation implementation = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IMPLEMENTATION_BY_NAME)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_IMPLEMENTATION_BY_NAME)) {
             ps.setString(1, name);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -102,7 +105,7 @@ public class ImplementationDAO extends DAO {
 
     public Implementation getImplementation(final long id) {
         Implementation implementation = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IMPLEMENTATION_BY_ID)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_IMPLEMENTATION_BY_ID)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -126,7 +129,7 @@ public class ImplementationDAO extends DAO {
 
     public List<Implementation> getImplementations(final Idea idea) {
         List<Implementation> implementations = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IMPLEMENTATIONS_BY_IDEA)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_IMPLEMENTATIONS_BY_IDEA)) {
             ps.setLong(1, idea.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -147,7 +150,7 @@ public class ImplementationDAO extends DAO {
 
     public List<Implementation> getImplementations(final Innovator innovator) {
         List<Implementation> implementations = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IMPLEMENTATIONS_BY_INNOVATOR)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_IMPLEMENTATIONS_BY_INNOVATOR)) {
             ps.setLong(1, innovator.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -171,6 +174,7 @@ public class ImplementationDAO extends DAO {
         final Innovator innovator = new Innovator();
         innovator.setId(rs.getLong("innovator_id"));
         innovator.setEmailAddress(rs.getString("email_address"));
+        innovator.setDisplayName(rs.getString("display_name"));
         implementation.setInnovator(innovator);
         
         implementation.setVotes(rs.getLong("votes"));
@@ -197,7 +201,7 @@ public class ImplementationDAO extends DAO {
             sql = UPDATE_IMPLEMENTATION;
         }
 
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             int i = 1;
             ps.setLong(i++, implementation.getInnovator().getId());
             ps.setString(i++, implementation.getName());
@@ -223,7 +227,7 @@ public class ImplementationDAO extends DAO {
 
     private boolean disassociateCategoriesWithImplementation(final Implementation implementation) {
         boolean deleted = false;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(DISASSOCIATE_IMPLEMENTATION_WITH_CATEGORY)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(DISASSOCIATE_IMPLEMENTATION_WITH_CATEGORY)) {
             ps.setLong(1, implementation.getId());
             deleted = (ps.executeUpdate() != 0);
         } catch (final Exception e) {
@@ -239,7 +243,7 @@ public class ImplementationDAO extends DAO {
         "VALUES (?, ?)";
 
     private Implementation associateCategoriesWithImplementation(final Implementation implementation) {
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(ASSOCIATE_IMPLEMENTATION_WITH_CATEGORY)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(ASSOCIATE_IMPLEMENTATION_WITH_CATEGORY)) {
             for (Category category : implementation.getCategories()) {
                 int i = 1;
                 ps.setLong(i++, implementation.getId());
@@ -263,7 +267,7 @@ public class ImplementationDAO extends DAO {
         List<Idea> updatedIdeas = null;
 
         if (implementation.getIdeas() != null) {
-            try (PreparedStatement ps = dataSource.getConnection().prepareStatement(ASSOCIATE_IMPLEMENTATION_WITH_IDEA)) {
+            try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(ASSOCIATE_IMPLEMENTATION_WITH_IDEA)) {
                 for (Idea idea : implementation.getIdeas()) {
                     int i = 1;
                     ps.setLong(i++, idea.getId());
@@ -305,7 +309,7 @@ public class ImplementationDAO extends DAO {
             sql = UPDATE_VOTE;
         }
 
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             int i = 1;
             ps.setLong(i++, up ? 1 : -1);
             ps.setLong(i++, implementationId);
@@ -331,7 +335,7 @@ public class ImplementationDAO extends DAO {
 
     public Long getVotes(final Long implementationId, final Long innovatorId) {
         Long votes = 0L;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_VOTES)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_VOTES)) {
             int i = 1;
             ps.setLong(i++, implementationId);
             ps.setLong(i++, innovatorId);
@@ -356,7 +360,7 @@ public class ImplementationDAO extends DAO {
 
     public Boolean getVote(final Long implementationId, final Long innovatorId) {
         Boolean vote = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_VOTE)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_VOTE)) {
             int i = 1;
             ps.setLong(i++, implementationId);
             ps.setLong(i++, innovatorId);
@@ -400,7 +404,7 @@ public class ImplementationDAO extends DAO {
             sql = UPDATE_RECOMMENDATION;
         }
 
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             int i = 1;
             ps.setString(i++, recommendation.getMessage());
             ps.setTimestamp(i++, Timestamp.from(dateTime.toInstant()), UTC_CALENDAR);
@@ -438,11 +442,14 @@ public class ImplementationDAO extends DAO {
 
     public List<Recommendation> getRecommendations(final Implementation implementation) {
         List<Recommendation> recommendations = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_RECOMMENDATIONS_BY_IMPLEMENTATION)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_RECOMMENDATIONS_BY_IMPLEMENTATION)) {
             ps.setLong(1, implementation.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    recommendations.add(recommendationMapper(rs));
+                    Recommendation recommendation = recommendationMapper(rs);
+                    recommendation.setVotes(this.getRecommendationVotes(recommendation.getId(), recommendation.getInnovator().getId()));
+                    recommendation.setReplies(this.getRecommendationReplies(recommendation));
+                    recommendations.add(recommendation);
                 }
             }
         } catch (final Exception e) {
@@ -461,7 +468,7 @@ public class ImplementationDAO extends DAO {
 
     public Recommendation getRecommendation(final Long implementationId, final Long innovatorId, final ZonedDateTime dateTimeCreated) {
         Recommendation recommendation = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_RECOMMENDATION)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_RECOMMENDATION)) {
             int i = 1;
             ps.setLong(i++, implementationId);
             ps.setLong(i++, innovatorId);
@@ -469,6 +476,7 @@ public class ImplementationDAO extends DAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     recommendation = recommendationMapper(rs);
+                    recommendation.setVotes(this.getRecommendationVotes(recommendation.getId(), recommendation.getInnovator().getId()));
                 }
             }
         } catch (final Exception e) {
@@ -486,11 +494,218 @@ public class ImplementationDAO extends DAO {
         recommendation.setDateTimeModified(ZonedDateTime.from(rs.getTimestamp("date_time_modified", UTC_CALENDAR).toInstant().atZone(ZoneId.of("UTC"))));
 
         Innovator innovator = new Innovator();
-        innovator.setDisplayName(rs.getString("innovator_id"));
+        innovator.setId(rs.getLong("innovator_id"));
         innovator.setDisplayName(rs.getString("display_name"));
         recommendation.setInnovator(innovator);
 
         return recommendation;
+    }
+
+    private final String INSERT_RECOMMENDATION_VOTE =
+        "INSERT " +
+        "INTO implementation_recommendation_vote (vote, implementation_recommendation_id, innovator_id) " +
+        "VALUES (?, ?, ?)";
+    private final String UPDATE_RECOMMENDATION_VOTE = 
+        "UPDATE implementation_recommendation_vote " +
+        "SET vote = ? " +
+        "WHERE implementation_recommendation_id = ? " +
+            "AND innovator_id = ?";
+
+    public Long postRecommendationVote(final Long recommendationId, final Long innovatorId, final Boolean up) {
+        String sql = null;
+        if (this.getRecommendationVote(recommendationId, innovatorId) == null) {
+            sql = INSERT_RECOMMENDATION_VOTE;
+        } else {
+            sql = UPDATE_RECOMMENDATION_VOTE;
+        }
+
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            int i = 1;
+            ps.setLong(i++, up ? 1 : -1);
+            ps.setLong(i++, recommendationId);
+            ps.setLong(i++, innovatorId);
+            ps.executeUpdate();
+        } catch (final Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+        return this.getRecommendationVotes(recommendationId, innovatorId);
+    }
+
+    private final String GET_RECOMMENDATION_VOTES = 
+        "SELECT " +
+            "SUM(vote) votes " +
+        "FROM implementation_recommendation_vote " +
+        "WHERE (implementation_recommendation_id = ? " +
+            "AND innovator_id = ?) " +
+        "GROUP BY " +
+            "implementation_recommendation_id, " +
+            "innovator_id";
+
+    public Long getRecommendationVotes(final Long recommendationId, final Long innovatorId) {
+        Long votes = 0L;
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_RECOMMENDATION_VOTES)) {
+            int i = 1;
+            ps.setLong(i++, recommendationId);
+            ps.setLong(i++, innovatorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    votes = rs.getLong("votes");
+                }
+            }
+        } catch (final Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return votes;
+    }
+
+    private final String GET_RECOMMENDATION_VOTE = 
+        "SELECT " +
+            "vote " +
+        "FROM implementation_recommendation_vote iv " +
+        "WHERE (implementation_recommendation_id = ? " +
+            "AND innovator_id = ?)";
+
+    public Boolean getRecommendationVote(final Long recommendationId, final Long innovatorId) {
+        Boolean vote = null;
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_RECOMMENDATION_VOTE)) {
+            int i = 1;
+            ps.setLong(i++, recommendationId);
+            ps.setLong(i++, innovatorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    vote = rs.getLong("vote") == 1;
+                }
+            }
+        } catch (final Exception e) {
+            vote = null;
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return vote;
+    }
+
+    private final String INSERT_RECOMMENDATION_REPLY =
+        "INSERT " +
+        "INTO implementation_recommendation_reply (" +
+            "message, " +
+            "date_time_created, " +
+            "implementation_recommendation_id, " +
+            "innovator_id, " +
+            "date_time_modified " +
+        ") VALUES (?, ?, ?, ?, ?)";
+    private final String UPDATE_RECOMMENDATION_REPLY = 
+        "UPDATE implementation_recommendation_reply " +
+        "SET message = ?, date_time_modified = ? " +
+        "WHERE (implementation_recommendation_id = ? " +
+            "AND innovator_id = ? " +
+            "AND id = ?)";
+
+    public Reply postRecommendationReply(final Reply reply) {
+        String sql = null;
+        ZonedDateTime dateTime = ZonedDateTime.now();
+        reply.setDateTimeModified(dateTime);
+        if (reply.getId() == 0) {
+            sql = INSERT_RECOMMENDATION_REPLY;
+            reply.setDateTimeCreated(dateTime);
+        } else {
+            sql = UPDATE_RECOMMENDATION_REPLY;
+        }
+
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            int i = 1;
+            ps.setString(i++, reply.getMessage());
+            ps.setTimestamp(i++, Timestamp.from(dateTime.toInstant()), UTC_CALENDAR);
+            ps.setLong(i++, reply.getRecommendation().getId());
+            ps.setLong(i++, reply.getInnovator().getId());
+            if (sql.equals(INSERT_RECOMMENDATION_REPLY)) {
+                ps.setTimestamp(i++, Timestamp.from(dateTime.toInstant()), UTC_CALENDAR);
+            } else {
+                ps.setLong(i++, reply.getId());
+            }
+            ps.executeUpdate();
+        } catch (final Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+        return this.getRecommendationReply(reply.getRecommendation().getId(), reply.getInnovator().getId(), reply.getDateTimeCreated());
+    }
+
+    private final String GET_RECOMMENDATION_REPLIES = 
+        "SELECT " +
+            "irr.id, " +
+            "irr.message, " +
+            "irr.date_time_created, " +
+            "irr.date_time_modified, " +
+            "irr.innovator_id, " +
+            "inno.display_name " +
+        "FROM implementation_recommendation_reply irr " +
+        "INNER JOIN innovator inno " +
+            "ON inno.id = irr.innovator_id";
+
+    private final String GET_RECOMMENDATION_REPLIES_BY_RECOMMENDATION = 
+        GET_RECOMMENDATION_REPLIES + " " +
+        "WHERE irr.implementation_recommendation_id = ?";
+
+    public List<Reply> getRecommendationReplies(final Recommendation recommendation) {
+        List<Reply> replies = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_RECOMMENDATION_REPLIES_BY_RECOMMENDATION)) {
+            ps.setLong(1, recommendation.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Reply reply = replyMapper(rs);
+                    replies.add(reply);
+                }
+            }
+        } catch (final Exception e) {
+            replies = null;
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return replies;
+    }
+
+    private final String GET_RECOMMENDATION_REPLY = 
+        GET_RECOMMENDATION_REPLIES + " " +
+        "WHERE (irr.implementation_recommendation_id = ? " +
+            "AND irr.innovator_id = ? " +
+            "AND irr.date_time_created = ?)";
+
+    public Reply getRecommendationReply(final Long recommendationId, final Long innovatorId, final ZonedDateTime dateTimeCreated) {
+        Reply reply = null;
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_RECOMMENDATION_REPLY)) {
+            int i = 1;
+            ps.setLong(i++, recommendationId);
+            ps.setLong(i++, innovatorId);
+            ps.setTimestamp(i++, Timestamp.from(dateTimeCreated.toInstant()), UTC_CALENDAR);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    reply = replyMapper(rs);
+                }
+            }
+        } catch (final Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return reply;
+    }
+
+    private Reply replyMapper(ResultSet rs) throws Exception {
+        Reply reply = new Reply();
+        reply.setId(rs.getLong("id"));
+        reply.setMessage(rs.getString("message"));
+        reply.setDateTimeCreated(ZonedDateTime.from(rs.getTimestamp("date_time_created", UTC_CALENDAR).toInstant().atZone(ZoneId.of("UTC"))));
+        reply.setDateTimeModified(ZonedDateTime.from(rs.getTimestamp("date_time_modified", UTC_CALENDAR).toInstant().atZone(ZoneId.of("UTC"))));
+
+        Innovator innovator = new Innovator();
+        innovator.setId(rs.getLong("innovator_id"));
+        innovator.setDisplayName(rs.getString("display_name"));
+        reply.setInnovator(innovator);
+
+        return reply;
     }
 
 }

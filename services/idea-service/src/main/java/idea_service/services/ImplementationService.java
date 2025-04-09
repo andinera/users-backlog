@@ -11,6 +11,7 @@ import idea_service.dao.ImplementationDAO;
 import idea_service.dao.ProductDAO;
 import idea_service.models.Implementation;
 import idea_service.models.Recommendation;
+import idea_service.models.Reply;
 
 @Service
 public class ImplementationService {
@@ -61,6 +62,14 @@ public class ImplementationService {
 
     public Recommendation postRecommendation(Recommendation recommendation) {
         return implementationDAO.postRecommendation(recommendation);
+    }
+
+    public Long postRecommendationVote(Long recommendationId, Long innovatorId, Boolean up) {
+        return implementationDAO.postRecommendationVote(recommendationId, innovatorId, up);
+    }
+
+    public Reply postRecommendationReply(Reply reply) {
+        return implementationDAO.postRecommendationReply(reply);
     }
 
 }
