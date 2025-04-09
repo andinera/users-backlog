@@ -10,6 +10,7 @@ import { SessionStorageService } from './session-storage.service';
 
 
 declare var firebase: any;
+declare var gapi: any;
 
 
 @Injectable({
@@ -30,7 +31,7 @@ export class InnovatorService extends Service {
   ) {
     super();
 
-    // gapi.load('client', this.initializeGoogleApi.bind(this));
+    gapi.load('client', this.initializeGoogleApi.bind(this));
 
     var firebaseConfig = {
       apiKey: environment.firebaseApiKey,
@@ -105,19 +106,20 @@ export class InnovatorService extends Service {
 
   private initializeGoogleApi(): Promise<any> {
     return new Promise((resolve, reject) => {
-      // this._ngZone.run(() => {
-      //   gapi.client.init({
-      //     apiKey: 'AIzaSyDSq3qOHBHL9YFahSGB5pO3koCIMUgTtuM',
-      //     discoveryDocs: [],
-      //     clientId: undefined,
-      //     scopes: undefined
-      //   }).then((response: any) => {
-      //     console.log("Google API Initialized");
-      //   }, (reason: any) => {
-      //     console.log("Google API Not Initialized");
-      //     console.log(reason.result.error.message);
-      //   });
-      // });
+      this._ngZone.run(() => {
+        gapi.client.init({
+          apiKey: 'AIzaSyDSq3qOHBHL9YFahSGB5pO3koCIMUgTtuM',
+          discoveryDocs: [],
+          clientId: '809333411313-ig8j262oip33aj9in335obcf90da4all.apps.googleusercontent.com',
+          scope: 'profile email openid'
+        }).then((response: any) => {
+          console.log("Google API Initialized");
+        }, (reason: any) => {
+          console.log("Google API Not Initialized");
+          console.log(reason);
+          // console.log(reason.result.error.message);
+        });
+      });
     });
   }
 
@@ -185,7 +187,13 @@ export class InnovatorService extends Service {
     if (this.innovator$.value) {
       innovator.idToken = this.innovator$.value.idToken;
     }
-    return this._http.post<Innovator>(`${this._serviceURL}postInnovator`, innovator);
+    return this._http.post<Innovator>(`${this._serviceURL}postInnovator`, innovator).pipe(
+      tap((innovator: Innovator) => {
+        if (innovator) {
+          this.innovator$.next(innovator);
+        }
+      })
+    );
   }
 
   

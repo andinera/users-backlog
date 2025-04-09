@@ -3,9 +3,9 @@
     <form (ngSubmit)="login(loginForm.value)">
 
         <div class="col" style="margin-bottom:30px">
-            <button mat-stroked-button type="button" (click)="openGoogleAuthenticator()" style="width:100%">
+            <button class="btn google-signin-button" type="button" (click)="openGoogleAuthenticator()">
                 <img src="assets/512px-Google__G__Logo.svg.webp" width="15" height="15">
-                Log in with Google
+                Sign in with Google
             </button>
         </div>
 
@@ -33,10 +33,10 @@
         </div>
 
         <div class="col">
-            <button mat-flat-button color="primary" type="submit">Login</button>
+            <button class="btn btn-primary" type="submit">Login</button>
         </div>
         <div class="col">
-            <button mat-stroked-button type="button" (click)="createAccount(loginForm.value)">Create Account</button>
+            <button class="btn btn-light" (click)="createAccount(loginForm.value)">Create Account</button>
         </div>
         <div class="col">
             <div *ngIf="errorMessage" class="text-danger">

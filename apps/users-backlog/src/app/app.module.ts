@@ -27,6 +27,7 @@ import { RecommendationComponent } from './components/recommendation/recommendat
 import { ImplementationsComponent } from './components/implementations/implementations.component';
 import { URLService } from './services/url.service';
 import { InnovatorService } from './services/innovator.service';
+import { AccountComponent } from './components/account/account.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { InnovatorService } from './services/innovator.service';
     LoginComponent,
     ImplementationComponent,
     InnovatorComponent,
+    AccountComponent,
     NewImplementationComponent,
     RecommendationComponent,
     ImplementationsComponent

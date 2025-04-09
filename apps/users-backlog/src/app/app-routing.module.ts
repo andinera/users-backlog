@@ -18,6 +18,7 @@ import { ImplementationsResolver } from './resolvers/implementations.resolver';
 import { NewImplementationComponent } from './components/new-implementation/new-implementation.component';
 import { LogInGuard } from './guards/log-in.guard';
 import { RedirectGuard } from './guards/redirect.guard';
+import { AccountComponent } from './components/account/account.component';
 
 
 const extraOptions = {
@@ -62,6 +63,11 @@ const routes: Routes = [
         }
     },
     {
+        path: 'account',
+        component: AccountComponent,
+        canActivate: [LogInGuard]
+    },
+    {
         path: 'new-idea',
         component: NewIdeaComponent,
         resolve: {
@@ -70,7 +76,7 @@ const routes: Routes = [
         canActivate: [LogInGuard]
     },
     {
-        path: 'Eeit-idea/:summary',
+        path: 'edit-idea/:summary',
         component: NewIdeaComponent,
         resolve: {
             idea: IdeaResolver,

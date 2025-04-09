@@ -1,0 +1,34 @@
+{{(innovatorService.innovator$ | async).displayName}}
+
+<div class="container d-flex align-self-stretch justify-content-center">
+
+    <form (ngSubmit)="updateAccount()">
+
+        <div class="col">
+            <mat-form-field appearance="fill">
+                <mat-label>Email Address</mat-label>
+                <input matInput readonly type="email" [formControl]="accountForm.controls.emailAddress">
+            </mat-form-field>
+        </div>
+
+        <div class="col">
+            <mat-form-field appearance="fill">
+                <mat-label>Display Name</mat-label>
+                <input matInput type="displayName" [formControl]="accountForm.controls.displayName">
+            </mat-form-field>
+        </div>
+
+        <!-- <div class="col">
+            <mat-form-field appearance="fill">
+                <mat-label>Email Address</mat-label>
+                <input matInput type="email" [formControl]="accountForm.controls.emailAddress">
+            </mat-form-field>
+        </div> -->
+
+        <div class="col">
+            <button class="btn btn-primary" type="submit">Update</button>
+        </div>
+
+    </form>
+
+</div>

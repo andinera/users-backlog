@@ -20,7 +20,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledBy="navbarDropdownMenuLink">
                         <a class="dropdown-item" routerLink="/innovator/{{(innovatorService.innovator$ | async).id}}">Profile</a>
-                        <a class="dropdown-item" routerLink="/innovator/{{(innovatorService.innovator$ | async).id}}">Account</a>
+                        <a class="dropdown-item" routerLink="/account">Account</a>
                         <a class="dropdown-item" (click)="logOut()">Log out</a>
                     </div>
                 </li>

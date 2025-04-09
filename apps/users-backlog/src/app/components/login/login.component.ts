@@ -4,8 +4,11 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { ReplaySubject } from 'rxjs';
 
 import { URLService } from 'src/app/services/url.service';
-import { LoginForm } from 'src/app/models/forms/login.form';
+import { AccountForm } from 'src/app/models/forms/account.form';
 import { InnovatorService } from 'src/app/services/innovator.service';
+
+declare var gapi: any;
+
 
 @Component({
   selector: 'app-login',
@@ -28,7 +31,7 @@ export class LoginComponent implements OnDestroy {
     private readonly _urlService: URLService,
     private readonly _router: Router
   ) {
-    this.loginForm = this._formBuilder.group(new LoginForm());
+    this.loginForm = this._formBuilder.group(new AccountForm());
   }
 
   ngOnDestroy(): void {

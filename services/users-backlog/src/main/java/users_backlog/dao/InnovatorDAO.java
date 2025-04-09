@@ -67,23 +67,38 @@ public class InnovatorDAO extends DAO {
         return innovator;
     }
 
-    final private String POST_INNOVATOR = 
+    private final String INSERT_INNOVATOR = 
         "INSERT " +
         "INTO innovator (" +
             "email_address," +
             "display_name" +
         ") " +
         "VALUES (?, ?)";
+    private final String UPDATE_INNOVATOR = 
+        "UPDATE innovator " +
+        "SET email_address = ?, display_name = ? " +
+        "WHERE id = ?";
 
     public Innovator postInnovator(final Innovator innovator) throws Exception {
+
+        String sql = null;
+        if (this.getInnovator(innovator.getId()) == null) {
+            sql = INSERT_INNOVATOR;
+        } else {
+            sql = UPDATE_INNOVATOR;
+        }
+
         Innovator updatedInnovator = null;
-        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(POST_INNOVATOR)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             if (innovator.getDisplayName() == null) {
                 innovator.setDisplayName(innovator.getEmailAddress());
             }
             int i = 1;
             ps.setString(i++, innovator.getEmailAddress());
             ps.setString(i++, innovator.getDisplayName());
+            if (sql.equals(UPDATE_INNOVATOR)) {
+                ps.setLong(i++, innovator.getId());
+            }
             if (ps.executeUpdate() != 0) {
                 updatedInnovator = innovator;
             }
