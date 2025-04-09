@@ -1,7 +1,11 @@
-<mat-toolbar>
-    <button mat-stroked-button routerLink="/ideas">Ideas</button>
-    <button mat-stroked-button routerLink="/addIdea">Add Idea</button>
-    <button mat-stroked-button routerLink="/login">Login</button>
-</mat-toolbar>
-
+<div style="position:sticky;top:0;z-index:100">
+    <mat-toolbar>
+        <button mat-stroked-button routerLink="/ideas">Ideas</button>
+        <button mat-stroked-button routerLink="/addIdea">Add Idea</button>
+        <button *ngIf="loggedIn" mat-stroked-button (click)="logOut()">Logout</button>
+        <button *ngIf="!loggedIn" mat-stroked-button [routerLink]="[{ outlets: { login: 'login' }}]">Login</button>
+    </mat-toolbar>
+    
+    <router-outlet name="login"></router-outlet>
+</div>
 <router-outlet></router-outlet>

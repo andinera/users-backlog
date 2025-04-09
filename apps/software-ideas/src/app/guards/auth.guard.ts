@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { InnovatorService } from '../services/innovator.service';
+import { AuthenticationService } from '../services/authentication.service';
+import { Innovator } from '../models/innovator';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +12,7 @@ import { InnovatorService } from '../services/innovator.service';
 export class AuthGuard implements CanActivate {
 
   constructor(
-    private readonly innovatorService: InnovatorService,
+    private readonly authenticationService: AuthenticationService,
     private readonly router: Router
   ) {
 
@@ -20,11 +22,14 @@ export class AuthGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-      if (this.innovatorService.innovator) {
-        return true;
-      } else {
-        this.router.navigate(['/login']);
-      }
+      return this.authenticationService.innovator.pipe(
+        map((innovator: Innovator) => {
+          if (innovator) {
+            return true;
+          } else {
+            this.router.navigate(['/login']);
+          }
+      }))
     }
   
 }

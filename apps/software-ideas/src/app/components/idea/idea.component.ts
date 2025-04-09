@@ -6,9 +6,8 @@ import { takeUntil, tap, first, catchError } from 'rxjs/operators';
 
 import { IdeaService } from '../../services/idea.service';
 import { Idea } from '../../models/idea';
-import { InnovatorService } from 'src/app/services/innovator.service';
-import { Implementation } from 'src/app/models/implementation';
-import { ImplementationService } from 'src/app/services/implementation.service';
+import { AuthenticationService } from 'src/app/services/authentication.service';
+import { Innovator } from 'src/app/models/innovator';
 
 @Component({
   selector: 'app-idea',
@@ -17,8 +16,9 @@ import { ImplementationService } from 'src/app/services/implementation.service';
 export class IdeaComponent implements OnInit, OnDestroy {
 
   idea: Idea;
-  deleteDisabled: boolean;
+  deleteDisabled = true;
   implementationForm: FormGroup;
+  addImplementationDisabled = true;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -26,14 +26,15 @@ export class IdeaComponent implements OnInit, OnDestroy {
     private readonly ideaService: IdeaService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
-    public readonly innovatorService: InnovatorService,
-    private readonly formBuilder: FormBuilder,
-    private readonly implementationService: ImplementationService
+    private readonly authenticationService: AuthenticationService,
+    private readonly formBuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
     this.implementationForm = this.formBuilder.group({
-      source: new FormControl(''),
+      source: new FormControl('', [
+        Validators.required
+      ]),
       name: new FormControl('', [
         Validators.required
       ])
@@ -41,7 +42,10 @@ export class IdeaComponent implements OnInit, OnDestroy {
 
     this.route.data.subscribe((data: {idea: Idea}) => {
       this.idea = data.idea;
-      this.deleteDisabled = (JSON.stringify(this.idea.innovator) !== JSON.stringify(this.innovatorService.innovator));
+      this.authenticationService.innovator.subscribe((innovator: Innovator) => {
+        this.deleteDisabled = (JSON.stringify(this.idea.innovator) !== JSON.stringify(innovator));
+        this.addImplementationDisabled = (innovator ? false : true);
+      });
 
 
       // Don't touch!!!
@@ -61,25 +65,6 @@ export class IdeaComponent implements OnInit, OnDestroy {
       first(),
       tap((deleted) => {
         this.router.navigateByUrl('/ideas');
-      }),
-      takeUntil(this.destroyed$),
-      catchError((e: any) => {
-        console.log(e);
-        return of(null);
-      })
-    ).subscribe();
-  }
-
-  addImplementation(form: any): void {
-    const implementation: Implementation = form.value;
-    implementation.implementer = this.innovatorService.innovator;
-    implementation.idea = this.idea;
-    this.implementationService.postImplementation(implementation).pipe(
-      first(),
-      tap((implementation: Implementation) => {
-        if (implementation) {
-          this.idea.implementations.push(implementation);
-        }
       }),
       takeUntil(this.destroyed$),
       catchError((e: any) => {

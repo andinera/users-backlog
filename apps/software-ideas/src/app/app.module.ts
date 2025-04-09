@@ -4,69 +4,23 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatMenuModule } from '@angular/material/menu';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterModule, Routes } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { IdeaComponent } from './components/idea/idea.component';
 import { IdeasComponent } from './components/ideas/ideas.component';
 import { AddIdeaComponent } from './components/add-idea/add-idea.component';
-import { AuthGuard } from './guards/auth.guard';
-import { IdeaResolver } from './resolvers/idea.resolver';
 import { LostComponent } from './components/lost/lost.component';
 import { LoginComponent } from './components/login/login.component';
 import { ImplementationComponent } from './components/implementation/implementation.component';
-import { ImplementationResolver } from './resolvers/implementation.resolver';
 import { InnovatorComponent } from './components/innovator/innovator.component';
-import { InnovatorResolver } from './resolvers/innovator.resolver';
-
-const routes: Routes = [
-  {
-    path: 'ideas',
-    component: IdeasComponent
-  },
-  {
-    path: 'idea/:summary',
-    component: IdeaComponent,
-    resolve: {
-      idea: IdeaResolver
-    }
-  },
-  {
-    path: 'implementation/:name',
-    component: ImplementationComponent,
-    resolve: {
-      implementation: ImplementationResolver
-    }
-  },
-  {
-    path: 'innovator/:emailAddress',
-    component: InnovatorComponent,
-    resolve: {
-      innovator: InnovatorResolver
-    }
-  },
-  {
-    path: 'addIdea',
-    component: AddIdeaComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'login',
-    component: LoginComponent
-  },
-  {
-    path: '',
-    redirectTo: 'ideas',
-    pathMatch: 'full'
-  },
-  {
-    path: '**',
-    component: LostComponent
-  }
-];
+import { AddImplementationComponent } from './components/add-implementation/add-implementation.component';
+import { AddInnovatorComponent } from './components/add-innovator/add-innovator.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +31,9 @@ const routes: Routes = [
     LostComponent,
     LoginComponent,
     ImplementationComponent,
-    InnovatorComponent
+    InnovatorComponent,
+    AddImplementationComponent,
+    AddInnovatorComponent
   ],
   imports: [
     BrowserModule,
@@ -86,10 +42,12 @@ const routes: Routes = [
     HttpClientModule,
     MatButtonModule,
     MatCardModule,
+    MatExpansionModule,
     MatInputModule,
+    MatMenuModule,
     MatToolbarModule,
     ReactiveFormsModule,
-    RouterModule.forRoot(routes)
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

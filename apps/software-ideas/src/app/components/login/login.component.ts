@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { InnovatorService } from 'src/app/services/innovator.service';
 import { Innovator } from 'src/app/models/innovator';
-import { URLService } from 'src/app/services/url.service';
+import { AuthenticationService } from 'src/app/services/authentication.service';
 
 @Component({
   selector: 'app-login',
@@ -16,8 +15,7 @@ export class LoginComponent {
   loginFailed = false;
 
   constructor(
-    private readonly innovatorService: InnovatorService,
-    private readonly urlService: URLService,
+    private readonly authenticationService: AuthenticationService,
     private readonly formBuilder: FormBuilder,
     private readonly router: Router
   ) {
@@ -29,15 +27,24 @@ export class LoginComponent {
     });
   }
 
+  closeRoute() {
+    this.router.navigate([{outlets: { login: null}}]);
+  }
+
   login(form: FormGroup): void {
     const innovator: Innovator = form.value;
-    this.innovatorService.getInnovator(innovator.emailAddress).subscribe((innovator: Innovator) => {
-      if (innovator) {
-        this.router.navigate([this.urlService.previousURL]);
+    this.loginFailed = false;
+    this.authenticationService.login(innovator.emailAddress).subscribe((loggedIn: boolean) => {
+      if (loggedIn) {
+        this.closeRoute();
       } else {
         this.loginFailed = true;
       }
     });
+  }
+
+  createAccount(form: FormGroup): void {
+
   }
 
 }

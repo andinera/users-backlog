@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { URLService } from './services/url.service';
+import { AuthenticationService } from './services/authentication.service';
+import { Innovator } from './models/innovator';
 
 @Component({
     selector: 'app-root',
@@ -8,11 +9,24 @@ import { URLService } from './services/url.service';
 })
 export class AppComponent implements OnInit {
 
+    loggedIn = false;
+
     constructor (
-        private readonly urlService: URLService
+        private readonly authenticationService: AuthenticationService
     ) {
     }
 
+    logOut(): void {
+        this.authenticationService.logout();
+    }
+
     ngOnInit() {
+        this.authenticationService.innovator.subscribe((innovator: Innovator) => {
+            if (innovator) {
+                this.loggedIn = true;
+            } else {
+                this.loggedIn = false;
+            }
+        });
     }
 }

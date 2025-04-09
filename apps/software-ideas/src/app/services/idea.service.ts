@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { map, mergeMap, flatMap } from 'rxjs/operators';
 
 import { Idea } from '../models/idea';
-import { InnovatorService } from './innovator.service';
+import { AuthenticationService } from './authentication.service';
+import { Innovator } from '../models/innovator';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +16,7 @@ export class IdeaService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly innovatorService: InnovatorService
+    private readonly authenticationService: AuthenticationService
   ) { }
 
   getAllIdeas(): Observable<Idea[]> {
@@ -26,13 +28,16 @@ export class IdeaService {
   }
 
   postIdea(idea: Idea): Observable<Idea> {
-    const innovator = this.innovatorService.innovator;
-    if (innovator) {
-      idea.innovator = innovator;
-    } else {
-      return of(null);
-    }
-    return this.http.post<Idea>(`${this.serviceURL}postIdea`, idea);
+    return this.authenticationService.innovator.pipe(
+      flatMap((innovator: Innovator) => {
+        if (innovator) {
+          idea.innovator = innovator;
+          return this.http.post<Idea>(`${this.serviceURL}postIdea`, idea);
+        } else {
+          return of(null);
+        }
+      })
+    );
   }
 
   deleteIdea(summary: string) {
