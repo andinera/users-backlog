@@ -37,7 +37,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     public onSearch(): void {
-        this._router.navigate([`/search/${this.searchForm.controls.search.value}`]);
+        this._router.navigate(['/search', this.searchForm.controls.search.value]);
       }
 
     public logOut(): void {

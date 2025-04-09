@@ -14,6 +14,9 @@ import { InnovatorService } from 'src/app/services/innovator.service';
 import { SessionStorageService } from 'src/app/services/session-storage.service';
 import { ProductForm } from 'src/app/models/forms/product.form';
 import { Product } from 'src/app/models/product.model';
+import { IdeaAssociationForm } from 'src/app/models/forms/idea-association.form';
+import { SearchService } from 'src/app/services/search.service';
+import { Idea } from 'src/app/models/idea.model';
 
 @Component({
   selector: 'app-implementation',
@@ -29,6 +32,9 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   productForm: FormGroup;
   editProductForm: FormGroup;
   editedProduct: Product;
+
+  ideaAssociationForm: FormGroup;
+  ideaOptions: Idea[] = [];
   
   recommendationForm: FormGroup;
   editRecommendationForm: FormGroup;
@@ -46,12 +52,39 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     private readonly _router: Router,
     private readonly _formBuilder: FormBuilder,
     public readonly innovatorService: InnovatorService,
-    private readonly _sessionStorageService: SessionStorageService
+    private readonly _sessionStorageService: SessionStorageService,
+    private readonly _searchService: SearchService
   ) { }
 
   ngOnInit(): void {
     this.productForm = this._formBuilder.group(new ProductForm());
     this.editProductForm = this._formBuilder.group(new ProductForm());
+
+    this.ideaAssociationForm = this._formBuilder.group(new IdeaAssociationForm());
+    this.ideaAssociationForm.controls.summary.valueChanges.pipe(
+      tap(() => {
+        if (this.ideaAssociationForm.controls.summary.value.length > 0) {
+          this._searchService.searchForIdeas(this.ideaAssociationForm.controls.summary.value).pipe(
+            first(),
+            tap((ideas: Idea[]) => {
+              this.ideaOptions = ideas.filter(idea => !this.implementation.ideas.map(i => i.id).includes(idea.id));
+            }),
+            catchError((error: any) => {
+              console.log(error);
+              return of(null);
+            }),
+            takeUntil(this._destroyed$)
+          ).subscribe();
+        } else {
+          this.ideaOptions = [];
+        }
+      }),
+      catchError((error: any) => {
+        console.log(error);
+        return of(null);
+      }),
+      takeUntil(this._destroyed$)
+    ).subscribe();
 
     this.recommendationForm = this._formBuilder.group(new RecommendationForm());
     this.editRecommendationForm = this._formBuilder.group(new RecommendationForm());
@@ -101,9 +134,17 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     this._destroyed$.complete();
   }
 
+  public canEdit(): boolean {
+    return this.canDelete() || this.implementation.innovator === undefined;
+  }
+
   public editImplementation() {
     this._implementationService.implementationForEditing = this.implementation;
     this._router.navigate(['/edit-implementation']);
+  }
+
+  public canDelete(): boolean {
+    return this.innovatorService.innovator$.value && this.implementation.innovator && this.innovatorService.innovator$.value.id === this.implementation.innovator.id;
   }
 
   public deleteImplementation() {
@@ -184,6 +225,43 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     this.editedProduct = undefined;
   }
 
+  public associateIdeaValid(): boolean {
+    return this.ideaOptions.map(option => option.summary).includes(this.ideaAssociationForm.controls.summary.value);
+  }
+
+  public associateWithIdea() {
+    const idea = this.ideaOptions.filter(idea => idea.summary === this.ideaAssociationForm.controls.summary.value)[0];
+    this._implementationService.associateWithIdea(this.implementation, idea).pipe(
+      first(),
+      tap((added: boolean) => {
+        if (added) {
+          this.implementation.ideas.push(idea);
+        }
+      }),
+      takeUntil(this._destroyed$),
+      catchError((e: any) => {
+        console.log(e);
+        return of(null);
+      })
+    ).subscribe();
+  }
+
+  public disassociateWithIdea(idea: Idea) {
+    this._implementationService.disassociateWithIdea(this.implementation, idea).pipe(
+      first(),
+      tap((removed: boolean) => {
+        if (removed) {
+          this.implementation.ideas = this.implementation.ideas.filter(i => i.id !== idea.id);
+        }      
+      }),
+      takeUntil(this._destroyed$),
+      catchError((e: any) => {
+        console.log(e);
+        return of(null);
+      })
+    ).subscribe();
+  }
+
   public postVote(up: boolean) {
     this._implementationService.postVote(this.implementation, up).pipe(
       first(),
@@ -203,8 +281,6 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     if (recommendationForm.controls.message.value.length === 0) {
       recommendationForm.markAllAsTouched();
     } else {
-      const innovator = this.innovatorService.innovator$.value;
-      recommendation.innovator = innovator;
       recommendation.parent = this.implementation;
       this._implementationService.postRecommendation(recommendation).pipe(
         first(),
@@ -275,8 +351,6 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     if (!replyForm.controls.message.value) {
       replyForm.markAllAsTouched();
     } else {
-      const innovator = this.innovatorService.innovator$.value;
-      reply.innovator = innovator;
       reply.recommendation = recommendation;
       this._implementationService.postRecommendationReply(reply).pipe(
         first(),
@@ -337,7 +411,6 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     this._implementationService.postImplementation(this.implementation).pipe(
       first(),
       tap((implementation: Implementation) => {
-        console.log('test2');
         this.implementation = implementation;
       }),
       takeUntil(this._destroyed$),

@@ -21,6 +21,7 @@ import { RedirectGuard } from './guards/redirect.guard';
 import { AccountComponent } from './components/account/account.component';
 import { SearchResultsComponent } from './components/search-results/search-results.component';
 import { SearchResolver } from './resolvers/search.resolver';
+import { HomepageComponent } from './components/homepage/homepage.component';
 
 
 const extraOptions = {
@@ -36,7 +37,7 @@ const routes: Routes = [
         }
     },
     {
-        path: 'idea/:summary',
+        path: 'idea/:id/:summary',
         component: IdeaComponent,
         resolve: {
             idea: IdeaResolver
@@ -50,7 +51,7 @@ const routes: Routes = [
         }
     },
     {
-        path: 'implementation/:name',
+        path: 'implementation/:id/:name',
         component: ImplementationComponent,
         resolve: {
             implementation: ImplementationResolver
@@ -64,7 +65,7 @@ const routes: Routes = [
         }
     },
     {
-        path: 'innovator/:id',
+        path: 'innovator/:id/:displayName',
         component: InnovatorComponent,
         resolve: {
             innovator: InnovatorResolver
@@ -118,8 +119,11 @@ const routes: Routes = [
     },
     {
         path: '',
-        redirectTo: 'implementations',
-        pathMatch: 'full'
+        component: HomepageComponent,
+        resolve: {
+            ideas: IdeasResolver,
+            implementations: ImplementationsResolver
+        }
     },
     {
         path: '**',

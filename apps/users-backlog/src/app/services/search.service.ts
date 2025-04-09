@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs'
 
 import { Service } from './service';
 import { SearchResults } from '../models/search-results.model';
+import { Idea } from '../models/idea.model';
 
 
 @Injectable({
@@ -20,7 +21,14 @@ export class SearchService extends Service {
   }
 
   search(criteria: string): Observable<SearchResults[]> {
-    const parameters = `criteria=${criteria}`
-    return this._http.get<SearchResults[]>(`${this._serviceURL}search?${parameters}`);
+    const params = new HttpParams().set('criteria', criteria);
+    const options = {params: params};
+    return this._http.get<SearchResults[]>(`${this._serviceURL}search`, options);
+  }
+
+  searchForIdeas(partialSummary: string): Observable<Idea[]> {
+    const params = new HttpParams().set('partialSummary', partialSummary);
+    const options = {params: params};
+    return this._http.get<Idea[]>(`${this._serviceURL}searchForIdeas`, options);
   }
 }

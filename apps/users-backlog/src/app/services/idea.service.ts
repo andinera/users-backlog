@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
 
 import { Idea } from '../models/idea.model';
 import { Service } from './service';
@@ -37,82 +38,109 @@ export class IdeaService extends Service {
     return this._http.get<Idea[]>(`${this._serviceURL}getIdeas`, options);
   }
 
-  getIdea(summary: string): Observable<Idea> {
-    const params = new HttpParams().set('summary', summary);
+  getIdea(id: number): Observable<Idea> {
+    const params = new HttpParams().set('id', String(id));
     const options = {params: params};
     return this._http.get<Idea>(`${this._serviceURL}getIdea`, options);
   }
 
   postIdea(idea: Idea): Observable<Idea> {
-    idea.idToken = this._innovatorService.innovator$.value.idToken;
-    idea.innovator = this._innovatorService.innovator$.value;
-    return this._http.post<Idea>(`${this._serviceURL}postIdea`, idea);
+    return this._innovatorService.getIdToken().pipe(
+      mergeMap((idToken: string) => {
+        idea.idToken = idToken;
+        return this._http.post<Idea>(`${this._serviceURL}postIdea`, idea);
+      })
+    );
   }
 
   deleteIdea(idea: Idea) {
-    idea.idToken = this._innovatorService.innovator$.value.idToken;
-    return this._http.post<boolean>(`${this._serviceURL}deleteIdea`, idea);
+    return this._innovatorService.getIdToken().pipe(
+      mergeMap((idToken: string) => {
+        idea.idToken = idToken;
+        return this._http.post<boolean>(`${this._serviceURL}deleteIdea`, idea);
+      })
+    );
   }
 
   postVote(idea: Idea, up: boolean): Observable<number> {
-    const innovator = this._innovatorService.innovator$.value;
-    if (!innovator) {
+    if (!this._innovatorService.innovator$.value) {
       this._sessionStorageService.storeData('postIdeaVote', {ideaId: idea.id, up: up});
       this._router.navigate(['/log-in']);
       return throwError('Not logged in.');
     } else {
-      idea.idToken = innovator.idToken;
-      const params = new HttpParams().set('up', String(up));
-      const options = {params: params};
-      return this._http.post<number>(`${this._serviceURL}postIdeaVote`, idea, options);
+      return this._innovatorService.getIdToken().pipe(
+        mergeMap((idToken: string) => {
+          idea.idToken = idToken;
+          const params = new HttpParams().set('up', String(up));
+          const options = {params: params};
+          return this._http.post<number>(`${this._serviceURL}postVote`, idea, options);
+        })
+      );
     }
   }
 
   postRecommendation(recommendation: Recommendation<Idea>): Observable<Recommendation<Idea>> {
-    const innovator = this._innovatorService.innovator$.value;
-    if (!innovator) {
+    if (!this._innovatorService.innovator$.value) {
       this._sessionStorageService.storeData('postIdeaRecommendation', {recommendation: recommendation});
       this._router.navigate(['/log-in']);
       return throwError('Not logged in.');
     } else {
-      recommendation.idToken = this._innovatorService.innovator$.value.idToken;
-      return this._http.post<Recommendation<Idea>>(`${this._serviceURL}postRecommendation`, recommendation);
+      return this._innovatorService.getIdToken().pipe(
+        mergeMap((idToken: string) => {
+          recommendation.idToken = idToken;
+          return this._http.post<Recommendation<Idea>>(`${this._serviceURL}postRecommendation`, recommendation);
+        })
+      );
     }
   }
 
   deleteRecommendation(recommendation: Recommendation<Idea>): Observable<boolean> {
-    recommendation.idToken = this._innovatorService.innovator$.value.idToken;
-    return this._http.post<boolean>(`${this._serviceURL}deleteRecommendation`, recommendation);
+    return this._innovatorService.getIdToken().pipe(
+      mergeMap((idToken: string) => {
+        recommendation.idToken = idToken;
+        return this._http.post<boolean>(`${this._serviceURL}deleteRecommendation`, recommendation);
+      })
+    );
   }
 
   postRecommendationVote(recommendation: Recommendation<Idea>, up: boolean): Observable<number> {
-    const innovator = this._innovatorService.innovator$.value;
-    if (!innovator) {
+    if (!this._innovatorService.innovator$.value) {
       this._sessionStorageService.storeData('postIdeaRecommendationVote', {recommendationId: recommendation.id, up: up});
       this._router.navigate(['/log-in']);
       return throwError('Not logged in.');
     } else {
-      recommendation.idToken = this._innovatorService.innovator$.value.idToken;
-      const params = new HttpParams().set('up', String(up));
-      const options = {params: params};
-      return this._http.post<number>(`${this._serviceURL}postRecommendationVote`, recommendation, options);
+      return this._innovatorService.getIdToken().pipe(
+        mergeMap((idToken: string) => {
+          recommendation.idToken = idToken;
+          const params = new HttpParams().set('up', String(up));
+          const options = {params: params};
+          return this._http.post<number>(`${this._serviceURL}postRecommendationVote`, recommendation, options);
+        })
+      );
     }
   }
 
   postRecommendationReply(reply: Reply<Idea>): Observable<Reply<Idea>> {
-    const innovator = this._innovatorService.innovator$.value;
-    if (!innovator) {
+    if (!this._innovatorService.innovator$.value) {
       this._sessionStorageService.storeData('postIdeaRecommendationReply', {reply: reply});
       this._router.navigate(['/log-in']);
       return throwError('Not logged in.');
     } else {
-      reply.idToken = this._innovatorService.innovator$.value.idToken;
-      return this._http.post<Reply<Idea>>(`${this._serviceURL}postRecommendationReply`, reply);
+      return this._innovatorService.getIdToken().pipe(
+        mergeMap((idToken: string) => {
+          reply.idToken = idToken;
+          return this._http.post<Reply<Idea>>(`${this._serviceURL}postRecommendationReply`, reply);
+        })
+      );
     }
   }
 
   deleteRecommendationReply(reply: Reply<Idea>): Observable<boolean> {
-    reply.idToken = this._innovatorService.innovator$.value.idToken;
-    return this._http.post<boolean>(`${this._serviceURL}deleteRecommendationReply`, reply);
+    return this._innovatorService.getIdToken().pipe(
+      mergeMap((idToken: string) => {
+        reply.idToken = idToken;
+        return this._http.post<boolean>(`${this._serviceURL}deleteRecommendationReply`, reply);
+      })
+    );
   }
 }

@@ -1,5 +1,6 @@
 package users_backlog.models;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class Innovator extends Model {
 
     private String emailAddress;
+    private Boolean hideEmailAddress;
     private String displayName;
     private List<Idea> ideas;
     private List<Implementation> implementations;
@@ -18,11 +20,17 @@ public class Innovator extends Model {
     }
 
     public static Innovator fromMap(Map<String, Object> map) {
-        return null;
+        Innovator innovator = new Innovator();
+        innovator.setId(Long.parseLong((String)map.get("id")));
+        innovator.setDisplayName((String)map.get("displayName"));
+        return innovator;
     }
 
     public Map<String, Object> toMap() {
-        return null;
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", String.valueOf(this.getId()));
+        map.put("displayName", this.displayName);
+        return map;
     }
 
     public String getEmailAddress() {
@@ -31,6 +39,14 @@ public class Innovator extends Model {
 
     public void setEmailAddress(final String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public Boolean getHideEmailAddress() {
+        return this.hideEmailAddress;
+    }
+
+    public void setHideEmailAddress(final Boolean hideEmailAddress) {
+        this.hideEmailAddress = hideEmailAddress;
     }
 
     public String getDisplayName() {

@@ -22,14 +22,26 @@ public class IdeaService {
     @Autowired ElasticSearchService elasticSearchService;
 
     public List<Idea> getIdeas(String categoryName) {
-        return ideaDAO.getIdeas(categoryName);
+        List<Idea> ideas = ideaDAO.getIdeas(categoryName);
+        for (Idea idea: ideas) {
+            idea.setCategories(categoryDAO.getCategories(idea));
+        }
+        return ideas;
+    }
+
+    public List<Idea> getImplementations(List<Long> ids) {
+        List<Idea> ideas = ideaDAO.getIdeas(ids);
+        for (Idea idea: ideas) {
+            idea.setCategories(categoryDAO.getCategories(idea));
+        }
+        return ideas;
     }
 
     public Idea getIdea(final long id) {
         Idea idea = ideaDAO.getIdea(id);
         if (idea != null) {
             idea.setCategories(categoryDAO.getCategories(idea));
-            // idea.setImplementations(implementationDAO.getImplementations(idea));
+            idea.setImplementations(implementationDAO.getImplementations(idea));
         }
         return idea;
     }
@@ -38,7 +50,7 @@ public class IdeaService {
         Idea idea = ideaDAO.getIdea(summary);
         if (idea != null) {
             idea.setCategories(categoryDAO.getCategories(idea));
-            // idea.setImplementations(implementationDAO.getImplementations(idea));
+            idea.setImplementations(implementationDAO.getImplementations(idea));
         }
         return idea;
     }

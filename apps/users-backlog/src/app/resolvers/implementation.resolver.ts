@@ -19,7 +19,7 @@ export class ImplementationResolver implements Resolve<Implementation> {
   ) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Implementation> {
-    return this._implementationService.getImplementation(route.paramMap.get('name')).pipe(
+    return this._implementationService.getImplementation(Number(route.paramMap.get('id'))).pipe(
       first(),
       map((implementation: Implementation) => {
         if (implementation) {

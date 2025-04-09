@@ -68,18 +68,14 @@ export class NewImplementationComponent implements OnInit {
       implementationForm.markAllAsTouched();
     } else {
       const implementation = implementationForm.value;
-      const innovator = this._innovatorService.innovator$.value;
       if (implementationForm.controls.isOwner.value) {
-        const innovator = this._innovatorService.innovator$.value;
-        implementation.innovator = innovator;
-      } else {
-        implementation.innovator = null;
+        implementation.innovator = this._innovatorService.innovator$.value;
       }
       this._implementationService.postImplementation(implementation).pipe(
         first(),
         tap((newImplementation: Implementation) => {
           if (newImplementation) {
-            this._router.navigate([`/implementation/${newImplementation.name}`])
+            this._router.navigate(['/implementation', newImplementation.id, newImplementation.name])
           }
         }),
         takeUntil(this._destroyed$),

@@ -18,6 +18,7 @@ public class InnovatorDAO extends DAO {
         "SELECT " +
             "inv.id, " +
             "inv.email_address, " +
+            "inv.hide_email_address, " +
             "inv.display_name " +
         "FROM innovator inv";
 
@@ -31,10 +32,7 @@ public class InnovatorDAO extends DAO {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    innovator = new Innovator();
-                    innovator.setId(rs.getLong("id"));
-                    innovator.setEmailAddress(rs.getString("email_address"));
-                    innovator.setDisplayName(rs.getString("display_name"));
+                    innovator = innovatorMapper(rs);
                 }
             }
         } catch (final Exception e) {
@@ -54,10 +52,7 @@ public class InnovatorDAO extends DAO {
             ps.setString(1, emailAddress);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    innovator = new Innovator();
-                    innovator.setId(rs.getLong("id"));
-                    innovator.setEmailAddress(rs.getString("email_address"));
-                    innovator.setDisplayName(rs.getString("display_name"));
+                    innovator = innovatorMapper(rs);
                 }
             }
         } catch (final Exception e) {
@@ -67,16 +62,26 @@ public class InnovatorDAO extends DAO {
         return innovator;
     }
 
+    private Innovator innovatorMapper(ResultSet rs) throws Exception {
+        Innovator innovator = new Innovator();
+        innovator.setId(rs.getLong("id"));
+        innovator.setEmailAddress(rs.getString("email_address"));
+        innovator.setHideEmailAddress(rs.getInt("hide_email_address") == 1);
+        innovator.setDisplayName(rs.getString("display_name"));
+        return innovator;
+    }
+
     private final String INSERT_INNOVATOR = 
         "INSERT " +
         "INTO innovator (" +
             "email_address," +
+            "hide_email_address, " +
             "display_name" +
         ") " +
-        "VALUES (?, ?)";
+        "VALUES (?, ?, ?)";
     private final String UPDATE_INNOVATOR = 
         "UPDATE innovator " +
-        "SET email_address = ?, display_name = ? " +
+        "SET email_address = ?, hide_email_address = ?, display_name = ? " +
         "WHERE id = ?";
 
     public Innovator postInnovator(final Innovator innovator) throws Exception {
@@ -95,6 +100,7 @@ public class InnovatorDAO extends DAO {
             }
             int i = 1;
             ps.setString(i++, innovator.getEmailAddress());
+            ps.setInt(i++, innovator.getHideEmailAddress() ? 1 : 0);
             ps.setString(i++, innovator.getDisplayName());
             if (sql.equals(UPDATE_INNOVATOR)) {
                 ps.setLong(i++, innovator.getId());

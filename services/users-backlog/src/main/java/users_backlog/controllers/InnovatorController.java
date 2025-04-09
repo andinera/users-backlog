@@ -2,6 +2,8 @@ package users_backlog.controllers;
 
 import java.util.logging.Logger;
 
+import com.google.firebase.auth.FirebaseAuthException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,8 +52,13 @@ public class InnovatorController {
         @RequestBody final Innovator innovator
     ) throws Exception {
         try {
-            firebaseService.verifyToken(innovator.getIdToken());
+            String emailAddress = firebaseService.verifyToken(innovator.getIdToken());
+            if (!emailAddress.equals(innovator.getEmailAddress())) {
+                throw new SecurityException("Unauthorized to create an innovator with a different email address from that associated with your ID token.");
+            }
             return ResponseEntity.ok(innovatorService.postInnovator(innovator));
+        } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

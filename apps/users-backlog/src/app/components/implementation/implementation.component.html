@@ -1,13 +1,13 @@
 <div class="container">
-    <div *ngIf="(innovatorService.innovator$ | async) && implementation.innovator && (innovatorService.innovator$ | async).id === implementation.innovator.id" class="row">
+    <div class="row">
         <div class="col">
             <div class="float-right" style="margin-top:15px;margin-bottom:15px">
-                <div class="row">
+                <div class="row" *ngIf="canEdit()">
                     <button class="btn btn-primary" type="button" (click)="editImplementation()">Edit Implementation</button>
                 </div>
-                <div class="row">
+                <!-- <div class="row" *ngIf="canDelete()">
                     <button class="btn btn-primary" type="button" (click)="deleteImplementation()">Delete Implementation</button>
-                </div>            
+                </div>             -->
             </div>
         </div>
     </div>
@@ -23,7 +23,7 @@
 
     <div class="row">
         <div class="innovator" *ngIf="implementation.innovator">
-            <a [routerLink]="['/innovator', implementation.innovator.id]">
+            <a [routerLink]="['/innovator', implementation.innovator.id, implementation.innovator.displayName]">
                 {{implementation.innovator.displayName}}
             </a>
         </div>
@@ -116,6 +116,53 @@
 
     <div class="row">
         <div class="col">
+            <div class="row">
+                Ideas
+            </div>
+
+            <div *ngFor="let idea of implementation.ideas">
+                <div class="row">
+                    <div class="col">
+                        <a [routerLink]="['/idea', idea.id, idea.summary]">
+                            {{idea.summary}}
+                        </a>
+                        <button class="btn btn-primary float-right" (click)="disassociateWithIdea(idea)">Disassociate Idea</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-primary" data-toggle="collapse" [attr.data-target]="'#associateIdea'">Associate Idea</button>
+                </div>
+            </div>
+            <div class="collapse" #associateIdea [attr.id]="'associateIdea'">
+                <div class="row">
+                    <div class="col">
+                        <form (ngSubmit)="associateWithIdea()">
+        
+                            <mat-form-field appearance="fill">
+                                <mat-label>Idea Name</mat-label>
+                                <input matInput [matAutocomplete]="auto" [formControl]="ideaAssociationForm.controls.summary">
+                                <mat-autocomplete #auto="matAutocomplete">
+                                    <mat-option *ngFor="let option of ideaOptions" [value]="option.summary">
+                                        {{option.summary}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                            <button mat-mini-fab color="primary" type="submit" [disabled]="!associateIdeaValid()">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
             <button class="btn btn-light" style="text-transform: none;" type="button" (click)="postVote(true)">i++</button>
         </div>
         <div class="col">
@@ -165,7 +212,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col text-right">
-                                            <a [routerLink]="['/innovator', recommendation.innovator.id]">
+                                            <a [routerLink]="['/innovator', recommendation.innovator.id, recommendation.innovator.displayName]">
                                                 {{recommendation.innovator.displayName}}
                                             </a>
                                         </div>
@@ -216,7 +263,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col text-right">
-                                                    <a [routerLink]="['/innovator', reply.innovator.id]">
+                                                    <a [routerLink]="['/innovator', reply.innovator.id, reply.innovator.displayName]">
                                                         {{reply.innovator.displayName}}
                                                     </a>
                                                 </div>

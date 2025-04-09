@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col">
             <div class="float-right" style="margin-top:15px;margin-bottom:15px">
-                <button class="btn btn-primary" type="button" routerLink="/new-idea">New Idea</button>
+                <button class="btn btn-primary" type="button" [routerLink]="['/new-idea']">New Idea</button>
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@
             </div>
             <div class="right-container">
                 <div class="summary">
-                    <a routerLink="/idea/{{idea.summary}}">{{idea.summary}}</a>
+                    <a [routerLink]="['/idea', idea.id, idea.summary]">{{idea.summary}}</a>
                 </div>
                 <div class="categories">
                     <div class="category" *ngFor="let category of idea.categories">

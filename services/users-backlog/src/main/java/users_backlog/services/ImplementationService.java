@@ -84,6 +84,14 @@ public class ImplementationService {
         return productDAO.deleteProduct(product);
     }
 
+    public Boolean associateWithIdea(final Implementation implementation, final Long ideaId) {
+        return implementationDAO.associateWithIdea(implementation, ideaId);
+    }
+
+    public Boolean disassociateWithIdea(final Implementation implementation, final Long ideaId) {
+        return implementationDAO.disassociateWithIdea(implementation, ideaId);
+    }
+
     public Long postVote(Implementation implementation, Innovator innovator, Boolean up) {
         return implementationDAO.postVote(implementation, innovator, up);
     }

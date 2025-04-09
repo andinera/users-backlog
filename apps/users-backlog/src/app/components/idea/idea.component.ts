@@ -107,8 +107,6 @@ export class IdeaComponent implements OnInit, OnDestroy {
     if (recommendationForm.controls.message.value.length === 0) {
       recommendationForm.markAllAsTouched();
     } else {
-      const innovator = this.innovatorService.innovator$.value;
-      recommendation.innovator = innovator;
       recommendation.parent = this.idea;
       this._ideaService.postRecommendation(recommendation).pipe(
         first(),
@@ -179,8 +177,6 @@ export class IdeaComponent implements OnInit, OnDestroy {
     if (!replyForm.controls.message.value) {
       replyForm.markAllAsTouched();
     } else {
-      const innovator = this.innovatorService.innovator$.value;
-      reply.innovator = innovator;
       reply.recommendation = recommendation;
       this._ideaService.postRecommendationReply(reply).pipe(
         first(),

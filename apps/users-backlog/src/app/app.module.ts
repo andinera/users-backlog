@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -29,6 +30,7 @@ import { URLService } from './services/url.service';
 import { InnovatorService } from './services/innovator.service';
 import { AccountComponent } from './components/account/account.component';
 import { SearchResultsComponent } from './components/search-results/search-results.component';
+import { HomepageComponent } from './components/homepage/homepage.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +46,8 @@ import { SearchResultsComponent } from './components/search-results/search-resul
     NewImplementationComponent,
     RecommendationComponent,
     ImplementationsComponent,
-    SearchResultsComponent
+    SearchResultsComponent,
+    HomepageComponent
   ],
   imports: [
     AppRoutingModule,
@@ -52,6 +55,7 @@ import { SearchResultsComponent } from './components/search-results/search-resul
     BrowserAnimationsModule,
     FormsModule,
     HttpClientModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,

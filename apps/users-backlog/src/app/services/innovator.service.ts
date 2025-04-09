@@ -1,7 +1,7 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, ReplaySubject, BehaviorSubject } from 'rxjs';
-import { tap, catchError, takeUntil } from 'rxjs/operators';
+import { Observable, of, ReplaySubject, BehaviorSubject, from } from 'rxjs';
+import { tap, catchError, takeUntil, mergeMap } from 'rxjs/operators';
 
 import { Innovator } from '../models/innovator.model';
 import { Service } from './service';
@@ -70,28 +70,24 @@ export class InnovatorService extends Service implements OnDestroy {
     if (user) {
       this.getInnovator(undefined, user.email).pipe(
         tap((innovator: Innovator) => {
-          user.getIdToken().then(idToken => {
-            if (innovator) {
-              innovator.idToken = idToken;
-              this.innovator$.next(innovator);
-            } else {
-              const innovator = {
-                idToken: idToken,
-                emailAddress: user.email,
-                displayName: user.displayName
-              } as Innovator;
-              this.postInnovator(innovator).pipe(
-                tap((postedInnovator: Innovator) => {
-                  this.innovator$.next(postedInnovator);
-                }),
-                catchError((error: any) => {
-                  console.log(error);
-                  return of(null);
-                }),
-                takeUntil(this._destroyed$)
-              ).subscribe();
-            }
-          });
+          if (innovator) {
+            this.innovator$.next(innovator);
+          } else {
+            const innovator = {
+              emailAddress: user.email,
+              displayName: user.displayName
+            } as Innovator;
+            this.postInnovator(innovator).pipe(
+              tap((postedInnovator: Innovator) => {
+                this.innovator$.next(postedInnovator);
+              }),
+              catchError((error: any) => {
+                console.log(error);
+                return of(null);
+              }),
+              takeUntil(this._destroyed$)
+            ).subscribe();
+          }
         }),
         catchError((error: any) => {
           console.log(error);
@@ -170,6 +166,10 @@ export class InnovatorService extends Service implements OnDestroy {
     firebase.auth().signOut();
   }
 
+  public getIdToken(): Observable<string> {
+    return from(firebase.auth().currentUser.getIdToken()) as Observable<string>;
+  }
+
   public getInnovator(id?: string, emailAddress?: string): Observable<Innovator> {
     let parameters: string;
     if (id) {
@@ -182,15 +182,17 @@ export class InnovatorService extends Service implements OnDestroy {
     return this._http.get<Innovator>(`${this._serviceURL}${parameters}`);
   }
 
-  public postInnovator(innovator: Innovator) {
-    if (this.innovator$.value) {
-      innovator.idToken = this.innovator$.value.idToken;
-    }
-    return this._http.post<Innovator>(`${this._serviceURL}postInnovator`, innovator).pipe(
-      tap((innovator: Innovator) => {
-        if (innovator) {
-          this.innovator$.next(innovator);
-        }
+  public postInnovator(innovator: Innovator): Observable<Innovator> {
+    return this.getIdToken().pipe(
+      mergeMap((idToken: string) => {
+        innovator.idToken = idToken;
+        return this._http.post<Innovator>(`${this._serviceURL}postInnovator`, innovator).pipe(
+          tap((innovator: Innovator) => {
+            if (innovator) {
+              this.innovator$.next(innovator);
+            }
+          })
+        );
       })
     );
   }

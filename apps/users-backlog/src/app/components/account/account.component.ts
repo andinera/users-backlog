@@ -36,6 +36,7 @@ export class AccountComponent {
     } else {
       const innovator = Object.assign({}, this.innovatorService.innovator$.value);
       innovator.emailAddress = this.accountForm.controls.emailAddress.value;
+      innovator.hideEmailAddress = this.accountForm.controls.hideEmailAddress.value;
       innovator.displayName = this.accountForm.controls.displayName.value;
       this.innovatorService.postInnovator(innovator).pipe(
         first(),

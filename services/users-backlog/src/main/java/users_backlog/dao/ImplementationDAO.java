@@ -274,37 +274,46 @@ public class ImplementationDAO extends DAO {
         return implementation;
     }
 
-    // private final String ASSOCIATE_IMPLEMENTATION_WITH_IDEA =
-    //     "INSERT " +
-    //     "INTO idea_implementation (idea_id, implementation_id) " +
-    //     "VALUES (?, ?)";
+    private final String ASSOCIATE_IMPLEMENTATION_WITH_IDEA =
+        "INSERT " +
+        "INTO idea_implementation (implementation_id, idea_id) " +
+        "VALUES (?, ?)";
 
-    // private Implementation associateImplementationWithIdea(final Implementation implementation) {
-    //     List<Idea> updatedIdeas = null;
+    public Boolean associateWithIdea(final Implementation implementation, final Long ideaId) {
+        Boolean associated = false;
 
-    //     if (implementation.getIdeas() != null) {
-    //         try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(ASSOCIATE_IMPLEMENTATION_WITH_IDEA)) {
-    //             for (Idea idea : implementation.getIdeas()) {
-    //                 int i = 1;
-    //                 ps.setLong(i++, idea.getId());
-    //                 ps.setLong(i++, implementation.getId());
-    //                 ps.addBatch();
-    //             }
-    //             int[] updatedCount = ps.executeBatch();
-    //             updatedIdeas = new ArrayList<>();
-    //             for (int i = 0; i < updatedCount.length; i++) {
-    //                 if (updatedCount[i] > 0) {
-    //                     updatedIdeas.add(implementation.getIdeas().get(i));
-    //                 }
-    //             }
-    //         } catch (final Exception e) {
-    //             log.severe(e.getMessage());
-    //         }
-    //     }
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(ASSOCIATE_IMPLEMENTATION_WITH_IDEA)) {
+            int i = 1;
+            ps.setLong(i++, implementation.getId());
+            ps.setLong(i++, ideaId);
+            associated = ps.executeUpdate() > 0;
+        } catch (final Exception e) {
+            log.severe(e.getMessage());
+        }
 
-    //     implementation.setIdeas(updatedIdeas);
-    //     return implementation;
-    // }
+        return associated;
+    }
+
+    private final String DISASSOCIATE_IMPLEMENTATION_WITH_IDEA =
+        "DELETE " +
+        "FROM idea_implementation ii " +
+        "WHERE (ii.implementation_id = ? " +
+            "AND ii.idea_id = ?)";
+
+    public Boolean disassociateWithIdea(final Implementation implementation, final Long ideaId) {
+        Boolean disassociated = false;
+
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(DISASSOCIATE_IMPLEMENTATION_WITH_IDEA)) {
+            int i = 1;
+            ps.setLong(i++, implementation.getId());
+            ps.setLong(i++, ideaId);
+            disassociated = ps.executeUpdate() > 0;
+        } catch (final Exception e) {
+            log.severe(e.getMessage());
+        }
+
+        return disassociated;
+    }
 
     private final String DELETE_IMPLEMENTATION = 
         "DELETE " +
@@ -518,6 +527,7 @@ public class ImplementationDAO extends DAO {
                 if (rs.next()) {
                     recommendation = recommendationMapper(rs);
                     recommendation.setVotes(this.getRecommendationVotes(recommendation.getId()));
+                    recommendation.setReplies(this.getRecommendationReplies(recommendation));
                 }
             }
         } catch (final Exception e) {

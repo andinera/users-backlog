@@ -68,9 +68,10 @@ public class IdeaController {
         @RequestBody final Idea idea
     ) {
         try {
-            firebaseService.verifyToken(idea.getIdToken());
+            String emailAddress = firebaseService.verifyToken(idea.getIdToken());
+            idea.setInnovator(innovatorService.getInnovator(emailAddress));
             return ResponseEntity.ok(ideaService.postIdea(idea));
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.severe(e.getMessage());
@@ -78,20 +79,20 @@ public class IdeaController {
         }
     }
 
-    @PostMapping(path = "deleteIdea")
-    public ResponseEntity<?> deleteIdea(
-        @RequestBody final Idea idea
-    ) {
-        try {
-            firebaseService.verifyToken(idea.getIdToken());
-            return ResponseEntity.ok(ideaService.deleteIdea(idea));
-        } catch (SecurityException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (Exception e) {
-            log.severe(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
+    // @PostMapping(path = "deleteIdea")
+    // public ResponseEntity<?> deleteIdea(
+    //     @RequestBody final Idea idea
+    // ) {
+    //     try {
+    //         firebaseService.verifyToken(idea.getIdToken());
+    //         return ResponseEntity.ok(ideaService.deleteIdea(idea));
+    //     } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
+    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    //     } catch (Exception e) {
+    //         log.severe(e.getMessage());
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    //     }
+    // }
 
     @PostMapping(path = "postVote")
     public ResponseEntity<?> postVote(
@@ -115,7 +116,8 @@ public class IdeaController {
         @RequestBody final Recommendation<Idea> recommendation
     ) {
         try {
-            firebaseService.verifyToken(recommendation.getIdToken());
+            String emailAddress = firebaseService.verifyToken(recommendation.getIdToken());
+            recommendation.setInnovator(innovatorService.getInnovator(emailAddress));
             return ResponseEntity.ok(ideaService.postRecommendation(recommendation));
         } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -130,7 +132,11 @@ public class IdeaController {
         @RequestBody final Recommendation<Idea> recommendation
     ) {
         try {
-            firebaseService.verifyToken(recommendation.getIdToken());
+            String emailAddress = firebaseService.verifyToken(recommendation.getIdToken());
+            Innovator innovator = innovatorService.getInnovator(emailAddress);
+            if (innovator.getId() != recommendation.getInnovator().getId()) {
+                throw new SecurityException("Unauthorized to delete this recommendation.");
+            }
             return ResponseEntity.ok(ideaService.deleteRecommendation(recommendation));
         } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -162,7 +168,8 @@ public class IdeaController {
         @RequestBody final Reply<Idea> reply
     ) {
         try {
-            firebaseService.verifyToken(reply.getIdToken());
+            String emailAddress = firebaseService.verifyToken(reply.getIdToken());
+            reply.setInnovator(innovatorService.getInnovator(emailAddress));
             return ResponseEntity.ok(ideaService.postRecommendationReply(reply));
         } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -177,7 +184,11 @@ public class IdeaController {
         @RequestBody final Reply<Idea> reply
     ) {
         try {
-            firebaseService.verifyToken(reply.getIdToken());
+            String emailAddress = firebaseService.verifyToken(reply.getIdToken());
+            Innovator innovator = innovatorService.getInnovator(emailAddress);
+            if (innovator.getId() != reply.getInnovator().getId()) {
+                throw new SecurityException("Unauthorized to delete this reply.");
+            }
             return ResponseEntity.ok(ideaService.deleteRecommendationReply(reply));
         } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

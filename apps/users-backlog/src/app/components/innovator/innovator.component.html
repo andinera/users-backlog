@@ -4,6 +4,11 @@
             {{innovator.displayName}}
         </div>
     </div>
+    <div class="row" *ngIf="!innovator.hideEmailAddress">
+        <div class="col">
+            {{innovator.emailAddress}}
+        </div>
+    </div>
     <ul class="list-group">
         <li class="list-group-item" *ngFor="let implementation of innovator.implementations">
             <div class="left-container">
@@ -18,7 +23,7 @@
             </div>
             <div class="right-container">
                 <div class="summary">
-                    <a routerLink="/implementation/{{implementation.name}}">{{implementation.name}}</a>
+                    <a [routerLink]="['/implementation', implementation.id, implementation.name]">{{implementation.name}}</a>
                 </div>
                 <div class="categories">
                     <div class="category" *ngFor="let category of implementation.categories">
@@ -29,20 +34,3 @@
         </li>
     </ul>
 </div>
-
-<!-- <mat-tab-group [animationDuration]="0">
-    <mat-tab label="Ideas">
-        <mat-nav-list>
-            <a mat-list-item *ngFor="let idea of innovator.ideas" routerLink="/idea/{{idea.summary}}">
-                {{idea.summary}}
-            </a>
-        </mat-nav-list>
-    </mat-tab>
-    <mat-tab label="implementations">
-        <mat-nav-list>
-            <a mat-list-item *ngFor="let implementation of innovator.implementations" routerLink="/implementation/{{implementation.name}}">
-                {{implementation.name}}
-            </a>
-        </mat-nav-list>
-    </mat-tab>
-</mat-tab-group> -->

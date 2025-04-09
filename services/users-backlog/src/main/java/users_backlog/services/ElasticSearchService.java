@@ -23,6 +23,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import users_backlog.models.Idea;
 import users_backlog.models.Implementation;
 import users_backlog.models.Model;
 
@@ -135,6 +136,44 @@ public class ElasticSearchService {
         }
 
         return models;
+    }
+
+    public List<Idea> searchForIdeas(String partialSummary) {
+        List<Idea> ideas = new ArrayList<>();
+
+        SearchRequest searchRequest = new SearchRequest("idea");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchRequest.source(searchSourceBuilder);
+
+        try {
+            DisMaxQueryBuilder qb = QueryBuilders.disMaxQuery();
+            qb.add(QueryBuilders.matchQuery("summary", partialSummary));
+            qb.add(QueryBuilders.fuzzyQuery("summary", partialSummary));
+            for (String subCriteria: partialSummary.split(" ")) {
+                qb.add(QueryBuilders.matchQuery("summary", subCriteria));
+                qb.add(QueryBuilders.fuzzyQuery("summary", subCriteria));
+            }
+            searchSourceBuilder.query(qb);
+
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+            SearchHits searchHits = searchResponse.getHits();
+            for (SearchHit hit: searchHits) {
+                try {
+                    ideas.add(Idea.fromMap(hit.getSourceAsMap()));
+                } catch (Exception e) {
+                    log.severe(e.getMessage());
+                }
+            }
+
+        } catch (IOException e) {
+            log.severe(e.getMessage());
+        } catch (ElasticsearchException e) {
+            log.severe(e.getMessage());
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+        }
+
+        return ideas;
     }
 
 }

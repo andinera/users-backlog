@@ -5,6 +5,7 @@ export class AccountForm {
         Validators.required,
         Validators.email
     ]);
+    hideEmailAddress = new FormControl(false);
     password = new FormControl('');
     verifiedPassword = new FormControl('');
     displayName = new FormControl('');

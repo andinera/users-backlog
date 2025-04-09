@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -121,6 +122,26 @@ public class IdeaDAO extends DAO {
         return ideas;
     }
 
+    private final String GET_IDEAS_BY_ID = 
+        GET_ALL_IDEAS + " " +
+        "WHERE impl.id IN (?)";
+
+    public List<Idea> getIdeas(final List<Long> ids) {
+        List<Idea> ideas = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_IDEAS_BY_ID)) {
+            ps.setString(1, ids.stream().map(String::valueOf).collect(Collectors.joining(",")));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ideas.add(ideaMapper(rs));
+                }
+            }
+        } catch (final Exception e) {
+            ideas = null;
+            log.severe(e.getMessage());
+        }
+        return ideas;
+    }
+
     private final String GET_IDEA_BY_SUMMARY = 
         GET_ALL_IDEAS + " " + 
         "WHERE idea.summary = ?";
@@ -213,8 +234,8 @@ public class IdeaDAO extends DAO {
             log.severe(e.getMessage());
         }
 
-        idea.setId(this.getIdea(idea.getSummary()).getId());
-        return associateCategoriesWithIdea(idea);
+        Idea updatedIdea = this.getIdea(idea.getSummary());
+        return associateCategoriesWithIdea(updatedIdea);
     }
 
     private final String DISASSOCIATE_IDEA_WITH_CATEGORY =
@@ -358,6 +379,7 @@ public class IdeaDAO extends DAO {
             "innovator_id, " +
             "date_time_modified " +
         ") VALUES (?, ?, ?, ?, ?)";
+
     private final String UPDATE_RECOMMENDATION = 
         "UPDATE idea_recommendation " +
         "SET message = ?, date_time_modified = ? " +
@@ -464,6 +486,7 @@ public class IdeaDAO extends DAO {
                 if (rs.next()) {
                     recommendation = recommendationMapper(rs);
                     recommendation.setVotes(this.getRecommendationVotes(recommendation.getId()));
+                    recommendation.setReplies(this.getRecommendationReplies(recommendation));
                 }
             }
         } catch (final Exception e) {

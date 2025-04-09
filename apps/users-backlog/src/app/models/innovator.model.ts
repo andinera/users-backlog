@@ -4,6 +4,7 @@ import { Model } from './model.model';
 
 export interface Innovator extends Model {
     emailAddress: string,
+    hideEmailAddress: boolean,
     displayName: string,
     ideas: Idea[],
     implementations: Implementation[]

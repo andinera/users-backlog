@@ -19,7 +19,7 @@ export class IdeaResolver implements Resolve<Idea> {
   ) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Idea> {
-    return this._ideaService.getIdea(route.paramMap.get('summary')).pipe(
+    return this._ideaService.getIdea(Number(route.paramMap.get('id'))).pipe(
       first(),
       map((idea: Idea) => {
         if (idea) {

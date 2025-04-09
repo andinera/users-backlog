@@ -13,7 +13,7 @@
             </div>
             <div class="right-container">
                 <div class="summary">
-                    <a routerLink="/implementation/{{implementation.name}}">{{implementation.name}}</a>
+                    <a [routerLink]="['/implementation', implementation.id, implementation.name]">{{implementation.name}}</a>
                 </div>
                 <div class="categories">
                     <div class="category" *ngFor="let category of implementation.categories">

@@ -75,7 +75,7 @@ export class NewIdeaComponent implements OnInit, OnDestroy {
         first(),
         tap((newIdea: Idea) => {
           if (newIdea) {
-            this._router.navigateByUrl(`/idea/${newIdea.summary}`);
+            this._router.navigate(['/idea', newIdea.id, newIdea.summary]);
           }
         }),
         takeUntil(this._destroyed$),
