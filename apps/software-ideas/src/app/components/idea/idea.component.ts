@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ReplaySubject, of } from 'rxjs';
 import { takeUntil, tap, first, catchError } from 'rxjs/operators';
 
@@ -33,7 +33,10 @@ export class IdeaComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.implementationForm = this.formBuilder.group({
-      source: ''
+      source: new FormControl(''),
+      name: new FormControl('', [
+        Validators.required
+      ])
     });
 
     this.route.data.subscribe((data: {idea: Idea}) => {

@@ -5,5 +5,6 @@ export interface Implementation {
     source: string,
     implementer: Innovator,
     idea: Idea,
-    name: string
+    name: string,
+    description: string
 }

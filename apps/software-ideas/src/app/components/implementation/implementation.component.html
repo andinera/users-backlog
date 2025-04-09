@@ -1,3 +1,11 @@
-{{implementation.name}}<br/>
-<a href="{{implementation.source}}">{{implementation.source}}</a><br/>
-Implementer: <button routerLink="/innovator/{{implementation.implementer.emailAddress}}">{{implementation.implementer.emailAddress}}</button>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>
+            <a href="{{implementation.source}}">{{implementation.name}}</a>
+        </mat-card-title>
+        <mat-card-subtitle routerLink="/innovator/{{implementation.implementer.emailAddress}}">{{implementation.implementer.emailAddress}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+        {{implementation.description}}
+    </mat-card-content>
+</mat-card>

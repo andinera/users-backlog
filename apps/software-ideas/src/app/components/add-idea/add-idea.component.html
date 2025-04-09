@@ -1,14 +1,21 @@
-<form [formGroup]="submitForm" (ngSubmit)="onSubmit(submitForm)">
+<form [formGroup]="ideaForm" (ngSubmit)="onSubmit(ideaForm)">
 
     <div>
-        <label for="summary">Summary</label>
-        <input id="summary" type="text" formControlName="summary">
+        <mat-form-field>
+            <mat-label for="summary">Summary</mat-label>
+            <input matInput id="summary" [formControl]="ideaForm.controls.summary">
+            <mat-error *ngIf="ideaForm.controls.summary.hasError('required')">
+                Summary is <strong>required</strong>
+            </mat-error>
+        </mat-form-field>
     </div>
 
     <div>
-        <label for="description">Description</label>
-        <textarea id="description" formControlName="description"></textarea>
+        <mat-form-field>
+            <mat-label for="description">Description</mat-label>
+            <textarea cdkTextareaAutosize matInput id="description" [formControl]="ideaForm.controls.description"></textarea>
+        </mat-form-field>
     </div>
 
-    <button class="button" type="submit">Add Idea</button>
+    <button mat-stroked-button type="submit" [disabled]="ideaForm.invalid">Add Idea</button>
 </form>

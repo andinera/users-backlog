@@ -6,6 +6,7 @@ public class Implementation {
     private Innovator implementer;
     private Idea idea;
     private String name;
+    private String description;
 
     public Implementation() {
     }
@@ -40,5 +41,13 @@ public class Implementation {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

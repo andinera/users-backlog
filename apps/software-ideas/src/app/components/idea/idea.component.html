@@ -1,22 +1,35 @@
-Summary: {{idea.summary}}
-<br/>
-Description: {{idea.description}}
-<br/>
-Innovator: <button routerLink="/innovator/{{idea.innovator.emailAddress}}">{{idea.innovator.emailAddress}}</button>
-<br/>
-Implementations: 
-<div *ngFor="let implementation of idea.implementations">
-    <button routerLink="/implementation/{{implementation.name}}">{{implementation.name}}</button>
-</div>
-<br/>
-<button class="button" type="button" (click)="delete()" [disabled]="deleteDisabled">Delete Idea</button>
-
-<div *ngIf="innovatorService.innovator">
-    <form [formGroup]="implementationForm" (ngSubmit)="addImplementation(implementationForm)">
-        <span>
-            <label for="source">URL</label>
-            <input id="source" type="text" formControlName="source">
-        </span>
-        <button class="button" type="submit">Add Implementation</button>
-    </form>
-</div>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>{{idea.summary}}</mat-card-title>
+        <mat-card-subtitle routerLink="/innovator/{{idea.innovator.emailAddress}}">{{idea.innovator.emailAddress}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+        {{idea.description}}
+    </mat-card-content>
+    <mat-card-actions>
+        <div *ngFor="let implementation of idea.implementations">
+            <button mat-stroked-button routerLink="/implementation/{{implementation.name}}">{{implementation.name}}</button>
+        </div>
+        <button mat-stroked-button class="button" type="button" (click)="delete()" *ngIf="!deleteDisabled">Delete Idea</button>
+    </mat-card-actions>
+    <mat-card-footer *ngIf="innovatorService.innovator">
+        <form [formGroup]="implementationForm" (ngSubmit)="addImplementation(implementationForm)">
+            <div>
+                <mat-form-field>
+                    <mat-label for="source">URL</mat-label>
+                    <input matInput id="source" [formControl]="implementationForm.controls.source">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <mat-label for="name">Name</mat-label>
+                    <input matInput id="name" [formControl]="implementationForm.controls.name">
+                    <mat-error *ngIf="implementationForm.controls.name.hasError('required')">
+                        Name is <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <button mat-stroked-button type="submit" [disabled]="implementationForm.invalid">Add Implementation</button>
+        </form>
+    </mat-card-footer>
+</mat-card>

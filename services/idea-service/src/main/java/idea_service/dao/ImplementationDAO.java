@@ -17,7 +17,7 @@ import idea_service.models.Innovator;
 @Repository
 public class ImplementationDAO {
     
-    private final String GET_IMPLEMENTATION_SQL = "SELECT impl.source, impl.implementer, impl.name FROM implementation impl WHERE impl.name = ?";
+    private final String GET_IMPLEMENTATION_SQL = "SELECT impl.source, impl.implementer, impl.name, impl.description FROM implementation impl WHERE impl.name = ?";
     private final String GET_IMPLEMENTATIONS_SQL = "SELECT impl.source, impl.implementer, impl.name FROM implementation impl WHERE impl.idea = ?";
     private final String POST_IMPLEMENTATION_SQL = "INSERT INTO implementation (source, implementer, idea, name) " + "VALUES (?, ?, ?, ?)";
 
@@ -36,6 +36,7 @@ public class ImplementationDAO {
                     innovator.setEmailAddress(rs.getString("implementer"));
                     implementation.setImplementer(innovator);
                     implementation.setName(rs.getString("name"));
+                    implementation.setDescription(rs.getString("description"));
                 }
             }
         } catch (final SQLException e) {

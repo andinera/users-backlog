@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { InnovatorService } from 'src/app/services/innovator.service';
@@ -13,6 +13,7 @@ import { URLService } from 'src/app/services/url.service';
 export class LoginComponent {
 
   loginForm: FormGroup;
+  loginFailed = false;
 
   constructor(
     private readonly innovatorService: InnovatorService,
@@ -21,7 +22,10 @@ export class LoginComponent {
     private readonly router: Router
   ) {
     this.loginForm = this.formBuilder.group({
-      emailAddress: ''
+      emailAddress: new FormControl('', [
+        Validators.required,
+        Validators.email
+      ])
     });
   }
 
@@ -31,7 +35,7 @@ export class LoginComponent {
       if (innovator) {
         this.router.navigate([this.urlService.previousURL]);
       } else {
-        this.router.navigate(['lost']);
+        this.loginFailed = true;
       }
     });
   }
