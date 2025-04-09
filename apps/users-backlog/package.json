@@ -1,0 +1,23 @@
+{
+  "name": "users-backlog",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular-devkit/build-angular": "^0.1000.1",
+    "@angular-devkit/schematics": "^10.0.1",
+    "@angular/compiler": "^10.0.2",
+    "@angular/compiler-cli": "^10.0.2",
+    "@angular/core": "^10.0.2",
+    "typescript": "^3.9.6",
+    "zone.js": "^0.10.3"
+  },
+  "devDependencies": {}
+}
