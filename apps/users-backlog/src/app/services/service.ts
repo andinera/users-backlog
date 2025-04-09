@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class Service {
 
-  // private _endpointURL = "https://service-dot-use rs-backlog.uc.r.appspot.com";
-  private _endpointURL = "http://localhost:8080";
+  private _endpointURL = environment.serviceEndpoint;
 
   constructor() { }
 
