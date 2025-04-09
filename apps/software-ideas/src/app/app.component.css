@@ -1,0 +1,11 @@
+button {
+    outline: 0;
+}
+
+a {
+    outline: 0;
+}
+
+a:hover {
+    opacity: 1;
+}
