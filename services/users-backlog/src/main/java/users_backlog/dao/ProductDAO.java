@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +15,8 @@ import users_backlog.models.Product;
 @Repository
 public class ProductDAO extends DAO {
     
+    private static final Logger log = Logger.getLogger(ProductDAO.class.getName());
+
     private final String GET_PRODUCTS = 
         "SELECT " +
             "p.id, " +
@@ -40,8 +43,7 @@ public class ProductDAO extends DAO {
             }
         } catch (final Exception e) {
             products = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return products;
     }

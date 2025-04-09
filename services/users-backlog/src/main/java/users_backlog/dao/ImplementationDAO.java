@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.logging.Logger;
 
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +24,8 @@ import users_backlog.models.Reply;
 
 @Repository
 public class ImplementationDAO extends DAO {
+    
+    private static final Logger log = Logger.getLogger(ImplementationDAO.class.getName());
 
     private Calendar UTC_CALENDAR = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
@@ -71,8 +74,7 @@ public class ImplementationDAO extends DAO {
             }
         } catch (final Exception e) {
             implementations = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return implementations;
     }
@@ -93,8 +95,7 @@ public class ImplementationDAO extends DAO {
             }
         } catch (final Exception e) {
             implementation = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return implementation;
     }
@@ -115,8 +116,7 @@ public class ImplementationDAO extends DAO {
             }
         } catch (final Exception e) {
             implementation = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return implementation;
     }
@@ -138,8 +138,7 @@ public class ImplementationDAO extends DAO {
             }
         } catch (final Exception e) {
             implementations = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return implementations;
     }
@@ -159,8 +158,7 @@ public class ImplementationDAO extends DAO {
             }
         } catch (final Exception e) {
             implementations = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return implementations;
     }
@@ -217,8 +215,7 @@ public class ImplementationDAO extends DAO {
             }
             ps.executeUpdate();
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
 
         implementation.setId(this.getImplementation(implementation.getName()).getId());
@@ -237,8 +234,7 @@ public class ImplementationDAO extends DAO {
             ps.setLong(1, implementation.getId());
             deleted = (ps.executeUpdate() != 0);
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return deleted;
     }
@@ -258,8 +254,7 @@ public class ImplementationDAO extends DAO {
             }
             ps.executeBatch();
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return implementation;
     }
@@ -288,8 +283,7 @@ public class ImplementationDAO extends DAO {
                     }
                 }
             } catch (final Exception e) {
-                System.out.println(e.getMessage());
-                e.printStackTrace();
+                log.severe(e.getMessage());
             }
         }
 
@@ -322,8 +316,7 @@ public class ImplementationDAO extends DAO {
             ps.setLong(i++, innovatorId);
             ps.executeUpdate();
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
 
         return this.getVotes(implementationId, innovatorId);
@@ -351,8 +344,7 @@ public class ImplementationDAO extends DAO {
                 }
             }
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return votes;
     }
@@ -377,8 +369,7 @@ public class ImplementationDAO extends DAO {
             }
         } catch (final Exception e) {
             vote = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return vote;
     }
@@ -423,8 +414,7 @@ public class ImplementationDAO extends DAO {
             }
             ps.executeUpdate();
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
 
         return this.getRecommendation(recommendation.getImplementation().getId(), recommendation.getInnovator().getId(), recommendation.getDateTimeCreated());
@@ -460,8 +450,7 @@ public class ImplementationDAO extends DAO {
             }
         } catch (final Exception e) {
             recommendations = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return recommendations;
     }
@@ -486,8 +475,7 @@ public class ImplementationDAO extends DAO {
                 }
             }
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return recommendation;
     }
@@ -532,8 +520,7 @@ public class ImplementationDAO extends DAO {
             ps.setLong(i++, innovatorId);
             ps.executeUpdate();
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
 
         return this.getRecommendationVotes(recommendationId, innovatorId);
@@ -561,8 +548,7 @@ public class ImplementationDAO extends DAO {
                 }
             }
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return votes;
     }
@@ -587,8 +573,7 @@ public class ImplementationDAO extends DAO {
             }
         } catch (final Exception e) {
             vote = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return vote;
     }
@@ -633,8 +618,7 @@ public class ImplementationDAO extends DAO {
             }
             ps.executeUpdate();
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
 
         return this.getRecommendationReply(reply.getRecommendation().getId(), reply.getInnovator().getId(), reply.getDateTimeCreated());
@@ -668,8 +652,7 @@ public class ImplementationDAO extends DAO {
             }
         } catch (final Exception e) {
             replies = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return replies;
     }
@@ -693,8 +676,7 @@ public class ImplementationDAO extends DAO {
                 }
             }
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return reply;
     }

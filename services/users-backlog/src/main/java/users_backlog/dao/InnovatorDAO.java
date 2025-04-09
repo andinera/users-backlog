@@ -3,6 +3,7 @@ package users_backlog.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.logging.Logger;
 
 import org.springframework.stereotype.Repository;
 
@@ -10,6 +11,8 @@ import users_backlog.models.Innovator;
 
 @Repository
 public class InnovatorDAO extends DAO {
+
+    private static final Logger log = Logger.getLogger(InnovatorDAO.class.getName());
 
     final private String GET_ALL_INNOVATORS = 
         "SELECT " +
@@ -36,8 +39,7 @@ public class InnovatorDAO extends DAO {
             }
         } catch (final Exception e) {
             innovator = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return innovator;
     }
@@ -60,8 +62,7 @@ public class InnovatorDAO extends DAO {
             }
         } catch (final Exception e) {
             innovator = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return innovator;
     }
@@ -87,8 +88,7 @@ public class InnovatorDAO extends DAO {
                 updatedInnovator = innovator;
             }
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
             throw e;
         }
         return updatedInnovator;

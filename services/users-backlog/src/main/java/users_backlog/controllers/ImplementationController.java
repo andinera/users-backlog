@@ -2,6 +2,8 @@
 package users_backlog.controllers;
 
 import java.util.List;
+// import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,12 +24,16 @@ import users_backlog.services.ImplementationService;
 @RequestMapping("/implementation")
 public class ImplementationController {
 
+    private static final Logger log = Logger.getLogger(ImplementationController.class.getName());
+
     @Autowired ImplementationService implementationService;
 
     @GetMapping(path="getImplementations")
     public List<Implementation> getImplementations(
         @RequestParam(required = false) final String categoryName
     ) {
+        System.out.println("test1");
+        log.info("test2");
         return implementationService.getImplementations(categoryName);
     }
 

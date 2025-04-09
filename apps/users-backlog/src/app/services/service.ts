@@ -5,7 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class Service {
 
-  private _endpointURL = "https://service-dot-users-backlog.uc.r.appspot.com/";
+  // private _endpointURL = "https://service-dot-use rs-backlog.uc.r.appspot.com";
+  private _endpointURL = "http://localhost";
 
   constructor() { }
 

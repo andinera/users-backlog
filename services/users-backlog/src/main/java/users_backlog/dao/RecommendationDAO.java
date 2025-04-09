@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.logging.Logger;
 
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +20,8 @@ import users_backlog.models.Innovator;
 
 @Repository
 public class RecommendationDAO extends DAO {
+
+    private static final Logger log = Logger.getLogger(RecommendationDAO.class.getName());
 
     private final String GET_ALL_RECOMMENDATIONS = 
         "SELECT " +
@@ -44,8 +47,7 @@ public class RecommendationDAO extends DAO {
                 }
             }
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return recommendation;
     }
@@ -65,8 +67,7 @@ public class RecommendationDAO extends DAO {
             }
         } catch (final Exception e) {
             recommendations = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return recommendations;
     }
@@ -89,8 +90,7 @@ public class RecommendationDAO extends DAO {
                 }
             }
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return recommendation;
     }
@@ -124,8 +124,7 @@ public class RecommendationDAO extends DAO {
             }
             ps.executeUpdate();
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         recommendation.setId(this.getRecommendation(recommendation.getInnovator(), recommendation.getDateTimeCreated()).getId());
         return recommendation;

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +15,8 @@ import users_backlog.models.Implementation;
 
 @Repository
 public class CategoryDAO extends DAO {
+    
+    private static final Logger log = Logger.getLogger(CategoryDAO.class.getName());
 
     private final String GET_ALL_CATEGORIES = 
         "SELECT " +
@@ -31,8 +34,7 @@ public class CategoryDAO extends DAO {
             }
         } catch (final Exception e) {
             categories = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return categories;
     }
@@ -54,8 +56,7 @@ public class CategoryDAO extends DAO {
             }
         } catch (final Exception e) {
             categories = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return categories;
     }
@@ -77,8 +78,7 @@ public class CategoryDAO extends DAO {
             }
         } catch (final Exception e) {
             categories = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return categories;
     }
@@ -97,8 +97,7 @@ public class CategoryDAO extends DAO {
                 }
             }
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return category;
     }
@@ -122,8 +121,7 @@ public class CategoryDAO extends DAO {
                 category.setId(this.getCategoryByName(category.getName()).getId());
             }
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return categories;
     }

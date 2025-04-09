@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,8 @@ import users_backlog.models.Innovator;
 
 @Repository
 public class IdeaDAO extends DAO {
+
+    private static final Logger log = Logger.getLogger(IdeaDAO.class.getName());
 
     private final String GET_ALL_IDEAS = 
         "SELECT " +
@@ -46,8 +49,7 @@ public class IdeaDAO extends DAO {
             }
         } catch (final Exception e) {
             ideas = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return ideas;
     }
@@ -70,8 +72,7 @@ public class IdeaDAO extends DAO {
             }
         } catch (final Exception e) {
             ideas = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return ideas;
     }
@@ -92,8 +93,7 @@ public class IdeaDAO extends DAO {
             }
         } catch (final Exception e) {
             ideas = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return ideas;
     }
@@ -113,8 +113,7 @@ public class IdeaDAO extends DAO {
             }
         } catch (final Exception e) {
             idea = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return idea;
     }
@@ -134,8 +133,7 @@ public class IdeaDAO extends DAO {
             }
         } catch (final Exception e) {
             idea = null;
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return idea;
     }
@@ -168,8 +166,7 @@ public class IdeaDAO extends DAO {
             }
             ps.executeUpdate();
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
 
         idea.setId(this.getIdea(idea.getSummary()).getId());
@@ -187,8 +184,7 @@ public class IdeaDAO extends DAO {
             ps.setLong(1, idea.getId());
             deleted = (ps.executeUpdate() != 0);
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return deleted;
     }
@@ -208,8 +204,7 @@ public class IdeaDAO extends DAO {
             }
             ps.executeBatch();
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return idea;
     }
@@ -225,8 +220,7 @@ public class IdeaDAO extends DAO {
             ps.setLong(1, id);
             deleted = (ps.executeUpdate() != 0);
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.severe(e.getMessage());
         }
         return deleted;
     }

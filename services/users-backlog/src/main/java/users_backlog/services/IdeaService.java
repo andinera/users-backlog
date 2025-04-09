@@ -1,6 +1,7 @@
 package users_backlog.services;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,8 @@ import users_backlog.models.Idea;
 
 @Service
 public class IdeaService {
+
+    private static final Logger log = Logger.getLogger(IdeaService.class.getName());
 
     @Autowired IdeaDAO ideaDAO;
     @Autowired ImplementationDAO implementationDAO;

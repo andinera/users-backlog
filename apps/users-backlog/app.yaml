@@ -5,27 +5,37 @@ threadsafe: true
 instance_class: F1
 handlers:
   - url: /
+    redirect_http_response_code: 301
     application_readable: false
     static_files: dist/users-backlog/index.html
     require_matching_file: false
     upload: dist/users-backlog/index.html
+    secure: always
   - url: /(.*\.js)
     redirect_http_response_code: 301
     static_files: dist/users-backlog/\1
     upload: dist/users-backlog/.*\.js
+    secure: always
+    http_headers:
+      Access-Control-Allow-Origin: https://usersbacklog.com
   - url: /(.*\.css)
     redirect_http_response_code: 301
     static_files: dist/users-backlog/\1
     mime_type: text/css
     upload: dist/users-backlog/.*\.css
+    secure: always
   - url: /(.*\.(.+))$
+    redirect_http_response_code: 301
     static_files: dist/users-backlog/\1
     upload: dist/users-backlog/(.*\.(.+))$
+    secure: always
   - url: /(.*)
+    redirect_http_response_code: 301
     application_readable: false
     static_files: dist/users-backlog/index.html
     require_matching_file: false
     upload: dist/users-backlog/index.html
+    secure: always
 skip_files:
   - (?!^dist)
 automatic_scaling:

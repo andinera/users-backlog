@@ -1,7 +1,8 @@
 package users_backlog.controllers;
 
+import java.util.logging.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,10 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import users_backlog.models.Innovator;
 import users_backlog.services.InnovatorService;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/innovator")
 public class InnovatorController {
+
+    private static final Logger log = Logger.getLogger(InnovatorController.class.getName());
 
     @Autowired InnovatorService innovatorService;
 
