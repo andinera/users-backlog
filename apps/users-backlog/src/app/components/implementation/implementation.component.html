@@ -27,14 +27,22 @@
 
     <div class="row">
         <div class="innovator" *ngIf="implementation.innovator">
-            <a [routerLink]="['/innovator', implementation.innovator.id, implementation.innovator.displayName]">
-                {{implementation.innovator.displayName}}
-            </a>
+            <div>
+                <a [routerLink]="['/innovator', implementation.innovator.id, implementation.innovator.displayName]">
+                    {{implementation.innovator.displayName}}
+                </a>
+            </div>
+            <div>
+                <button class="btn btn-primary" (click)="relinquishOwnership()" [disabled]="changingOwnership">
+                    Relinquish Ownership
+                    <mat-progress-bar *ngIf="changingOwnership" mode="indeterminate"></mat-progress-bar>
+                </button>
+            </div>
         </div>
         <div *ngIf="!implementation.innovator">
-            <button class="btn btn-primary" (click)="claimOwnership()" [disabled]="claimingOwnership">
+            <button class="btn btn-primary" (click)="claimOwnership()" [disabled]="changingOwnership">
                 Claim Ownership
-                <mat-progress-bar *ngIf="claimingOwnership" mode="indeterminate"></mat-progress-bar>
+                <mat-progress-bar *ngIf="changingOwnership" mode="indeterminate"></mat-progress-bar>
             </button>
         </div>
     </div>

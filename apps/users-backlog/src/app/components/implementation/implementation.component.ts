@@ -33,7 +33,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   implementation: Implementation;
   implementationVote: boolean;
   recommendationVotes: any;
-  claimingOwnership = false;
+  changingOwnership = false;
 
   productForm: FormGroup;
   editProductForm: FormGroup;
@@ -468,13 +468,14 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   }
 
   public claimOwnership(): void {
-    this.claimingOwnership = true;
+    this.changingOwnership = true;
     const innovator = this.innovatorService.innovator$.value;
-    this.implementation.innovator = innovator;
-    this._implementationService.postImplementation(this.implementation).pipe(
+    const implementation = Object.assign({}, this.implementation);
+    implementation.innovator = innovator;
+    this._implementationService.postImplementation(implementation).pipe(
       first(),
-      tap((implementation: Implementation) => {
-        this.implementation = implementation;
+      tap((updatedImplementation: Implementation) => {
+        this.implementation = updatedImplementation;
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {
@@ -483,7 +484,28 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         return of(null);
       }),
       finalize(() => {
-        this.claimingOwnership = false;
+        this.changingOwnership = false;
+      })
+    ).subscribe();
+  }
+
+  public relinquishOwnership(): void {
+    this.changingOwnership = true;
+    const implementation = Object.assign({}, this.implementation);
+    implementation.innovator = undefined;
+    this._implementationService.postImplementation(implementation).pipe(
+      first(),
+      tap((updatedImplementation: Implementation) => {
+        this.implementation = updatedImplementation;
+      }),
+      takeUntil(this._destroyed$),
+      catchError((e: any) => {
+        console.error(e);
+        this._snackBar.open('Failed to relinquish ownership.', 'Close');
+        return of(null);
+      }),
+      finalize(() => {
+        this.changingOwnership = false;
       })
     ).subscribe();
   }
