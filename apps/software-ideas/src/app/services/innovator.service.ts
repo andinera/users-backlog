@@ -10,10 +10,9 @@ import { Innovator } from '../models/innovator';
 })
 export class InnovatorService {
 
-  public redirectUrl = '';
   public innovator: Innovator;
 
-  private ideaServiceURL = "http://localhost:8080/innovator/";
+  private serviceURL = "http://localhost:8080/innovator/";
 
   constructor(private readonly http: HttpClient) { }
 
@@ -21,7 +20,7 @@ export class InnovatorService {
     if (this.innovator) {
       return of(this.innovator);
     } else {
-      return this.http.get<Innovator>(`${this.ideaServiceURL}getInnovator?emailAddress=${encodeURIComponent(innovator.emailAddress)}`).pipe(
+      return this.http.get<Innovator>(`${this.serviceURL}getInnovator?emailAddress=${encodeURIComponent(innovator.emailAddress)}`).pipe(
         tap((innovator: Innovator) => {
           this.innovator = innovator;
         })
@@ -30,6 +29,6 @@ export class InnovatorService {
   }
 
   postInnovator(innovator: Innovator) {
-    return this.http.post<Innovator>(`${this.ideaServiceURL}postInnovator`, innovator);
+    return this.http.post<Innovator>(`${this.serviceURL}postInnovator`, innovator);
   }
 }

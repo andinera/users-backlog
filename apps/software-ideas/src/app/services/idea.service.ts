@@ -10,7 +10,7 @@ import { InnovatorService } from './innovator.service';
 })
 export class IdeaService {
 
-  private ideaServiceURL = "http://localhost:8080/idea/";
+  private serviceURL = "http://localhost:8080/idea/";
 
   constructor(
     private readonly http: HttpClient,
@@ -18,11 +18,11 @@ export class IdeaService {
   ) { }
 
   getAllIdeas(): Observable<Idea[]> {
-    return this.http.get<Idea[]>(`${this.ideaServiceURL}getAllIdeas`);
+    return this.http.get<Idea[]>(`${this.serviceURL}getAllIdeas`);
   }
 
   getIdea(summary: string): Observable<Idea> {
-    return this.http.get<Idea>(`${this.ideaServiceURL}getIdea?summary=${summary}`);
+    return this.http.get<Idea>(`${this.serviceURL}getIdea?summary=${encodeURIComponent(summary)}`);
   }
 
   postIdea(idea: Idea): Observable<Idea> {
@@ -32,10 +32,10 @@ export class IdeaService {
     } else {
       return of(null);
     }
-    return this.http.post<Idea>(`${this.ideaServiceURL}postIdea`, idea);
+    return this.http.post<Idea>(`${this.serviceURL}postIdea`, idea);
   }
 
   deleteIdea(summary: string) {
-    return this.http.delete<string>(`${this.ideaServiceURL}deleteIdea?summary=${summary}`);
+    return this.http.delete<string>(`${this.serviceURL}deleteIdea?summary=${encodeURIComponent(summary)}`);
   }
 }

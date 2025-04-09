@@ -5,6 +5,7 @@ import { mergeMap, first } from 'rxjs/operators';
 
 import { IdeaService } from '../services/idea.service';
 import { Idea } from '../models/idea';
+import { URLService } from '../services/url.service';
 
 @Injectable({
     providedIn: 'root'
@@ -13,7 +14,9 @@ import { Idea } from '../models/idea';
   
     constructor(
       private readonly ideaService: IdeaService,
-      private readonly router: Router) { }
+      private readonly router: Router,
+      private readonly urlService: URLService
+    ) { }
   
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Idea> | Observable<never> {
       return this.ideaService.getIdea(route.paramMap.get('summary')).pipe(
@@ -22,7 +25,7 @@ import { Idea } from '../models/idea';
           if (idea) {
             return of(idea);
           } else {
-            this.router.navigate(['/ideas']);
+            this.router.navigate([this.urlService.previousURL]);
             return EMPTY;
           }
         })

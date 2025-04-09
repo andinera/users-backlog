@@ -1,3 +1,3 @@
 export interface Innovator {
-    emailAddress: string;
+    emailAddress: string
 }

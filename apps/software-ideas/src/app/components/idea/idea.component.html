@@ -4,4 +4,19 @@ Description: {{idea.description}}
 <br/>
 Innovator: {{idea.innovator.emailAddress}}
 <br/>
-<button class="button" type="button" (click)="delete()" [disabled]="disabled">Delete Idea</button>
+Implementations: 
+<span *ngFor="let implementation of idea.implementations">
+    <a href="{{implementation.source}}">{{implementation.source}}</a>
+</span>
+<br/>
+<button class="button" type="button" (click)="delete()" [disabled]="deleteDisabled">Delete Idea</button>
+
+<div *ngIf="innovatorService.innovator">
+    <form [formGroup]="implementationForm" (ngSubmit)="addImplementation(implementationForm)">
+        <span>
+            <label for="source">URL</label>
+            <input id="source" type="text" formControlName="source">
+        </span>
+        <button class="button" type="submit">Add Implementation</button>
+    </form>
+</div>
