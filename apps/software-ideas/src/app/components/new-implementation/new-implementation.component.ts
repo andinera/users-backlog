@@ -3,11 +3,11 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 import { first, tap, takeUntil, catchError } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
 
-import { Implementation } from 'src/app/models/implementation';
+import { Implementation } from 'src/app/models/implementation.model';
 import { ImplementationService } from 'src/app/services/implementation.service';
-import { Idea } from 'src/app/models/idea';
+import { Idea } from 'src/app/models/idea.model';
 import { AuthenticationService } from 'src/app/services/authentication.service';
-import { Innovator } from 'src/app/models/innovator';
+import { Innovator } from 'src/app/models/innovator.model';
 
 @Component({
   selector: 'app-new-implementation [idea]',

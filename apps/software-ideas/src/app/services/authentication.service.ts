@@ -3,7 +3,7 @@ import { Observable, BehaviorSubject} from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { InnovatorService } from './innovator.service';
-import { Innovator } from '../models/innovator';
+import { Innovator } from '../models/innovator.model';
 
 declare var gapi: any;
 
@@ -36,7 +36,7 @@ export class AuthenticationService {
               }).then((response: any) => {
                   console.log("Google API Initialized");
               }, (reason: any) => {
-                console.log("Google API NOT Initialized");
+                console.log("Google API Not Initialized");
                   console.log(reason.result.error.message);
               });
           });

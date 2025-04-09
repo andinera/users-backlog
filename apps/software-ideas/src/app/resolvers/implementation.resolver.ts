@@ -3,7 +3,7 @@ import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@a
 import { Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 
-import { Implementation } from '../models/implementation';
+import { Implementation } from '../models/implementation.model';
 import { ImplementationService } from '../services/implementation.service';
 import { URLService } from '../services/url.service';
 

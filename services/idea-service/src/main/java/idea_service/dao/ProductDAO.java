@@ -2,7 +2,6 @@ package idea_service.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,29 +18,34 @@ public class ProductDAO {
     
     private final String GET_PRODUCTS = 
         "SELECT " +
+            "p.id, " +
             "p.url, " +
             "p.description " +
-        "FROM product p " +
-        "WHERE p.implementation_name = ?";
+        "FROM product p";
 
     @Autowired DataSource dataSource;
 
+    private final String GET_PRODUCTS_BY_IMPLEMENTATION = 
+        GET_PRODUCTS + " " +
+        "WHERE p.implementation_id = ?";
+
     public List<Product> getProducts(final Implementation implementation) {
         List<Product> products = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_PRODUCTS)) {
-            int i = 1;
-            ps.setString(i++, implementation.getName());
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_PRODUCTS_BY_IMPLEMENTATION)) {
+            ps.setLong(1, implementation.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     final Product product = new Product();
+                    product.setId(rs.getLong("id"));
                     product.setURL(rs.getString("url"));
                     product.setDescription(rs.getString("description"));
                     products.add(product);
                 }
             }
-        } catch (final SQLException e) {
+        } catch (final Exception e) {
             products = null;
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return products;
     }

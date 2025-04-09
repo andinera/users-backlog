@@ -4,6 +4,7 @@
         <p>
             {{idea.description}}
         </p>
+        <button mat-raised-button type="submit" routerLink="/Edit Idea/{{idea.summary}}">Edit Idea</button>
     </mat-tab>
 
     <mat-tab [label]="tabLabels[1]">
@@ -31,6 +32,18 @@
     </mat-tab>
 
     <mat-tab [label]="tabLabels[3]">
+        <div *ngFor="let recommendation of idea.recommendations">
+            {{recommendation.message}}<br>
+            {{recommendation.dateTimeCreated.toLocaleString()}}
+        </div>
+        <form (ngSubmit)="addRecommendation(recommendationForm.value)">
+            <div>
+                <mat-form-field appearance="fill">
+                    <textarea cdkTextareaAutosize matInput required [formControl]="recommendationForm.controls.message"></textarea>
+                </mat-form-field>
+            </div>
+            <button mat-raised-button color="primary" type="submit">Add Recommendation</button>
+        </form>
 
     </mat-tab>
 

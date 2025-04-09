@@ -5,7 +5,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { tap, first, catchError, takeUntil } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
 
-import { Innovator } from 'src/app/models/innovator';
+import { Innovator } from 'src/app/models/innovator.model';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { InnovatorService } from 'src/app/services/innovator.service';
 import { URLService } from 'src/app/services/url.service';

@@ -1,3 +1,7 @@
+button {
+    outline: 0;
+}
+
 .list-group-item-container {
     text-decoration: none;
 }

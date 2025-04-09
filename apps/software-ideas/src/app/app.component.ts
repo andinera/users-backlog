@@ -5,7 +5,7 @@ import { of, ReplaySubject } from 'rxjs';
 import { tap, catchError, takeUntil, filter } from 'rxjs/operators';
 
 import { AuthenticationService } from './services/authentication.service';
-import { Innovator } from './models/innovator';
+import { Innovator } from './models/innovator.model';
 import { URLService } from './services/url.service';
 import { LoginComponent } from './components/login/login.component';
 

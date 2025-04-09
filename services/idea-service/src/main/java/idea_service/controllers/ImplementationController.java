@@ -21,8 +21,18 @@ public class ImplementationController {
     @Autowired ImplementationService implementationService;
 
     @GetMapping(path= "getImplementation")
-    public Implementation getImplementation(@RequestParam final String name) {
-        return implementationService.getImplementation(name);
+    public Implementation getImplementation(
+        @RequestParam(required = false) final Long id,
+        @RequestParam(required = false) final String name
+    ) {
+        if (id != null) {
+            return implementationService.getImplementation(id);
+        } else if (name != null) {
+            return implementationService.getImplementation(name);
+        } else {
+            return null;
+            // throw error, identical to if no parameters are passed
+        }
     }
 
     @PostMapping(path = "postImplementation")

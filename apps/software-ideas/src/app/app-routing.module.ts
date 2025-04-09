@@ -58,6 +58,15 @@ const routes: Routes = [
         canActivate: [NewIdeaGuard]
     },
     {
+        path: 'Edit Idea/:summary',
+        component: NewIdeaComponent,
+        resolve: {
+            idea: IdeaResolver,
+            categories: CategoriesResolver
+        },
+        canActivate: [NewIdeaGuard]
+    },
+    {
         path: 'Login',
         component: LoginComponent
     },

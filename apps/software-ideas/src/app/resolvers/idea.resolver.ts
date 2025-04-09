@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 
 import { IdeaService } from '../services/idea.service';
-import { Idea } from '../models/idea';
+import { Idea } from '../models/idea.model';
 import { URLService } from '../services/url.service';
 
 @Injectable({

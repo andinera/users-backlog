@@ -5,8 +5,8 @@ import { Observable, forkJoin } from 'rxjs';
 
 import { IdeaService } from '../services/idea.service';
 import { CategoriesResolver } from './categories.resolver';
-import { Category } from '../models/category';
-import { Idea } from '../models/idea';
+import { Category } from '../models/category.model';
+import { Idea } from '../models/idea.model';
 
 @Injectable({
   providedIn: 'root'

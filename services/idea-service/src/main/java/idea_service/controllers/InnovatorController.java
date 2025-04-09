@@ -20,8 +20,19 @@ public class InnovatorController {
     @Autowired InnovatorService innovatorService;
 
     @GetMapping(path="getInnovator")
-    public Innovator getInnovator(@RequestParam final String emailAddress) {
-        return innovatorService.getInnovator(emailAddress);
+    public Innovator getInnovator(
+        @RequestParam(required = false) final Long id,
+        @RequestParam(required = false) final String emailAddress
+    ) {
+        if (id != null) {
+            return innovatorService.getInnovator(id);
+        } else if (emailAddress != null) {
+            return innovatorService.getInnovator(emailAddress);
+        } else {
+            return null;
+            // throw error, identical to if no parameters are passed
+        }
+        
     }
 
     @PostMapping(path = "postInnovator")

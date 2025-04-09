@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class Implementation {
+public class Implementation extends Model {
     
     private Innovator innovator;
     private List<Idea> ideas;

@@ -2,7 +2,6 @@ package idea_service.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,112 +19,127 @@ public class ImplementationDAO {
 
     private final String GET_ALL_IMPLEMENTATIONS = 
         "SELECT " +
-            "impl.innovator_email_address, " +
+            "impl.id, " +
             "impl.name, " +
-            "impl.description " +
-        "FROM implementation impl";
+            "impl.description, " +
+            "inv.email_address " +
+        "FROM implementation impl " +
+        "INNER JOIN innovator inv " +
+            "ON inv.id = impl.innovator_id";
+
+    @Autowired DataSource dataSource;
+
     private final String GET_IMPLEMENTATION_BY_NAME = 
         GET_ALL_IMPLEMENTATIONS + " " +
         "WHERE impl.name = ?";
-    private final String GET_IMPLEMENTATIONS_BY_IDEA = 
-        GET_ALL_IMPLEMENTATIONS + " " +
-        "INNER JOIN idea_implementation ii " +
-            "ON ii.implementation_name = impl.name " +
-            "AND ii.idea_summary = ?";
-    private final String GET_IMPLEMENTATIONS_BY_INNOVATOR = 
-        GET_ALL_IMPLEMENTATIONS + " " +
-        "WHERE impl.innovator_email_address = ?";
-    private final String POST_IMPLEMENTATION = 
-        "INSERT " +
-        "INTO implementation (innovator_email_address, name) " +
-        "VALUES (?, ?)";
-    private final String ASSOCIATE_IMPLEMENTATION_WITH_IDEA =
-        "INSERT " +
-        "INTO idea_implementation (idea_summary, implementation_name) " +
-        "VALUES (?, ?)";
-
-    @Autowired DataSource dataSource;
 
     public Implementation getImplementation(final String name) {
         Implementation implementation = null;
         try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IMPLEMENTATION_BY_NAME)) {
-            int i = 1;
-            ps.setString(i++, name);
+            ps.setString(1, name);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    implementation = new Implementation();
-                    Innovator innovator = new Innovator();
-                    innovator.setEmailAddress(rs.getString("innovator_email_address"));
-                    implementation.setInnovator(innovator);
-                    implementation.setName(rs.getString("name"));
-                    implementation.setDescription(rs.getString("description"));
+                    implementation = implementationMapper(rs);
                 }
             }
-        } catch (final SQLException e) {
+        } catch (final Exception e) {
             implementation = null;
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return implementation;
     }
 
+    private final String GET_IMPLEMENTATION_BY_ID = 
+        GET_ALL_IMPLEMENTATIONS + " " +
+        "WHERE impl.id = ?";
+
+    public Implementation getImplementation(final long id) {
+        Implementation implementation = null;
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IMPLEMENTATION_BY_ID)) {
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    implementation = implementationMapper(rs);
+                }
+            }
+        } catch (final Exception e) {
+            implementation = null;
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return implementation;
+    }
+
+    private final String GET_IMPLEMENTATIONS_BY_IDEA = 
+        GET_ALL_IMPLEMENTATIONS + " " +
+        "INNER JOIN idea_implementation ii " +
+            "ON (ii.implementation_id = impl.id " +
+                "AND ii.idea_id = ?)";
+
     public List<Implementation> getImplementations(final Idea idea) {
         List<Implementation> implementations = new ArrayList<>();
         try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IMPLEMENTATIONS_BY_IDEA)) {
-            int i = 1;
-            ps.setString(i++, idea.getSummary());
+            ps.setLong(1, idea.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    final Implementation implementation = new Implementation();
-                    Innovator innovator = new Innovator();
-                    innovator.setEmailAddress(rs.getString("innovator_email_address"));
-                    implementation.setInnovator(innovator);
-                    implementation.setName(rs.getString("name"));
-                    implementations.add(implementation);
+                    implementations.add(implementationMapper(rs));
                 }
             }
-        } catch (final SQLException e) {
+        } catch (final Exception e) {
             implementations = null;
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return implementations;
     }
 
+    private final String GET_IMPLEMENTATIONS_BY_INNOVATOR = 
+        GET_ALL_IMPLEMENTATIONS + " " +
+        "WHERE impl.innovator_id = ?";
+
     public List<Implementation> getImplementations(final Innovator innovator) {
         List<Implementation> implementations = new ArrayList<>();
         try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IMPLEMENTATIONS_BY_INNOVATOR)) {
-            int i = 1;
-            ps.setString(i++, innovator.getEmailAddress());
+            ps.setLong(1, innovator.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    final Implementation implementation = new Implementation();
-                    Innovator queriedInnovator = new Innovator();
-                    queriedInnovator.setEmailAddress(rs.getString("innovator_email_address"));
-                    implementation.setInnovator(queriedInnovator);
-                    implementation.setName(rs.getString("name"));
-                    implementations.add(implementation);
+                    implementations.add(implementationMapper(rs));
                 }
             }
-        } catch (final SQLException e) {
+        } catch (final Exception e) {
             implementations = null;
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return implementations;
     }
+
+    private final String POST_IMPLEMENTATION = 
+        "INSERT " +
+        "INTO implementation (innovator_id, name) " +
+        "VALUES (?, ?)";
 
     public Implementation postImplementation(final Implementation implementation) {
         Implementation updatedImplementation = null;
         try (PreparedStatement ps = dataSource.getConnection().prepareStatement(POST_IMPLEMENTATION)) {
             int i = 1;
-            ps.setString(i++, implementation.getInnovator().getEmailAddress());
+            ps.setLong(i++, implementation.getInnovator().getId());
             ps.setString(i++, implementation.getName());
             if (ps.executeUpdate() == 0) {
                 updatedImplementation = implementation;
             }
-        } catch (final SQLException e) {
+        } catch (final Exception e) {
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return associateImplementatioWithIdea(updatedImplementation);
     }
+
+    private final String ASSOCIATE_IMPLEMENTATION_WITH_IDEA =
+        "INSERT " +
+        "INTO idea_implementation (idea_summary, implementation_id) " +
+        "VALUES (?, ?)";
 
     private Implementation associateImplementatioWithIdea(final Implementation implementation) {
         List<Idea> updatedIdeas = null;
@@ -133,7 +147,7 @@ public class ImplementationDAO {
             for (Idea idea : implementation.getIdeas()) {
                 int i = 1;
                 ps.setString(i++, idea.getSummary());
-                ps.setString(i++, implementation.getName());
+                ps.setLong(i++, implementation.getId());
                 ps.addBatch();
             }
             int[] updatedCount = ps.executeBatch();
@@ -143,10 +157,24 @@ public class ImplementationDAO {
                     updatedIdeas.add(implementation.getIdeas().get(i));
                 }
             }
-        } catch (final SQLException e) {
+        } catch (final Exception e) {
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         implementation.setIdeas(updatedIdeas);
+        return implementation;
+    }
+
+    private Implementation implementationMapper(ResultSet rs) throws Exception {
+        Implementation implementation = new Implementation();
+        implementation.setId(rs.getLong("id"));
+        implementation.setName(rs.getString("name"));
+        implementation.setDescription(rs.getString("description"));
+
+        final Innovator innovator = new Innovator();
+        innovator.setEmailAddress(rs.getString("email_address"));
+        implementation.setInnovator(innovator);
+
         return implementation;
     }
 

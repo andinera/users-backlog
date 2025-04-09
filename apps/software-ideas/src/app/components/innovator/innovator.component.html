@@ -1,4 +1,4 @@
-<mat-tab-group>
+<mat-tab-group [animationDuration]="0">
     <mat-tab label="Ideas">
         <mat-nav-list>
             <a mat-list-item *ngFor="let idea of innovator.ideas" routerLink="/Idea/{{idea.summary}}">

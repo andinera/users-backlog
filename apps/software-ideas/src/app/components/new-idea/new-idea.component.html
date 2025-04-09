@@ -34,10 +34,10 @@
             <mat-label for="otherCategory">Other Category</mat-label>
             <input matInput [formControl]="categoryForm.controls.name">
         </mat-form-field>
-        <button mat-mini-fab color="primary" type="submit" [disabled]="categoryForm.invalid">
+        <button mat-mini-fab color="primary" type="submit" [disabled]="!newCategoryIsValid()">
             <mat-icon>add</mat-icon>
         </button>
     </form>
 
-    <button mat-raised-button color="primary" type="submit">New Idea</button>
+    <button mat-raised-button color="primary" type="submit">{{(ideaForm.controls.id.value === 0 ? 'New Idea' : 'Edit Idea')}}</button>
 </form>

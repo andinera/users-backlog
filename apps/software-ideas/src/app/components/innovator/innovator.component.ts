@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { of, ReplaySubject } from 'rxjs';
 import { first, tap, catchError, takeUntil } from 'rxjs/operators';
 
-import { Innovator } from 'src/app/models/innovator';
+import { Innovator } from 'src/app/models/innovator.model';
 
 @Component({
   selector: 'app-innovator',

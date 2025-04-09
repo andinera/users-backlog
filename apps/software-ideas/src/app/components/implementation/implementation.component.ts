@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { tap, first, catchError, takeUntil } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
 
-import { Implementation } from 'src/app/models/implementation';
+import { Implementation } from 'src/app/models/implementation.model';
 
 @Component({
   selector: 'app-implementation',

@@ -3,7 +3,7 @@ import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@a
 import { Observable } from 'rxjs';
 
 import { URLService } from '../services/url.service';
-import { Innovator } from '../models/innovator';
+import { Innovator } from '../models/innovator.model';
 import { first, map } from 'rxjs/operators';
 import { InnovatorService } from '../services/innovator.service';
 

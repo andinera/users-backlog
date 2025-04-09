@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { tap, takeUntil, catchError, first } from 'rxjs/operators';
 import { ReplaySubject, of } from 'rxjs';
 
-import { Idea } from '../../models/idea';
+import { Idea } from '../../models/idea.model';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import idea_service.dao.ImplementationDAO;
 import idea_service.models.Idea;
 import idea_service.services.IdeaService;
 
@@ -22,7 +21,6 @@ import idea_service.services.IdeaService;
 public class IdeaController {
 
     @Autowired IdeaService ideaService;
-    @Autowired ImplementationDAO implementationDAO;
 
     @GetMapping(path="getIdeas")
     public List<Idea> getIdeas(@RequestParam final String categoryName) {
@@ -30,8 +28,18 @@ public class IdeaController {
     }
 
     @GetMapping(path = "getIdea")
-    public Idea getIdea(@RequestParam final String summary) {
-        return ideaService.getIdea(summary);
+    public Idea getIdea(
+        @RequestParam(required = false) final Long id,
+        @RequestParam(required = false) final String summary
+    ) {
+        if (id != null) {
+            return ideaService.getIdea(id);
+        } else if (summary != null) {
+            return ideaService.getIdea(summary);
+        } else {
+            return null;
+            // throw error, identical to if no parameters are passed
+        }
     }
 
     @PostMapping(path = "postIdea")
@@ -40,7 +48,7 @@ public class IdeaController {
     }
 
     @DeleteMapping(path = "deleteIdea")
-    public boolean deleteIdea(@RequestParam final String summary) {
-        return ideaService.deleteIdea(summary);
+    public boolean deleteIdea(@RequestParam final long id) {
+        return ideaService.deleteIdea(id);
     }
 }

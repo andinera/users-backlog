@@ -1,7 +1,5 @@
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 
 export class CategoryForm {
-    name = new FormControl('', [
-        Validators.required
-    ]);
+    name = new FormControl('');
 }

@@ -3,9 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 
-import { Idea } from '../models/idea';
+import { Idea } from '../models/idea.model';
 import { AuthenticationService } from './authentication.service';
-import { Innovator } from '../models/innovator';
+import { Innovator } from '../models/innovator.model';
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +40,7 @@ export class IdeaService {
     );
   }
 
-  deleteIdea(summary: string) {
-    return this._http.delete<string>(`${this._serviceURL}deleteIdea?summary=${encodeURIComponent(summary)}`);
+  deleteIdea(id: number) {
+    return this._http.delete<string>(`${this._serviceURL}deleteIdea?id=${encodeURIComponent(id)}`);
   }
 }

@@ -15,6 +15,15 @@ public class InnovatorService {
     @Autowired IdeaDAO ideaDAO;
     @Autowired ImplementationDAO implementationDAO;
 
+    public Innovator getInnovator(final long id) {
+        Innovator innovator = innovatorDAO.getInnovator(id);
+        if (innovator != null) {
+            innovator.setIdeas(ideaDAO.getIdeas(innovator));
+            innovator.setImplementations(implementationDAO.getImplementations(innovator));
+        }
+        return innovator;
+    }
+
     public Innovator getInnovator(final String emailAddress) {
         Innovator innovator = innovatorDAO.getInnovator(emailAddress);
         if (innovator != null) {

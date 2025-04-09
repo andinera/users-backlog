@@ -5,8 +5,8 @@ import { tap, catchError, first, takeUntil } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
 
 import { IdeaService } from 'src/app/services/idea.service';
-import { Idea } from 'src/app/models/idea';
-import { Category } from 'src/app/models/category';
+import { Idea } from 'src/app/models/idea.model';
+import { Category } from 'src/app/models/category.model';
 import { IdeaForm } from 'src/app/models/forms/idea.form';
 import { CategoryForm } from 'src/app/models/forms/category.form';
 
@@ -20,6 +20,7 @@ export class NewIdeaComponent implements OnInit, OnDestroy {
   categoryForm: FormGroup;
   ideaForm: FormGroup;
   categoryOptions: Category[];
+  idea: Idea;
     
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -35,10 +36,18 @@ export class NewIdeaComponent implements OnInit, OnDestroy {
     this.categoryForm = this._formBuilder.group(new CategoryForm());
     this.ideaForm = this._formBuilder.group(new IdeaForm());
 
+    
+    // Gather data from resolver
     this._route.data.pipe(
       first(),
-      tap((data: {categories: Category[]}) => {
+      tap((data: {categories: Category[], idea: Idea}) => {
         this.categoryOptions = data.categories;
+        if (data.idea) {
+          this.ideaForm.controls.id.setValue(data.idea.id);
+          this.ideaForm.controls.summary.setValue(data.idea.summary);
+          this.ideaForm.controls.description.setValue(data.idea.description);
+          this.ideaForm.controls.categories.setValue(this.categoryOptions.filter(category => data.idea.categories.map(cat => cat.name).includes(category.name)));
+        }
       }),
       catchError((error: any) => {
         console.log(error);
@@ -73,17 +82,28 @@ export class NewIdeaComponent implements OnInit, OnDestroy {
     }
   }
 
+  newCategoryIsValid() {
+    const categoryOptionsNames = this.categoryOptions.map(category => category.name);
+    if (!this.categoryForm.controls.name.value ||
+        categoryOptionsNames.includes(this.categoryForm.controls.name.value)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   addCategory(category: Category) {
     const categoryOptionsNames = this.categoryOptions.map(category => category.name);
-    const selectedCategoryNames = this.ideaForm.value.categories.map(category => category.name);
     if (!categoryOptionsNames.includes(category.name)) {
       this.categoryOptions.push(category);
     }
+    const selectedCategoryNames = this.ideaForm.value.categories.map(category => category.name);
     if (!selectedCategoryNames.includes(category.name)) {
       const selectedCategories = this.ideaForm.controls.categories.value;
       selectedCategories.push(category);
       this.ideaForm.controls.categories.setValue(selectedCategories);
     }
+    this.categoryForm.reset();
   }
 
 }

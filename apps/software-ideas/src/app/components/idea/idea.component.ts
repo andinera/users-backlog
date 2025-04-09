@@ -1,15 +1,18 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 
 import { ReplaySubject, of } from 'rxjs';
 import { takeUntil, tap, first, catchError } from 'rxjs/operators';
 
 import { IdeaService } from '../../services/idea.service';
-import { Idea } from '../../models/idea';
+import { Idea } from '../../models/idea.model';
 import { AuthenticationService } from 'src/app/services/authentication.service';
-import { Innovator } from 'src/app/models/innovator';
+import { Innovator } from 'src/app/models/innovator.model';
+import { RecommendationForm } from 'src/app/models/forms/recommendation.form';
+import { Recommendation } from 'src/app/models/recommendation.model';
+import { RecommendationService } from 'src/app/services/recommendation.service';
 
 @Component({
   selector: 'app-idea',
@@ -23,6 +26,7 @@ export class IdeaComponent implements OnInit, OnDestroy {
   displayNewImplementationForm = false; 
   selectedIndex: number = null;
   tabLabels = ['Description', 'Implementations', 'Innovator', 'Recommendations'];
+  recommendationForm: FormGroup;
 
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -30,16 +34,20 @@ export class IdeaComponent implements OnInit, OnDestroy {
     private readonly _ideaService: IdeaService,
     private readonly _router: Router,
     private readonly _route: ActivatedRoute,
+    public readonly authenticationService: AuthenticationService,
     private readonly _formBuilder: FormBuilder,
-    public readonly authenticationService: AuthenticationService
+    private readonly _recommendationService: RecommendationService
   ) { }
 
   ngOnInit(): void {
+    this.recommendationForm = this._formBuilder.group(new RecommendationForm());
+    
     // Gather data from resolver
     this._route.data.pipe(
       first(),
       tap((data: {idea: Idea}) => {
         this.idea = data.idea;
+        this.idea.recommendations.forEach(recommendation => recommendation.dateTimeCreated = new Date(Date.parse(recommendation.dateTimeCreated.toString())));
         this.authenticationService.innovator.pipe(
           tap((innovator: Innovator) => {
               this.deleteDisabled = (!innovator || this.idea.summary === 'Software Ideas');
@@ -88,7 +96,7 @@ export class IdeaComponent implements OnInit, OnDestroy {
   }
 
   delete(): void {
-    this._ideaService.deleteIdea(this.idea.summary).pipe(
+    this._ideaService.deleteIdea(this.idea.id).pipe(
       first(),
       tap((deleted) => {
         this._router.navigateByUrl('/Ideas');
@@ -99,6 +107,28 @@ export class IdeaComponent implements OnInit, OnDestroy {
         return of(null);
       })
     ).subscribe();
+  }
+
+  addRecommendation(recommendation: Recommendation): void {
+    if(this.recommendationForm.invalid) {
+      this.recommendationForm.markAllAsTouched();
+    } else {
+      recommendation.idea = this.idea;
+      this._recommendationService.postRecommendation(recommendation).pipe(
+        first(),
+        tap((newRecommendation: Recommendation) => {
+          if (newRecommendation) {
+            this.idea.recommendations.push(newRecommendation);
+            this.recommendationForm.reset();
+          }
+        }),
+        takeUntil(this._destroyed$),
+        catchError((e: any) => {
+          console.log(e);
+          return of(null);
+        })
+      ).subscribe();
+    }
   }
 
 }
