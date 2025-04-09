@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { tap, catchError, takeUntil } from 'rxjs/operators';
@@ -16,7 +16,7 @@ declare var gapi: any;
 @Injectable({
   providedIn: 'root'
 })
-export class InnovatorService extends Service {
+export class InnovatorService extends Service implements OnDestroy {
   
   public innovator$ = new BehaviorSubject<Innovator>(undefined);
 
@@ -49,7 +49,7 @@ export class InnovatorService extends Service {
     firebase.auth(app);
 
     firebase.auth().useDeviceLanguage();
-    firebase.auth().onAuthStateChanged(user => {
+    firebase.auth().onIdTokenChanged(user => {
       _ngZone.run(() => {
         if (user && !user.emailVerified) {
           user.sendEmailVerification();
@@ -117,7 +117,6 @@ export class InnovatorService extends Service {
         }, (reason: any) => {
           console.log("Google API Not Initialized");
           console.log(reason);
-          // console.log(reason.result.error.message);
         });
       });
     });

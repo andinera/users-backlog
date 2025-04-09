@@ -1,0 +1,27 @@
+<div class="container">
+    <ul class="list-group">
+        <li class="list-group-item" *ngFor="let implementation of implementations">
+            <div class="left-container">
+                <div class="votes">
+                    <div>
+                        Votes
+                    </div>
+                    <div>
+                        {{implementation.votes}}
+                    </div>
+                </div>         
+            </div>
+            <div class="right-container">
+                <div class="summary">
+                    <a routerLink="/implementation/{{implementation.name}}">{{implementation.name}}</a>
+                </div>
+                <div class="categories">
+                    <div class="category" *ngFor="let category of implementation.categories">
+                        {{category.name}}
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+

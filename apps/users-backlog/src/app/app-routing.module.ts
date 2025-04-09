@@ -19,6 +19,8 @@ import { NewImplementationComponent } from './components/new-implementation/new-
 import { LogInGuard } from './guards/log-in.guard';
 import { RedirectGuard } from './guards/redirect.guard';
 import { AccountComponent } from './components/account/account.component';
+import { SearchResultsComponent } from './components/search-results/search-results.component';
+import { SearchResolver } from './resolvers/search.resolver';
 
 
 const extraOptions = {
@@ -53,6 +55,13 @@ const routes: Routes = [
         component: ImplementationComponent,
         resolve: {
             implementation: ImplementationResolver
+        }
+    },
+    {
+        path: 'search/:criteria',
+        component: SearchResultsComponent,
+        resolve: {
+            searchResults: SearchResolver
         }
     },
     {

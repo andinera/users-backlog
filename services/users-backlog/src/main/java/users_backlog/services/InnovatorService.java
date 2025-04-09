@@ -18,6 +18,7 @@ public class InnovatorService {
     @Autowired InnovatorDAO innovatorDAO;
     @Autowired IdeaDAO ideaDAO;
     @Autowired ImplementationDAO implementationDAO;
+    @Autowired ElasticSearchService elasticSearchService;
 
     public Innovator getInnovator(final long id) {
         Innovator innovator = innovatorDAO.getInnovator(id);
@@ -38,7 +39,9 @@ public class InnovatorService {
     }
 
     public Innovator postInnovator(final Innovator innovator) throws Exception {
-        return innovatorDAO.postInnovator(innovator);
+        Innovator updatedInnovator = innovatorDAO.postInnovator(innovator);
+        elasticSearchService.index(updatedInnovator);
+        return updatedInnovator;
     }
 
 }

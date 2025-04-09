@@ -1,6 +1,7 @@
 package users_backlog.models;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -16,6 +17,14 @@ public class Idea extends Model {
     private List<Recommendation> recommendations;
 
     public Idea() {
+    }
+
+    public static Idea fromMap(Map<String, Object> map) {
+        return null;
+    }
+
+    public Map<String, Object> toMap() {
+        return null;
     }
 
     public String getSummary() {

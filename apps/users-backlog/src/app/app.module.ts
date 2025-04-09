@@ -28,6 +28,7 @@ import { ImplementationsComponent } from './components/implementations/implement
 import { URLService } from './services/url.service';
 import { InnovatorService } from './services/innovator.service';
 import { AccountComponent } from './components/account/account.component';
+import { SearchResultsComponent } from './components/search-results/search-results.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { AccountComponent } from './components/account/account.component';
     AccountComponent,
     NewImplementationComponent,
     RecommendationComponent,
-    ImplementationsComponent
+    ImplementationsComponent,
+    SearchResultsComponent
   ],
   imports: [
     AppRoutingModule,

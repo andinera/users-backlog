@@ -5,6 +5,16 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -74,5 +84,24 @@ public class App extends SpringBootServletInitializer {
             DataSource pool = new HikariDataSource(config);
             return pool;
         }
+    }
+
+    @Bean(destroyMethod = "close")
+    public RestHighLevelClient client() {
+        RestHighLevelClient client = new RestHighLevelClient(
+                RestClient.builder(
+                    new HttpHost("0ad0a1a4418d4beca0ff5bf26ee9bf83.us-central1.gcp.cloud.es.io", 9243, "https")
+                )
+                .setHttpClientConfigCallback(new HttpClientConfigCallback() {
+                    @Override
+                    public HttpAsyncClientBuilder customizeHttpClient(
+                            HttpAsyncClientBuilder httpClientBuilder) {
+                        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "UomEBszg80ddqaA2E3sCUWQa"));
+                        return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+                    }
+                })
+            );
+        return client;
     }
 }

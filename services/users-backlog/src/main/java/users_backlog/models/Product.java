@@ -1,5 +1,7 @@
 package users_backlog.models;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -11,6 +13,14 @@ public class Product extends Model {
     private Implementation implementation;
 
     public Product() {
+    }
+
+    public static Product fromMap(Map<String, Object> map) {
+        return null;
+    }
+
+    public Map<String, Object> toMap() {
+        return null;
     }
 
     public String getURL() {

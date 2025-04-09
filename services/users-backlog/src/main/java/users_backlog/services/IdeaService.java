@@ -21,6 +21,7 @@ public class IdeaService {
     @Autowired ImplementationDAO implementationDAO;
     @Autowired CategoryDAO categoryDAO;
     @Autowired RecommendationDAO recommendationDAO;
+    @Autowired ElasticSearchService elasticSearchService;
 
     public List<Idea> getIdeas(String categoryName) {
         return ideaDAO.getIdeas(categoryName);
@@ -47,13 +48,18 @@ public class IdeaService {
 
     public Idea postIdea(final Idea idea) {
         categoryDAO.postCategories(idea.getCategories());
-        ideaDAO.postIdea(idea);
-        idea.setCategories(categoryDAO.getCategories(idea));
-        return idea;
+        Idea updatedIdea = ideaDAO.postIdea(idea);
+        elasticSearchService.index(updatedIdea);
+        idea.setCategories(categoryDAO.getCategories(updatedIdea));
+        return updatedIdea;
     }
 
     public boolean deleteIdea(final long id) {
-        return ideaDAO.deleteIdea(id);
+        boolean deleted = ideaDAO.deleteIdea(id);
+        if (deleted) {
+            // elasticSearchService.delete(idea.getId());
+        }
+        return deleted;
     }
 
 }

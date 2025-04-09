@@ -24,9 +24,18 @@ public class ImplementationService {
     @Autowired ImplementationDAO implementationDAO;
     @Autowired CategoryDAO categoryDAO;
     @Autowired ProductDAO productDAO;
+    @Autowired ElasticSearchService elasticSearchService;
 
     public List<Implementation> getImplementations(String categoryName) {
         List<Implementation> implementations = implementationDAO.getImplementations(categoryName);
+        for (Implementation implementation: implementations) {
+            implementation.setCategories(categoryDAO.getCategories(implementation));
+        }
+        return implementations;
+    }
+
+    public List<Implementation> getImplementations(List<Long> ids) {
+        List<Implementation> implementations = implementationDAO.getImplementations(ids);
         for (Implementation implementation: implementations) {
             implementation.setCategories(categoryDAO.getCategories(implementation));
         }
@@ -55,18 +64,22 @@ public class ImplementationService {
 
     public Implementation postImplementation(final Implementation implementation) {
         categoryDAO.postCategories(implementation.getCategories());
-        implementationDAO.postImplementation(implementation);
-        implementation.setCategories(categoryDAO.getCategories(implementation));
-        return implementation;
+        Implementation updatedImplementation = implementationDAO.postImplementation(implementation);
+        elasticSearchService.index(updatedImplementation);
+        updatedImplementation.setCategories(categoryDAO.getCategories(updatedImplementation));
+        return updatedImplementation;
     }
 
     public boolean deleteImplementation(final Implementation implementation) {
-        return implementationDAO.deleteImplementation(implementation);
+        boolean deleted = implementationDAO.deleteImplementation(implementation);
+        if (deleted) {
+            elasticSearchService.delete(implementation);
+        }
+        return deleted;
     }
 
     public Product postProduct(final Product product) {
-        productDAO.postProduct(product);
-        return product;
+        return productDAO.postProduct(product);
     }
 
     public boolean deleteProduct(final Product product) {

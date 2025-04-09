@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -149,6 +150,26 @@ public class ImplementationDAO extends DAO {
         List<Implementation> implementations = new ArrayList<>();
         try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_IMPLEMENTATIONS_BY_INNOVATOR)) {
             ps.setLong(1, innovator.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    implementations.add(implementationMapper(rs));
+                }
+            }
+        } catch (final Exception e) {
+            implementations = null;
+            log.severe(e.getMessage());
+        }
+        return implementations;
+    }
+
+    private final String GET_IMPLEMENTATIONS_BY_ID = 
+        GET_ALL_IMPLEMENTATIONS + " " +
+        "WHERE impl.id IN (?)";
+
+    public List<Implementation> getImplementations(final List<Long> ids) {
+        List<Implementation> implementations = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_IMPLEMENTATIONS_BY_ID)) {
+            ps.setString(1, ids.stream().map(String::valueOf).collect(Collectors.joining(",")));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     implementations.add(implementationMapper(rs));

@@ -1,12 +1,21 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+
     <a class="navbar-brand" routerLink="/implementations">
         <img src="assets/bree-serif-dark.ico" width="30" height="30">
     </a>
+
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mr-auto">
+
+        <form class="form-inline" (ngSubmit)="onSearch()">
+            <input class="form-control" type="search" [formControl]="searchForm.controls.search" aria-label="Search">
+            <button class="btn btn-outline-secondary" type="submit">Search</button>
+        </form>
+
+        <ul class="nav navbar-nav ml-auto">
             <div *ngIf="!(innovatorService.innovator$ | async)">
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/log-in">
@@ -18,7 +27,7 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         User
                     </a>
-                    <div class="dropdown-menu" aria-labelledBy="navbarDropdownMenuLink">
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledBy="navbarDropdownMenuLink">
                         <a class="dropdown-item" routerLink="/innovator/{{(innovatorService.innovator$ | async).id}}">Profile</a>
                         <a class="dropdown-item" routerLink="/account">Account</a>
                         <a class="dropdown-item" (click)="logOut()">Log out</a>
@@ -26,6 +35,7 @@
                 </li>
             </div>
         </ul>
+
     </div>
 </nav>
 <router-outlet></router-outlet>

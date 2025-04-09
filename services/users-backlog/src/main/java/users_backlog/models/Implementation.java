@@ -1,7 +1,9 @@
 
 package users_backlog.models;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -19,6 +21,22 @@ public class Implementation extends Model {
     private List<Recommendation> recommendations;
 
     public Implementation() {
+    }
+
+    public static Implementation fromMap(Map<String, Object> map) {
+        Implementation implementation = new Implementation();
+        implementation.setId(Long.parseLong((String)map.get("id")));
+        implementation.setName((String)map.get("name"));
+        implementation.setDescription((String)map.get("description"));
+        return implementation;
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", String.valueOf(this.getId()));
+        map.put("name", this.name);
+        map.put("description", this.description);
+        return map;
     }
 
     public Innovator getInnovator() {

@@ -1,6 +1,7 @@
 package users_backlog.models;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -14,6 +15,14 @@ public class Innovator extends Model {
     private List<Implementation> implementations;
 
     public Innovator() {
+    }
+
+    public static Innovator fromMap(Map<String, Object> map) {
+        return null;
+    }
+
+    public Map<String, Object> toMap() {
+        return null;
     }
 
     public String getEmailAddress() {

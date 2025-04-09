@@ -3,6 +3,8 @@ package users_backlog.controllers;
 
 import java.util.logging.Logger;
 
+import com.google.firebase.auth.FirebaseAuthException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,7 +74,7 @@ public class ImplementationController {
         try {
             firebaseService.verifyToken(implementation.getIdToken());
             return ResponseEntity.ok(implementationService.postImplementation(implementation));
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.severe(e.getMessage());
@@ -87,7 +89,7 @@ public class ImplementationController {
         try {
             firebaseService.verifyToken(implementation.getIdToken());
             return ResponseEntity.ok(implementationService.deleteImplementation(implementation));
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.severe(e.getMessage());
@@ -102,7 +104,7 @@ public class ImplementationController {
         try {
             firebaseService.verifyToken(product.getIdToken());
             return ResponseEntity.ok(implementationService.postProduct(product));
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.severe(e.getMessage());
@@ -117,7 +119,7 @@ public class ImplementationController {
         try {
             firebaseService.verifyToken(product.getIdToken());
             return ResponseEntity.ok(implementationService.deleteProduct(product));
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.severe(e.getMessage());
@@ -135,7 +137,7 @@ public class ImplementationController {
             String emailAddress = firebaseService.verifyToken(model.getIdToken());
             Innovator innovator = innovatorService.getInnovator(emailAddress);
             return ResponseEntity.ok(implementationService.postVote(implementationId, innovator.getId(), up));
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.severe(e.getMessage());
@@ -150,7 +152,7 @@ public class ImplementationController {
         try {
             firebaseService.verifyToken(recommendation.getIdToken());
             return ResponseEntity.ok(implementationService.postRecommendation(recommendation));
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.severe(e.getMessage());
@@ -165,7 +167,7 @@ public class ImplementationController {
         try {
             firebaseService.verifyToken(recommendation.getIdToken());
             return ResponseEntity.ok(implementationService.deleteRecommendation(recommendation));
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.severe(e.getMessage());
@@ -183,7 +185,7 @@ public class ImplementationController {
             String emailAddress = firebaseService.verifyToken(model.getIdToken());
             Innovator innovator = innovatorService.getInnovator(emailAddress);
             return ResponseEntity.ok(implementationService.postRecommendationVote(recommendationId, innovator.getId(), up));
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.severe(e.getMessage());
@@ -198,7 +200,7 @@ public class ImplementationController {
         try {
             firebaseService.verifyToken(reply.getIdToken());
             return ResponseEntity.ok(implementationService.postRecommendationReply(reply));
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.severe(e.getMessage());
@@ -213,7 +215,7 @@ public class ImplementationController {
         try {
             firebaseService.verifyToken(reply.getIdToken());
             return ResponseEntity.ok(implementationService.deleteRecommendationReply(reply));
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
             log.severe(e.getMessage());

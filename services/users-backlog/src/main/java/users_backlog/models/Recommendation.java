@@ -2,6 +2,7 @@ package users_backlog.models;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -19,6 +20,14 @@ public class Recommendation extends Model {
     private List<Reply> replies;
 
     public Recommendation() {
+    }
+
+    public static Recommendation fromMap(Map<String, Object> map) {
+        return null;
+    }
+
+    public Map<String, Object> toMap() {
+        return null;
     }
 
     public Idea getIdea() {
