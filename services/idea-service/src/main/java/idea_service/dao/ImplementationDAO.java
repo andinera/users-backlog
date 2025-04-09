@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class ImplementationDAO extends DAO {
             "inv.display_name, " +
             "iv.votes " +
         "FROM implementation impl " +
-        "INNER JOIN innovator inv " +
+        "LEFT OUTER JOIN innovator inv " +
             "ON inv.id = impl.innovator_id " +
         "LEFT OUTER JOIN " +
             "(" +
@@ -48,8 +49,7 @@ public class ImplementationDAO extends DAO {
                     "implementation_id, " +
                     "innovator_id" +
             ") iv " +
-            "ON (impl.id = iv.implementation_id " +
-                "AND inv.id = iv.innovator_id)";
+            "ON impl.id = iv.implementation_id";
 
     public List<Implementation> getImplementations(final String categoryName) {
         String sql = GET_ALL_IMPLEMENTATIONS;
@@ -171,11 +171,13 @@ public class ImplementationDAO extends DAO {
         implementation.setName(rs.getString("name"));
         implementation.setDescription(rs.getString("description"));
 
-        final Innovator innovator = new Innovator();
-        innovator.setId(rs.getLong("innovator_id"));
-        innovator.setEmailAddress(rs.getString("email_address"));
-        innovator.setDisplayName(rs.getString("display_name"));
-        implementation.setInnovator(innovator);
+        if (rs.getLong("innovator_id") != 0) {
+            final Innovator innovator = new Innovator();
+            innovator.setId(rs.getLong("innovator_id"));
+            innovator.setEmailAddress(rs.getString("email_address"));
+            innovator.setDisplayName(rs.getString("display_name"));
+            implementation.setInnovator(innovator);
+        }
         
         implementation.setVotes(rs.getLong("votes"));
 
@@ -203,7 +205,11 @@ public class ImplementationDAO extends DAO {
 
         try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             int i = 1;
-            ps.setLong(i++, implementation.getInnovator().getId());
+            if (implementation.getInnovator() != null) {
+                ps.setLong(i++, implementation.getInnovator().getId());
+            } else {
+                ps.setNull(i++, Types.INTEGER);
+            }
             ps.setString(i++, implementation.getName());
             ps.setString(i++, implementation.getDescription());
             if (sql.equals(UPDATE_IMPLEMENTATION)) {

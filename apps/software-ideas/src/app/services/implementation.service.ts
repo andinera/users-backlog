@@ -35,8 +35,8 @@ export class ImplementationService {
     return this._http.post<Implementation>(`${this._serviceURL}postImplementation`, implementation);
   }
 
-  postVote(implementation: Implementation, up: boolean): Observable<number> {
-    const parameters = `implementationId=${implementation.id}&innovatorId=${implementation.innovator.id}&up=${up}`;
+  postVote(implementationId: number, innovatorId: number, up: boolean): Observable<number> {
+    const parameters = `implementationId=${implementationId}&innovatorId=${innovatorId}&up=${up}`;
     return this._http.post<number>(`${this._serviceURL}postVote?${parameters}`, null);
   }
 
@@ -44,8 +44,8 @@ export class ImplementationService {
     return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation);
   }
 
-  postRecommendationVote(recommendation: Recommendation, up: boolean): Observable<number> {
-    const parameters = `recommendationId=${recommendation.id}&innovatorId=${recommendation.innovator.id}&up=${up}`;
+  postRecommendationVote(recommendationId: number, innovatorId: number, up: boolean): Observable<number> {
+    const parameters = `recommendationId=${recommendationId}&innovatorId=${innovatorId}&up=${up}`;
     return this._http.post<number>(`${this._serviceURL}postRecommendationVote?${parameters}`, null);
   }
 

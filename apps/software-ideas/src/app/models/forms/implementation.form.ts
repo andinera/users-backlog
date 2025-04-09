@@ -9,4 +9,5 @@ export class ImplementationForm {
     categories = new FormControl([], [
         Validators.required
     ]);
+    isOwner = new FormControl(false);
 }

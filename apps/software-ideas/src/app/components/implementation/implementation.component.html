@@ -17,10 +17,13 @@
     </div>
 
     <div class="row">
-        <div class="innovator">
+        <div class="innovator" *ngIf="implementation.innovator">
             <a [routerLink]="['/Innovator', implementation.innovator.id]">
                 {{implementation.innovator.displayName}}
             </a>
+        </div>
+        <div *ngIf="!implementation.innovator">
+            <button class="btn btn-primary" type="button" (click)="claimOwnership()">Claim Ownership</button>
         </div>
     </div>
 

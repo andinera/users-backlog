@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -35,6 +36,7 @@ import { NewImplementationComponent } from './components/new-implementation/new-
 import { RecommendationComponent } from './components/recommendation/recommendation.component';
 import { ImplementationsComponent } from './components/implementations/implementations.component';
 import { AuthenticationService } from './services/authentication.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -54,23 +56,25 @@ import { AuthenticationService } from './services/authentication.service';
     AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
-    ClarityModule,
+    // ClarityModule,
     FormsModule,
     HttpClientModule,
     MatButtonModule,
-    MatCardModule,
-    MatDialogModule,
-    MatExpansionModule,
-    MatGridListModule,
+    // MatCardModule,
+    MatCheckboxModule,
+    // MatDialogModule,
+    // MatExpansionModule,
+    // MatGridListModule,
     MatIconModule,
     MatInputModule,
-    MatListModule,
-    MatMenuModule,
+    // MatListModule,
+    // MatMenuModule,
     MatSelectModule,
-    MatSidenavModule,
-    MatTabsModule,
-    MatToolbarModule,
-    MatTooltipModule,
+    // MatSidenavModule,
+    // MatTabsModule,
+    // MatToolbarModule,
+    // MatTooltipModule,
+    MatFormFieldModule,
     ReactiveFormsModule,
     LayoutModule,
   ],

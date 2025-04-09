@@ -1,6 +1,6 @@
 <div class="container d-flex align-self-stretch justify-content-center" style="margin-top:50px">
 
-    <form (ngSubmit)="addImplementation(implementationForm.value)">
+    <form (ngSubmit)="addImplementation(implementationForm)">
 
         <div class="col">
             <mat-form-field appearance="fill">
@@ -41,6 +41,10 @@
                     <mat-icon>add</mat-icon>
                 </button>
             </form>
+        </div>
+
+        <div class="col">
+            <mat-checkbox [formControl]="implementationForm.controls.isOwner">Claim Ownership</mat-checkbox>
         </div>
 
         <div class="col">

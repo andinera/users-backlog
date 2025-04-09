@@ -54,6 +54,7 @@ export class NewImplementationComponent implements OnInit {
     if (this._implementationService.implementationForEditing) {
       this.implementationForm.patchValue(this._implementationService.implementationForEditing);
       this.implementationForm.controls.categories.setValue(this.categoryOptions.filter(category => this._implementationService.implementationForEditing.categories.map(cat => cat.name).includes(category.name)));
+      this.implementationForm.controls.isOwner.setValue(!!this._implementationService.implementationForEditing.innovator);
       this._implementationService.implementationForEditing = undefined;
     }
   }
@@ -63,13 +64,18 @@ export class NewImplementationComponent implements OnInit {
     this._destroyed$.complete();
   }
 
-  addImplementation(implementation: Implementation): void {
-    if (this.implementationForm.invalid) {
-      this.implementationForm.markAllAsTouched();
+  addImplementation(implementationForm: FormGroup): void {
+    if (implementationForm.invalid) {
+      implementationForm.markAllAsTouched();
     } else {
+      const implementation = implementationForm.value;
       this.authenticationService.innovator.pipe(
         tap((innovator: Innovator) => {
-          implementation.innovator = innovator;
+          if (implementationForm.controls.isOwner.value) {
+            implementation.innovator = innovator;
+          } else {
+            implementation.innovator = null;
+          }
           this._implementationService.postImplementation(implementation).pipe(
             first(),
             tap((newImplementation: Implementation) => {

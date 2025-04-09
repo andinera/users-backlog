@@ -66,10 +66,19 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   }
 
   public postVote(up: boolean) {
-    this._implementationService.postVote(this.implementation, up).pipe(
-      first(),
-      tap((votes: number) => {
-        this.implementation.votes = votes;
+    this._authenticationService.innovator.pipe(
+      tap((innovator: Innovator) => {
+        this._implementationService.postVote(this.implementation.id, innovator.id, up).pipe(
+          first(),
+          tap((votes: number) => {
+            this.implementation.votes = votes;
+          }),
+          catchError((error: any) => {
+            console.log(error);
+            return of(null);
+          }),
+          takeUntil(this._destroyed$)
+        ).subscribe();
       }),
       catchError((error: any) => {
         console.log(error);
@@ -77,6 +86,9 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this._destroyed$)
     ).subscribe();
+
+
+
   }
 
   public postRecommendation(recommendationForm: FormGroup): void {
@@ -124,7 +136,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       tap((innovator: Innovator) => {
         recommendation.innovator = innovator;
         recommendation.implementation = this.implementation;
-        this._implementationService.postRecommendationVote(recommendation, up).pipe(
+        this._implementationService.postRecommendationVote(recommendation.id, innovator.id, up).pipe(
           first(),
           tap((votes: number) => {
             recommendation.votes = votes;
@@ -190,5 +202,30 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         takeUntil(this._destroyed$)
       ).subscribe();
     }
+  }
+
+  public claimOwnership(): void {
+    this._authenticationService.innovator.pipe(
+      tap((innovator: Innovator) => {
+        this.implementation.innovator = innovator;
+        this._implementationService.postImplementation(this.implementation).pipe(
+          first(),
+          tap((implementation: Implementation) => {
+            console.log('test2');
+            this.implementation = implementation;
+          }),
+          takeUntil(this._destroyed$),
+          catchError((e: any) => {
+            console.log(e);
+            return of(null);
+          })
+        ).subscribe();
+      }),
+      catchError((error: any) => {
+        console.log(error);
+        return of(null);
+      }),
+      takeUntil(this._destroyed$)
+    ).subscribe();
   }
 }

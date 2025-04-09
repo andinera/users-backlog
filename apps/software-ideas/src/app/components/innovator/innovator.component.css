@@ -1,12 +1,24 @@
-.list-group-item-container {
-    text-decoration: none;
+.left-container {
+    display: inline-block;
 }
 
-.list-group-item {
-    color: var(--clr-link-color);
+.votes {
+    text-align: center;
 }
 
-.list-group-item:hover {
-    background-color: var(--clr-link-color);
-    color: white;
+.right-container {
+    display: inline-block;
+    margin-left: 16px;
+}
+
+.summary {
+    font-size: 16px;
+}
+
+.category {
+    background-color: lightgray;
+    display: inline-block;
+    font-size: 12px;
+    padding: 3px;
+    margin-right: 16px;
 }

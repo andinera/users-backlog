@@ -1,14 +1,31 @@
-<nav class="navbar navbar-dark bg-dark">
-    <div class="navbar-brand">
-        <a routerLink="/Implementations">
-            <img src="assets/bree-serif-dark.ico" width="30" height="30">
-        </a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" routerLink="/Implementations">
+        <img src="assets/bree-serif-dark.ico" width="30" height="30">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+            <div *ngIf="!(authenticationService.innovator | async)">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/Log In">
+                    Log In</a>
+                </li>
+            </div>
+            <div *ngIf="authenticationService.innovator | async">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        User
+                    </a>
+                    <div class="dropdown-menu" aria-labelledBy="navbarDropdownMenuLink">
+                        <a class="dropdown-item" routerLink="/Innovator/{{(authenticationService.innovator | async).id}}">Profile</a>
+                        <a class="dropdown-item" routerLink="/Innovator/{{(authenticationService.innovator | async).id}}">Account</a>
+                        <a class="dropdown-item" (click)="logOut()">Log out</a>
+                    </div>
+                </li>
+            </div>
+        </ul>
     </div>
-    <button *ngIf="!(authenticationService.innovator | async)" class="btn btn-primary my-2 my-sm-0" type="button" routerLink="/Log In">
-        Log in
-    </button>
-    <button *ngIf="authenticationService.innovator | async"  class="btn btn-secondary my-2 my-sm-0" type="button" (click)="logOut()">
-        Log out
-    </button>
 </nav>
 <router-outlet></router-outlet>
