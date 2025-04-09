@@ -1,9 +1,9 @@
-<form [formGroup]="ideaForm" (ngSubmit)="onSubmit(ideaForm)">
+<form (ngSubmit)="onSubmit(ideaForm.value)">
 
     <div>
         <mat-form-field>
             <mat-label for="summary">Summary</mat-label>
-            <input matInput id="summary" [formControl]="ideaForm.controls.summary">
+            <input matInput [formControl]="ideaForm.controls.summary">
             <mat-error *ngIf="ideaForm.controls.summary.hasError('required')">
                 Summary is <strong>required</strong>
             </mat-error>
@@ -13,9 +13,29 @@
     <div>
         <mat-form-field>
             <mat-label for="description">Description</mat-label>
-            <textarea cdkTextareaAutosize matInput id="description" [formControl]="ideaForm.controls.description"></textarea>
+            <textarea cdkTextareaAutosize matInput [formControl]="ideaForm.controls.description"></textarea>
         </mat-form-field>
     </div>
+
+    <div>
+        <mat-form-field>
+            <mat-label for="categories">Categories</mat-label>
+            <mat-select [formControl]="ideaForm.controls.categories" multiple>
+                <mat-option *ngFor="let category of categoryOptions" [value]="category">{{category.name}}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="ideaForm.controls.categories.hasError('required')">
+                At least 1 category is <strong>required</strong>
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <form (ngSubmit)="addCategory(categoryForm.value)">
+        <mat-form-field>
+            <mat-label for="otherCategory">Other Category</mat-label>
+            <input matInput [formControl]="categoryForm.controls.name">
+        </mat-form-field>
+        <button mat-stroked-button type="submit" [disabled]="categoryForm.invalid">Add Category</button>
+    </form>
 
     <button mat-stroked-button type="submit" [disabled]="ideaForm.invalid">Add Idea</button>
 </form>

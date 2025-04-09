@@ -1,7 +1,7 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map, mergeMap, flatMap } from 'rxjs/operators';
+import { flatMap } from 'rxjs/operators';
 
 import { Idea } from '../models/idea';
 import { AuthenticationService } from './authentication.service';
@@ -19,8 +19,8 @@ export class IdeaService {
     private readonly _authenticationService: AuthenticationService
   ) { }
 
-  getAllIdeas(): Observable<Idea[]> {
-    return this._http.get<Idea[]>(`${this._serviceURL}getAllIdeas`);
+  getIdeas(categoryName: string): Observable<Idea[]> {
+    return this._http.get<Idea[]>(`${this._serviceURL}getIdeas?categoryName=${categoryName}`);
   }
 
   getIdea(summary: string): Observable<Idea> {

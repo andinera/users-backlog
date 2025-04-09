@@ -1,0 +1,34 @@
+import { Injectable } from '@angular/core';
+import { Resolve, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Observable, of, EMPTY } from 'rxjs';
+import { first, mergeMap } from 'rxjs/operators';
+
+import { Category } from '../models/category';
+import { CategoryService } from '../services/category.service';
+import { URLService } from '../services/url.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CategoriesResolver implements Resolve<Category[]> {
+
+  constructor(
+    private readonly _categoryService: CategoryService,
+    private readonly _router: Router,
+    private readonly _urlService: URLService
+  ) { }
+  
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Category[]> | Observable<never> {
+    return this._categoryService.getAllCategories().pipe(
+      first(),
+      mergeMap((categories: Category[]) => {
+        if (categories) {
+          return of(categories);
+        } else {
+          this._router.navigate([this._urlService.previousURL]);
+          return EMPTY;
+        }
+      })
+    );
+  }
+}

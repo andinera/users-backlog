@@ -7,16 +7,16 @@ import { filter, pairwise } from 'rxjs/operators';
 })
 export class URLService {
 
-  public previousURL = '';
-  public currentURL = '';
+  previousURL = '';
+  currentURL = '';
 
   constructor(
     private readonly _router: Router
   ) {
     this._router.events.pipe(
       filter((evt: any) => evt instanceof RoutesRecognized),
-      pairwise())
-    .subscribe((events: RoutesRecognized[]) => {
+      pairwise()
+    ).subscribe((events: RoutesRecognized[]) => {
       this.previousURL = decodeURIComponent(events[0].urlAfterRedirects);
       this.currentURL = decodeURIComponent(events[1].urlAfterRedirects);
     })

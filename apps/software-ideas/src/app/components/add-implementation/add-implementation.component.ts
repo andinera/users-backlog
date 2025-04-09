@@ -10,7 +10,7 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 import { Innovator } from 'src/app/models/innovator';
 
 @Component({
-  selector: 'app-add-implementation',
+  selector: 'app-add-implementation [idea]',
   templateUrl: './add-implementation.component.html'
 })
 export class AddImplementationComponent implements OnInit {
@@ -18,6 +18,7 @@ export class AddImplementationComponent implements OnInit {
   @Input() idea: Idea;
 
   implementationForm: FormGroup;
+  loggedIn = false;
 
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -34,6 +35,22 @@ export class AddImplementationComponent implements OnInit {
         Validators.required
       ])
     });
+
+    
+    this._authenticationService.innovator.pipe(
+      tap((innovator: Innovator) => {
+        if (innovator) {
+          this.loggedIn = true;
+        } else {
+          this.loggedIn = false;
+        }
+      }),
+      catchError((error: any) => {
+        console.log(error);
+        return of(null);
+      }),
+      takeUntil(this._destroyed$)
+    ).subscribe();
   }
 
   ngOnDestroy(): void {
@@ -66,7 +83,7 @@ export class AddImplementationComponent implements OnInit {
         return of(null);
       }),
       takeUntil(this._destroyed$)
-    );
+    ).subscribe();
   }
 
 }

@@ -1,0 +1,25 @@
+package idea_service.controllers;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import idea_service.models.Category;
+import idea_service.services.CategoryService;
+
+@CrossOrigin
+@RestController
+@RequestMapping("/category")
+public class CategoryController {
+
+    @Autowired CategoryService categoryService;
+
+    @GetMapping(path="getAllCategories")
+    public List<Category> getAllCategories() {
+        return categoryService.getAllCategories();
+    }
+}

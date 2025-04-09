@@ -17,11 +17,11 @@
     </mat-card-actions>
     <mat-card-footer>
         <mat-accordion>
-            <mat-expansion-panel [disabled]="addImplementationDisabled">
+            <mat-expansion-panel>
                 <mat-expansion-panel-header>
                     Add Implementation
                 </mat-expansion-panel-header>
-                <app-add-implementation></app-add-implementation>
+                <app-add-implementation [idea]="idea"></app-add-implementation>
             </mat-expansion-panel>
         </mat-accordion>
     </mat-card-footer>

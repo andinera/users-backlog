@@ -12,6 +12,7 @@ public class Idea {
     private String description;
     private Innovator innovator;
     private List<Implementation> implementations;
+    private List<Category> categories;
 
     public Idea() {
     }
@@ -46,5 +47,13 @@ public class Idea {
 
     public void setImplementations(final List<Implementation> implementations) {
         this.implementations = implementations;
+    }
+
+    public List<Category> getCategories() {
+        return this.categories;
+    }
+
+    public void setCategories(final List<Category> categories) {
+        this.categories = categories;
     }
 }

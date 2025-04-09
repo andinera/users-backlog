@@ -24,9 +24,9 @@ public class IdeaController {
     @Autowired IdeaService ideaService;
     @Autowired ImplementationDAO implementationDAO;
 
-    @GetMapping(path="getAllIdeas")
-    public List<Idea> getAllIdeas() {
-        return ideaService.getAllIdeas();
+    @GetMapping(path="getIdeas")
+    public List<Idea> getIdeas(@RequestParam final String categoryName) {
+        return ideaService.getIdeas(categoryName);
     }
 
     @GetMapping(path = "getIdea")

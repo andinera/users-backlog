@@ -1,14 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { tap, catchError, first, takeUntil } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
 
 import { IdeaService } from 'src/app/services/idea.service';
 import { Idea } from 'src/app/models/idea';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { Innovator } from 'src/app/models/innovator';
-import { URLService } from 'src/app/services/url.service';
+import { Category } from 'src/app/models/category';
+import { IdeaForm } from 'src/app/models/forms/idea.form';
+import { CategoryForm } from 'src/app/models/forms/category.form';
 
 @Component({
   selector: 'app-add-idea',
@@ -16,7 +16,9 @@ import { URLService } from 'src/app/services/url.service';
 })
 export class AddIdeaComponent implements OnInit, OnDestroy {
   
+  categoryForm: FormGroup;
   ideaForm: FormGroup;
+  categoryOptions: Category[];
     
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -24,24 +26,18 @@ export class AddIdeaComponent implements OnInit, OnDestroy {
     private readonly _ideaService: IdeaService,
     private readonly _formBuilder: FormBuilder,
     private readonly _router: Router,
-    private readonly _authenticationService: AuthenticationService,
-    private readonly _urlService: URLService
+    private readonly _route: ActivatedRoute
   ) {
   }
 
   ngOnInit(): void {
-    this.ideaForm = this._formBuilder.group({
-      summary: new FormControl('', [
-        Validators.required
-      ]),
-      description: ''
-    });
+    this.categoryForm = this._formBuilder.group(new CategoryForm());
+    this.ideaForm = this._formBuilder.group(new IdeaForm());
 
-    this._authenticationService.innovator.pipe(
-      tap((innovator: Innovator) => {
-        if (!innovator) {
-          this._router.navigate([this._urlService.previousURL]);
-        }
+    this._route.data.pipe(
+      first(),
+      tap((data: {categories: Category[]}) => {
+        this.categoryOptions = data.categories;
       }),
       catchError((error: any) => {
         console.log(error);
@@ -56,8 +52,8 @@ export class AddIdeaComponent implements OnInit, OnDestroy {
     this._destroyed$.complete();
   }
 
-  onSubmit(ideaForm: FormGroup) {
-    const idea: Idea = ideaForm.value;
+  onSubmit(idea: Idea) {
+    console.log(idea);
     this._ideaService.postIdea(idea).pipe(
       first(),
       tap((newIdea: Idea) => {
@@ -71,6 +67,19 @@ export class AddIdeaComponent implements OnInit, OnDestroy {
         return of(null);
       })
     ).subscribe();
+  }
+
+  addCategory(category: Category) {
+    const categoryOptionsNames = this.categoryOptions.map(category => category.name);
+    const selectedCategoryNames = this.ideaForm.value.categories.map(category => category.name);
+    if (!categoryOptionsNames.includes(category.name)) {
+      this.categoryOptions.push(category);
+    }
+    if (!selectedCategoryNames.includes(category.name)) {
+      const selectedCategories = this.ideaForm.controls.categories.value;
+      selectedCategories.push(category);
+      this.ideaForm.controls.categories.setValue(selectedCategories);
+    }
   }
 
 }

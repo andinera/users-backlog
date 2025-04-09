@@ -14,14 +14,19 @@ import idea_service.models.Innovator;
 @Repository
 public class InnovatorDAO {
 
-    final private String GET_INNOVATOR_SQL = "SELECT inv.email_address " + "FROM innovator inv " + "WHERE inv.email_address = ?";
-    final private String POST_INNOVATOR_SQL = "INSERT INTO innovator (email_address) " + "VALUES (?)";
+    final private String GET_INNOVATOR = 
+        "SELECT inv.email_address " +
+        "FROM innovator inv " +
+        "WHERE inv.email_address = ?";
+    final private String POST_INNOVATOR = 
+        "INSERT INTO innovator (email_address) " +
+        "VALUES (?)";
 
     @Autowired DataSource dataSource;
 
     public Innovator getInnovator(final String emailAddress) {
         Innovator innovator = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_INNOVATOR_SQL)) {
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_INNOVATOR)) {
             int i = 1;
             ps.setString(i++, emailAddress);
             try (ResultSet rs = ps.executeQuery()) {
@@ -39,7 +44,7 @@ public class InnovatorDAO {
 
     public Innovator postInnovator(final Innovator innovator) {
         Innovator updatedInnovator = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(POST_INNOVATOR_SQL)) {
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(POST_INNOVATOR)) {
             int i = 1;
             ps.setString(i++, innovator.getEmailAddress());
             if (ps.executeUpdate() != 0) {

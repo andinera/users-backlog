@@ -1,8 +1,8 @@
-import { Component, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { tap, first, catchError, takeUntil } from 'rxjs/operators';
-import { of, ReplaySubject, pipe } from 'rxjs';
+import { of, ReplaySubject } from 'rxjs';
 
 import { Innovator } from 'src/app/models/innovator';
 import { AuthenticationService } from 'src/app/services/authentication.service';
@@ -14,8 +14,6 @@ import { URLService } from 'src/app/services/url.service';
   templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnDestroy {
-
-  @Output() loggedIn = new EventEmitter<null>();
 
   loginForm: FormGroup;
   loginFailed = false;
@@ -50,7 +48,6 @@ export class LoginComponent implements OnDestroy {
       tap((loggedIn: boolean) => {
         if (loggedIn) {
           let url = ('/login' !== this._urlService.currentURL ? this._urlService.currentURL : this._urlService.previousURL);
-          this.loggedIn.emit();
           this._router.navigate([url]);
         } else {
           this.loginFailed = true;

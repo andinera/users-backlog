@@ -1,11 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
-import { MatInputModule } from '@angular/material/input';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -20,6 +21,7 @@ import { LoginComponent } from './components/login/login.component';
 import { ImplementationComponent } from './components/implementation/implementation.component';
 import { InnovatorComponent } from './components/innovator/innovator.component';
 import { AddImplementationComponent } from './components/add-implementation/add-implementation.component';
+import { CategoryComponent } from './components/category/category.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,8 @@ import { AddImplementationComponent } from './components/add-implementation/add-
     LoginComponent,
     ImplementationComponent,
     InnovatorComponent,
-    AddImplementationComponent
+    AddImplementationComponent,
+    CategoryComponent
   ],
   imports: [
     BrowserModule,
@@ -43,6 +46,7 @@ import { AddImplementationComponent } from './components/add-implementation/add-
     MatExpansionModule,
     MatInputModule,
     MatMenuModule,
+    MatSelectModule,
     MatToolbarModule,
     ReactiveFormsModule,
     AppRoutingModule

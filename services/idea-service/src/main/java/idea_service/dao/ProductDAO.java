@@ -17,13 +17,17 @@ import idea_service.models.Product;
 @Repository
 public class ProductDAO {
     
-    private final String GET_PRODUCTS_SQL = "SELECT p.url, p.description FROM product p WHERE p.implementation = ?";
+    private final String GET_PRODUCTS = 
+        "SELECT p.url, " +
+            "p.description " +
+        "FROM product p " +
+        "WHERE p.implementation_name = ?";
 
     @Autowired DataSource dataSource;
 
     public List<Product> getProducts(final Implementation implementation) {
         List<Product> products = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_PRODUCTS_SQL)) {
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_PRODUCTS)) {
             int i = 1;
             ps.setString(i++, implementation.getName());
             try (ResultSet rs = ps.executeQuery()) {

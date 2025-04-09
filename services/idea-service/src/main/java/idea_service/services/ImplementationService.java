@@ -15,7 +15,9 @@ public class ImplementationService {
 
     public Implementation getImplementation(final String name) {
         Implementation implementation = implementationDAO.getImplementation(name);
-        implementation.setProducts(productDAO.getProducts(implementation));
+        if (implementation != null) {
+            implementation.setProducts(productDAO.getProducts(implementation));
+        }
         return implementation;
     }
 

@@ -13,32 +13,19 @@ import { URLService } from './services/url.service';
 export class AppComponent implements OnInit, OnDestroy {
 
     loggedIn = false;
-    displayLogin = false;
     
     private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
     constructor (
         private readonly _authenticationService: AuthenticationService,
-        private readonly _urlService: URLService // Required for storing URLs before login is routed.
+        private readonly _urlService: URLService, // Required for storing URLs before login is routed.
     ) {
-    }
-
-    logIn(): void {
-        this.displayLogin = !this.displayLogin;
-    }
-
-    logOut(): void {
-        this._authenticationService.logout();
     }
 
     ngOnInit() {
         this._authenticationService.innovator.pipe(
             tap((innovator: Innovator) => {
-                if (innovator) {
-                    this.loggedIn = true;
-                } else {
-                    this.loggedIn = false;
-                }
+                this.loggedIn = (!!innovator);
             }),
             catchError((error: any) => {
                 console.log(error);
@@ -51,5 +38,9 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
       this._destroyed$.next(true);
       this._destroyed$.complete();
+    }
+
+    logOut(): void {
+        this._authenticationService.logout();
     }
 }

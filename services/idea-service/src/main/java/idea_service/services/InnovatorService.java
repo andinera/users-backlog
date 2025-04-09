@@ -17,8 +17,10 @@ public class InnovatorService {
 
     public Innovator getInnovator(final String emailAddress) {
         Innovator innovator = innovatorDAO.getInnovator(emailAddress);
-        innovator.setIdeas(ideaDAO.getIdeas(innovator));
-        innovator.setImplementations(implementationDAO.getImplementations(innovator));
+        if (innovator != null) {
+            innovator.setIdeas(ideaDAO.getIdeas(innovator));
+            innovator.setImplementations(implementationDAO.getImplementations(innovator));
+        }
         return innovator;
     }
 

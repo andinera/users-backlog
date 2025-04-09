@@ -18,7 +18,6 @@ export class IdeaComponent implements OnInit, OnDestroy {
   idea: Idea;
   deleteDisabled = true;
   implementationForm: FormGroup;
-  addImplementationDisabled = true;
 
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -26,8 +25,8 @@ export class IdeaComponent implements OnInit, OnDestroy {
     private readonly _ideaService: IdeaService,
     private readonly _router: Router,
     private readonly _route: ActivatedRoute,
-    private readonly _authenticationService: AuthenticationService,
-    private readonly _formBuilder: FormBuilder
+    private readonly _formBuilder: FormBuilder,
+    private readonly _authenticationService: AuthenticationService
   ) { }
 
   ngOnInit(): void {
@@ -46,23 +45,14 @@ export class IdeaComponent implements OnInit, OnDestroy {
         this.idea = data.idea;
         this._authenticationService.innovator.pipe(
           tap((innovator: Innovator) => {
-            this.deleteDisabled = (JSON.stringify(this.idea.innovator) !== JSON.stringify(innovator));
-            this.addImplementationDisabled = (innovator ? false : true);
+              this.deleteDisabled = (!innovator || this.idea.summary === 'Software Ideas');
           }),
           catchError((error: any) => {
-            console.log(error);
-            return of(null);
+              console.log(error);
+              return of(null);
           }),
           takeUntil(this._destroyed$)
-        ).subscribe();
-
-
-        // Don't touch!!!
-        if (!this.deleteDisabled) {
-          this.deleteDisabled = (this.idea.summary === 'Software Ideas');
-        }
-        // Don't touch!!!
-
+      ).subscribe();
 
       }),
       catchError((error: any) => {

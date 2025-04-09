@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import idea_service.models.Category;
 import idea_service.models.Idea;
 import idea_service.models.Innovator;
 
@@ -19,15 +20,37 @@ public class IdeaDAO {
 
     @Autowired DataSource dataSource;
 
-    private final String GET_ALL_IDEAS_SQL = "SELECT idea.summary, idea.description, idea.innovator FROM idea";
-    private final String GET_IDEAS_SQL = GET_ALL_IDEAS_SQL + " WHERE idea.innovator = ?";
-    private final String GET_IDEA_SQL = GET_ALL_IDEAS_SQL + " WHERE idea.summary = ?";
-    private final String POST_IDEA_SQL = "INSERT INTO idea (summary, description, innovator) VALUES (?, ?, ?)";
-    private final String DELETE_IDEA_SQL =  "DELETE FROM idea WHERE idea.summary = ?";
+    private final String GET_ALL_IDEAS = 
+        "SELECT idea.summary, " +
+            "idea.description, " +
+            "idea.innovator_email_address " +
+        "FROM idea";
+    private final String GET_IDEAS_BY_CATEGORY_NAME = 
+        GET_ALL_IDEAS + " " +
+        "JOIN idea_category ic " +
+            "ON idea.summary = ic.idea_summary " +
+        "WHERE ic.category_name = ?";
+    private final String GET_IDEAS_BY_INNOVATOR = 
+        GET_ALL_IDEAS + " " +
+        "WHERE idea.innovator_email_address = ?";
+    private final String GET_IDEA = 
+        GET_ALL_IDEAS + " " + 
+        "WHERE idea.summary = ?";
+    private final String POST_IDEA = 
+        "INSERT INTO idea (summary, description, innovator_email_address) " +
+        "VALUES (?, ?, ?)";
+    private final String ASSOCIATE_IDEA_WITH_CATEGORY =
+        "INSERT INTO idea_category (idea_summary, category_name) " +
+        "VALUES (?, ?)";
+    private final String DELETE_IDEA = 
+        "DELETE FROM idea " +
+        "WHERE idea.summary = ?";
 
-    public List<Idea> getAllIdeas() {
+    public List<Idea> getIdeas(final String categoryName) {
         List<Idea> ideas = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_ALL_IDEAS_SQL)) {
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEAS_BY_CATEGORY_NAME)) {
+            int i = 1;
+            ps.setString(i++, categoryName);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     final Idea idea = new Idea();
@@ -44,7 +67,7 @@ public class IdeaDAO {
 
     public List<Idea> getIdeas(final Innovator innovator) {
         List<Idea> ideas = new ArrayList<>();
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEAS_SQL)) {
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEAS_BY_INNOVATOR)) {
             int i = 1;
             ps.setString(i++, innovator.getEmailAddress());
             try (ResultSet rs = ps.executeQuery()) {
@@ -64,7 +87,7 @@ public class IdeaDAO {
 
     public Idea getIdea(final String summary) {
         Idea idea = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEA_SQL)) {
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEA)) {
             int i = 1;
             ps.setString(i++, summary);
             try (ResultSet rs = ps.executeQuery()) {
@@ -73,7 +96,7 @@ public class IdeaDAO {
                     idea.setSummary(rs.getString("summary"));
                     idea.setDescription(rs.getString("description"));
                     final Innovator innovator = new Innovator();
-                    innovator.setEmailAddress(rs.getString("innovator"));
+                    innovator.setEmailAddress(rs.getString("innovator_email_address"));
                     idea.setInnovator(innovator);
                 }
             }
@@ -86,7 +109,7 @@ public class IdeaDAO {
 
     public Idea postIdea(final Idea idea) {
         Idea updatedIdea = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(POST_IDEA_SQL)) {
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(POST_IDEA)) {
             int i = 1;
             ps.setString(i++, idea.getSummary());
             ps.setString(i++, idea.getDescription());
@@ -97,12 +120,35 @@ public class IdeaDAO {
         } catch (final SQLException e) {
             System.out.println(e.getMessage());
         }
-        return updatedIdea;
+        return associateIdeaWithCategory(updatedIdea);
+    }
+
+    private Idea associateIdeaWithCategory(final Idea idea) {
+        List<Category> updatedCategories = null;
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(ASSOCIATE_IDEA_WITH_CATEGORY)) {
+            for (Category category : idea.getCategories()) {
+                int i = 1;
+                ps.setString(i++, idea.getSummary());
+                ps.setString(i++, category.getName());
+                ps.addBatch();
+            }
+            int[] updatedCount = ps.executeBatch();
+            updatedCategories = new ArrayList<>();
+            for (int i = 0; i < updatedCount.length; i++) {
+                if (updatedCount[i] > 0) {
+                    updatedCategories.add(idea.getCategories().get(i));
+                }
+            }
+        } catch (final SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        idea.setCategories(updatedCategories);
+        return idea;
     }
 
     public boolean deleteIdea(final String summary) {
         boolean deleted = false;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(DELETE_IDEA_SQL)) {
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(DELETE_IDEA)) {
             int i = 1;
             ps.setString(i++, summary);
             deleted = (ps.executeUpdate() != 0);
