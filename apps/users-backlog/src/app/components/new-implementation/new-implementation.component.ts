@@ -79,7 +79,7 @@ export class NewImplementationComponent implements OnInit {
         first(),
         tap((newImplementation: Implementation) => {
           if (newImplementation) {
-            this._router.navigate([`/Implementation/${newImplementation.name}`])
+            this._router.navigate([`/implementation/${newImplementation.name}`])
           }
         }),
         takeUntil(this._destroyed$),

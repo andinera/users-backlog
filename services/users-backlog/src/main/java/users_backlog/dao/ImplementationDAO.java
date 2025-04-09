@@ -41,16 +41,14 @@ public class ImplementationDAO extends DAO {
         "FROM implementation impl " +
         "LEFT OUTER JOIN innovator inv " +
             "ON inv.id = impl.innovator_id " +
-        "LEFT OUTER JOIN " +
+        "INNER JOIN " +
             "(" +
                 "SELECT " +
                     "implementation_id, " +
-                    "innovator_id, " +
                     "SUM(vote) votes " +
                 "FROM implementation_vote " +
                 "GROUP BY " +
-                    "implementation_id, " +
-                    "innovator_id" +
+                    "implementation_id " +
             ") iv " +
             "ON impl.id = iv.implementation_id";
 
@@ -319,25 +317,22 @@ public class ImplementationDAO extends DAO {
             log.severe(e.getMessage());
         }
 
-        return this.getVotes(implementationId, innovatorId);
+        return this.getVotes(implementationId);
     }
 
     private final String GET_VOTES = 
         "SELECT " +
             "SUM(vote) votes " +
         "FROM implementation_vote " +
-        "WHERE (implementation_id = ? " +
-            "AND innovator_id = ?) " +
+        "WHERE implementation_id = ? " +
         "GROUP BY " +
-            "implementation_id, " +
-            "innovator_id";
+            "implementation_id";
 
-    public Long getVotes(final Long implementationId, final Long innovatorId) {
+    private Long getVotes(final Long implementationId) {
         Long votes = 0L;
         try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_VOTES)) {
             int i = 1;
             ps.setLong(i++, implementationId);
-            ps.setLong(i++, innovatorId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     votes = rs.getLong("votes");
@@ -443,7 +438,7 @@ public class ImplementationDAO extends DAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Recommendation recommendation = recommendationMapper(rs);
-                    recommendation.setVotes(this.getRecommendationVotes(recommendation.getId(), recommendation.getInnovator().getId()));
+                    recommendation.setVotes(this.getRecommendationVotes(recommendation.getId()));
                     recommendation.setReplies(this.getRecommendationReplies(recommendation));
                     recommendations.add(recommendation);
                 }
@@ -471,7 +466,7 @@ public class ImplementationDAO extends DAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     recommendation = recommendationMapper(rs);
-                    recommendation.setVotes(this.getRecommendationVotes(recommendation.getId(), recommendation.getInnovator().getId()));
+                    recommendation.setVotes(this.getRecommendationVotes(recommendation.getId()));
                 }
             }
         } catch (final Exception e) {
@@ -523,25 +518,22 @@ public class ImplementationDAO extends DAO {
             log.severe(e.getMessage());
         }
 
-        return this.getRecommendationVotes(recommendationId, innovatorId);
+        return this.getRecommendationVotes(recommendationId);
     }
 
     private final String GET_RECOMMENDATION_VOTES = 
         "SELECT " +
             "SUM(vote) votes " +
         "FROM implementation_recommendation_vote " +
-        "WHERE (implementation_recommendation_id = ? " +
-            "AND innovator_id = ?) " +
+        "WHERE implementation_recommendation_id = ? " +
         "GROUP BY " +
-            "implementation_recommendation_id, " +
-            "innovator_id";
+            "implementation_recommendation_id";
 
-    public Long getRecommendationVotes(final Long recommendationId, final Long innovatorId) {
+    private Long getRecommendationVotes(final Long recommendationId) {
         Long votes = 0L;
         try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_RECOMMENDATION_VOTES)) {
             int i = 1;
             ps.setLong(i++, recommendationId);
-            ps.setLong(i++, innovatorId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     votes = rs.getLong("votes");

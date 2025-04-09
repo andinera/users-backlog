@@ -26,14 +26,14 @@ const extraOptions = {
 
 const routes: Routes = [
     {
-        path: 'Ideas',
+        path: 'ideas',
         component: IdeasComponent,
         resolve: {
             categories: IdeasResolver
         }
     },
     {
-        path: 'Idea/:summary',
+        path: 'idea/:summary',
         component: IdeaComponent,
         resolve: {
             idea: IdeaResolver,
@@ -41,28 +41,28 @@ const routes: Routes = [
         }
     },
     {
-        path: 'Implementations',
+        path: 'implementations',
         component: ImplementationsComponent,
         resolve: {
             implementations: ImplementationsResolver
         }
     },
     {
-        path: 'Implementation/:name',
+        path: 'implementation/:name',
         component: ImplementationComponent,
         resolve: {
             implementation: ImplementationResolver
         }
     },
     {
-        path: 'Innovator/:id',
+        path: 'innovator/:id',
         component: InnovatorComponent,
         resolve: {
             innovator: InnovatorResolver
         }
     },
     {
-        path: 'New Idea',
+        path: 'new-idea',
         component: NewIdeaComponent,
         resolve: {
             categories: CategoriesResolver
@@ -70,7 +70,7 @@ const routes: Routes = [
         canActivate: [LogInGuard]
     },
     {
-        path: 'Edit Idea/:summary',
+        path: 'Eeit-idea/:summary',
         component: NewIdeaComponent,
         resolve: {
             idea: IdeaResolver,
@@ -79,7 +79,7 @@ const routes: Routes = [
         canActivate: [LogInGuard]
     },
     {
-        path: 'New Implementation',
+        path: 'new-implementation',
         component: NewImplementationComponent,
         resolve: {
             categories: CategoriesResolver
@@ -87,7 +87,7 @@ const routes: Routes = [
         canActivate: [LogInGuard]
     },
     {
-        path: 'Edit Implementation',
+        path: 'edit-implementation',
         component: NewImplementationComponent,
         resolve: {
             categories: CategoriesResolver
@@ -95,22 +95,22 @@ const routes: Routes = [
         canActivate: [LogInGuard]
     },
     {
-        path: 'Log In',
+        path: 'log-in',
         component: LoginComponent,
         canActivate: [RedirectGuard]
     },
     {
-        path: 'Lost',
+        path: 'lost',
         component: LostComponent
     },
     {
         path: '',
-        redirectTo: 'Implementations',
+        redirectTo: 'implementations',
         pathMatch: 'full'
     },
     {
         path: '**',
-        redirectTo: 'Lost',
+        redirectTo: 'lost',
         pathMatch: 'full'
     }
 ];

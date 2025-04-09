@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" routerLink="/Implementations">
+    <a class="navbar-brand" routerLink="/implementations">
         <img src="assets/bree-serif-dark.ico" width="30" height="30">
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
@@ -9,7 +9,7 @@
         <ul class="navbar-nav mr-auto">
             <div *ngIf="!(innovatorService.innovator$ | async)">
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="/Log In">
+                    <a class="nav-link" routerLink="/log-in">
                     Log In</a>
                 </li>
             </div>
@@ -19,8 +19,8 @@
                         User
                     </a>
                     <div class="dropdown-menu" aria-labelledBy="navbarDropdownMenuLink">
-                        <a class="dropdown-item" routerLink="/Innovator/{{(innovatorService.innovator$ | async).id}}">Profile</a>
-                        <a class="dropdown-item" routerLink="/Innovator/{{(innovatorService.innovator$ | async).id}}">Account</a>
+                        <a class="dropdown-item" routerLink="/innovator/{{(innovatorService.innovator$ | async).id}}">Profile</a>
+                        <a class="dropdown-item" routerLink="/innovator/{{(innovatorService.innovator$ | async).id}}">Account</a>
                         <a class="dropdown-item" (click)="logOut()">Log out</a>
                     </div>
                 </li>

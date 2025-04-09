@@ -99,7 +99,7 @@ export class IdeaComponent implements OnInit, OnDestroy {
     this._ideaService.deleteIdea(this.idea.id).pipe(
       first(),
       tap((deleted) => {
-        this._router.navigateByUrl('/Ideas');
+        this._router.navigateByUrl('/ideas');
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {

@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { Implementation } from '../models/implementation.model';
 import { Recommendation } from '../models/recommendation.model';
 import { Reply } from '../models/reply.model';
 import { Service } from './service';
 import { InnovatorService } from './innovator.service';
+import { Router } from '@angular/router';
+import { SessionStorageService } from './session-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +21,9 @@ export class ImplementationService extends Service {
 
   constructor(
     private readonly _http: HttpClient,
-    private readonly _innovatorService: InnovatorService
+    private readonly _innovatorService: InnovatorService,
+    private readonly _router: Router,
+    private readonly _sessionStorageService: SessionStorageService
   ) {
     super();
   }
@@ -41,10 +45,17 @@ export class ImplementationService extends Service {
     return this._http.post<Implementation>(`${this._serviceURL}postImplementation`, implementation);
   }
 
-  postVote(implementationId: number, innovatorId: number, up: boolean): Observable<number> {
-    const model = {idToken: this._innovatorService.innovator$.value.idToken};
-    const parameters = `implementationId=${implementationId}&innovatorId=${innovatorId}&up=${up}`;
-    return this._http.post<number>(`${this._serviceURL}postVote?${parameters}`, model);
+  postVote(implementationId: number, up: boolean): Observable<number> {
+    const innovator = this._innovatorService.innovator$.value;
+    if (!innovator) {
+      this._sessionStorageService.storeData('postVote', {implementationId: implementationId, up: up});
+      this._router.navigate(['/log-in']);
+      return of(null);
+    } else {
+      const model = {idToken: innovator.idToken};
+      const parameters = `implementationId=${implementationId}&up=${up}`;
+      return this._http.post<number>(`${this._serviceURL}postVote?${parameters}`, model);
+    }
   }
 
   postRecommendation(recommendation: Recommendation): Observable<Recommendation> {
@@ -52,10 +63,17 @@ export class ImplementationService extends Service {
     return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation);
   }
 
-  postRecommendationVote(recommendationId: number, innovatorId: number, up: boolean): Observable<number> {
-    const model = {idToken: this._innovatorService.innovator$.value.idToken};
-    const parameters = `recommendationId=${recommendationId}&innovatorId=${innovatorId}&up=${up}`;
-    return this._http.post<number>(`${this._serviceURL}postRecommendationVote?${parameters}`, model);
+  postRecommendationVote(recommendationId: number, up: boolean): Observable<number> {
+    const innovator = this._innovatorService.innovator$.value;
+    if (!innovator) {
+      this._sessionStorageService.storeData('postRecommendationVote', {recommendationId: recommendationId, up: up});
+      this._router.navigate(['/log-in']);
+      return of(null);
+    } else {
+      const model = {idToken: this._innovatorService.innovator$.value.idToken};
+      const parameters = `recommendationId=${recommendationId}&up=${up}`;
+      return this._http.post<number>(`${this._serviceURL}postRecommendationVote?${parameters}`, model);
+    }
   }
 
   postRecommendationReply(reply: Reply): Observable<Reply> {

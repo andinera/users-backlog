@@ -11,6 +11,7 @@ import { Recommendation } from 'src/app/models/recommendation.model';
 import { ReplyForm } from 'src/app/models/forms/reply.form';
 import { Reply } from 'src/app/models/reply.model';
 import { InnovatorService } from 'src/app/services/innovator.service';
+import { SessionStorageService } from 'src/app/services/session-storage.service';
 
 @Component({
   selector: 'app-implementation',
@@ -32,7 +33,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     private readonly _route: ActivatedRoute,
     private readonly _router: Router,
     private readonly _formBuilder: FormBuilder,
-    private readonly _innovatorService: InnovatorService,
+    public readonly innovatorService: InnovatorService,
+    private readonly _sessionStorageService: SessionStorageService
   ) { }
 
   ngOnInit(): void {
@@ -45,6 +47,17 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       tap((data: {implementation: Implementation}) => {
         this.implementation = data.implementation;
         this.implementation.recommendations.forEach(recommendation => recommendation.dateTimeCreated = new Date(Date.parse(recommendation.dateTimeCreated.toString())));
+
+        let parameters = this._sessionStorageService.retrieveData('postVote');
+        if (parameters) {
+          this.postVote(parameters.up);
+        }
+    
+        parameters = this._sessionStorageService.retrieveData('postRecommendationVote');
+        if (parameters) {
+          const recommendation = this.implementation.recommendations.filter(r => r.id = parameters.recommendationId)[0];
+          this.postRecommendationVote(recommendation, parameters.up);
+        }
       }),
       catchError((error: any) => {
         console.log(error);
@@ -61,12 +74,11 @@ export class ImplementationComponent implements OnInit, OnDestroy {
 
   public editImplementation() {
     this._implementationService.implementationForEditing = this.implementation;
-    this._router.navigate(['Edit Implementation']);
+    this._router.navigate(['edit-implementation']);
   }
 
   public postVote(up: boolean) {
-    const innovator = this._innovatorService.innovator$.value;
-    this._implementationService.postVote(this.implementation.id, innovator.id, up).pipe(
+    this._implementationService.postVote(this.implementation.id, up).pipe(
       first(),
       tap((votes: number) => {
         this.implementation.votes = votes;
@@ -84,7 +96,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     if (recommendationForm.controls.message.value.length === 0) {
       recommendationForm.markAllAsTouched();
     } else {
-      const innovator = this._innovatorService.innovator$.value;
+      const innovator = this.innovatorService.innovator$.value;
       recommendation.innovator = innovator;
       recommendation.implementation = this.implementation;
       this._implementationService.postRecommendation(recommendation).pipe(
@@ -112,10 +124,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
 
   public postRecommendationVote(recommendation: Recommendation, up: boolean) {
     recommendation.implementation = this.implementation;
-    const innovator = this._innovatorService.innovator$.value;
-    recommendation.innovator = innovator;
-    recommendation.implementation = this.implementation;
-    this._implementationService.postRecommendationVote(recommendation.id, innovator.id, up).pipe(
+    this._implementationService.postRecommendationVote(recommendation.id, up).pipe(
       first(),
       tap((votes: number) => {
         recommendation.votes = votes;
@@ -142,7 +151,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     if (!replyForm.controls.message.value) {
       replyForm.markAllAsTouched();
     } else {
-      const innovator = this._innovatorService.innovator$.value;
+      const innovator = this.innovatorService.innovator$.value;
       reply.innovator = innovator;
       reply.recommendation = recommendation;
       this._implementationService.postRecommendationReply(reply).pipe(
@@ -172,7 +181,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   }
 
   public claimOwnership(): void {
-    const innovator = this._innovatorService.innovator$.value;
+    const innovator = this.innovatorService.innovator$.value;
     this.implementation.innovator = innovator;
     this._implementationService.postImplementation(this.implementation).pipe(
       first(),

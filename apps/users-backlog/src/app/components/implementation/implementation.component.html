@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="row">
+    <div *ngIf="implementation.innovator && (innovatorService.innovator$ | async).id === implementation.innovator.id" class="row">
         <div class="col">
             <div class="float-right" style="margin-top:15px;margin-bottom:15px">
                 <button class="btn btn-primary my-2 my-sm-0" type="button" (click)="editImplementation()">Edit Implementation</button>
@@ -18,7 +18,7 @@
 
     <div class="row">
         <div class="innovator" *ngIf="implementation.innovator">
-            <a [routerLink]="['/Innovator', implementation.innovator.id]">
+            <a [routerLink]="['/innovator', implementation.innovator.id]">
                 {{implementation.innovator.displayName}}
             </a>
         </div>
@@ -86,7 +86,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col text-right">
-                                            <a [routerLink]="['/Innovator', recommendation.innovator.id]">
+                                            <a [routerLink]="['/innovator', recommendation.innovator.id]">
                                                 {{recommendation.innovator.displayName}}
                                             </a>
                                         </div>

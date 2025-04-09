@@ -4,12 +4,12 @@
         <p>
             {{idea.description}}
         </p>
-        <button mat-raised-button type="submit" routerLink="/Edit Idea/{{idea.summary}}">Edit Idea</button>
+        <button mat-raised-button type="submit" routerLink="/edit-idea/{{idea.summary}}">Edit Idea</button>
     </mat-tab>
 
     <mat-tab [label]="tabLabels[1]">
         <mat-nav-list>
-            <a mat-list-item *ngFor="let implementation of idea.implementations" routerLink="/Implementation/{{implementation.name}}">
+            <a mat-list-item *ngFor="let implementation of idea.implementations" routerLink="/implementation/{{implementation.name}}">
                 {{implementation.name}}
             </a>
         </mat-nav-list>
@@ -26,7 +26,7 @@
 
     <mat-tab [label]="tabLabels[2]">
         <mat-nav-list>
-            <a mat-list-item routerLink="/Innovator/{{idea.innovator.emailAddress}}">{{idea.innovator.emailAddress}}</a>
+            <a mat-list-item routerLink="/innovator/{{idea.innovator.emailAddress}}">{{idea.innovator.emailAddress}}</a>
         </mat-nav-list>
     </mat-tab>
 

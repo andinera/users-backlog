@@ -1,6 +1,5 @@
 package users_backlog.controllers;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import users_backlog.models.Category;
 import users_backlog.services.CategoryService;
 
 @RestController
@@ -26,6 +24,7 @@ public class CategoryController {
         try {
             return ResponseEntity.ok(categoryService.getAllCategories());
         } catch (Exception e) {
+            log.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

@@ -6,6 +6,7 @@ import { tap, catchError, takeUntil } from 'rxjs/operators';
 import { Innovator } from '../models/innovator.model';
 import { Service } from './service';
 import { environment } from 'src/environments/environment';
+import { SessionStorageService } from './session-storage.service';
 
 
 declare var firebase: any;
@@ -16,7 +17,7 @@ declare var firebase: any;
 })
 export class InnovatorService extends Service {
   
-  public innovator$ = new BehaviorSubject<Innovator>(null);
+  public innovator$ = new BehaviorSubject<Innovator>(undefined);
 
   private readonly _googleAuthProvider = new firebase.auth.GoogleAuthProvider();
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
@@ -24,7 +25,8 @@ export class InnovatorService extends Service {
 
   constructor(
     private readonly _http: HttpClient,
-    private readonly _ngZone: NgZone
+    private readonly _ngZone: NgZone,
+    private readonly _sessionStorageService: SessionStorageService
   ) {
     super();
 
@@ -67,30 +69,28 @@ export class InnovatorService extends Service {
     if (user) {
       this.getInnovator(undefined, user.email).pipe(
         tap((innovator: Innovator) => {
-          if (innovator) {
-            user.getIdToken().then(idToken => {
-            innovator.idToken = idToken;
-            this.innovator$.next(innovator);
-            });
-          } else {
-            const innovator = {
-              emailAddress: user.email,
-              displayName: user.displayName
-            } as Innovator;
-            this.postInnovator(innovator).pipe(
-              tap((postedInnovator: Innovator) => {
-                user.getIdToken().then(idToken => {
-                  postedInnovator.idToken = idToken;
+          user.getIdToken().then(idToken => {
+            if (innovator) {
+              innovator.idToken = idToken;
+              this.innovator$.next(innovator);
+            } else {
+              const innovator = {
+                idToken: idToken,
+                emailAddress: user.email,
+                displayName: user.displayName
+              } as Innovator;
+              this.postInnovator(innovator).pipe(
+                tap((postedInnovator: Innovator) => {
                   this.innovator$.next(postedInnovator);
-                });
-              }),
-              catchError((error: any) => {
-                console.log(error);
-                return of(null);
-              }),
-              takeUntil(this._destroyed$)
-            ).subscribe();
-          }
+                }),
+                catchError((error: any) => {
+                  console.log(error);
+                  return of(null);
+                }),
+                takeUntil(this._destroyed$)
+              ).subscribe();
+            }
+          });
         }),
         catchError((error: any) => {
           console.log(error);
@@ -157,13 +157,15 @@ export class InnovatorService extends Service {
     });
   };
 
-  public signInWithGoogle(): void {
+  public signInWithGoogle(store?: {key: string, data: string}): void {
     this.logOut();
+    if (store) {
+      this._sessionStorageService.storeData(store.key, store.data);
+    }
     firebase.auth().signInWithRedirect(this._googleAuthProvider);
   }
 
   public logOut(): void {
-    this._setInnovator(null);
     firebase.auth().signOut();
   }
 
@@ -180,7 +182,9 @@ export class InnovatorService extends Service {
   }
 
   public postInnovator(innovator: Innovator) {
-    innovator.idToken = this.innovator$.value.idToken;
+    if (this.innovator$.value) {
+      innovator.idToken = this.innovator$.value.idToken;
+    }
     return this._http.post<Innovator>(`${this._serviceURL}postInnovator`, innovator);
   }
 

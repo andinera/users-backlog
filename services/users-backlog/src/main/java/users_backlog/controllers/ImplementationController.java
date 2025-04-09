@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import users_backlog.models.Implementation;
+import users_backlog.models.Innovator;
 import users_backlog.models.Model;
 import users_backlog.models.Recommendation;
 import users_backlog.models.Reply;
@@ -39,6 +40,7 @@ public class ImplementationController {
         try {
             return ResponseEntity.ok(implementationService.getImplementations(categoryName));
         } catch (Exception e) {
+            log.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -57,6 +59,7 @@ public class ImplementationController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing 'id' and 'name' parameter.");
             }
         } catch (Exception e) {
+            log.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -71,6 +74,7 @@ public class ImplementationController {
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
+            log.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -78,16 +82,17 @@ public class ImplementationController {
     @PostMapping(path = "postVote")
     public ResponseEntity<?> postVote(
         @RequestParam final Long implementationId,
-        @RequestParam final Long innovatorId,
         @RequestParam final Boolean up,
         @RequestBody final Model model
     ) {
         try {
-            firebaseService.verifyToken(model.getIdToken());
-            return ResponseEntity.ok(implementationService.postVote(implementationId, innovatorId, up));
+            String emailAddress = firebaseService.verifyToken(model.getIdToken());
+            Innovator innovator = innovatorService.getInnovator(emailAddress);
+            return ResponseEntity.ok(implementationService.postVote(implementationId, innovator.getId(), up));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
+            log.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -103,6 +108,7 @@ public class ImplementationController {
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
+            log.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -110,16 +116,17 @@ public class ImplementationController {
     @PostMapping(path = "postRecommendationVote")
     public ResponseEntity<?> postRecommendationVote(
         @RequestParam final Long recommendationId,
-        @RequestParam final Long innovatorId,
         @RequestParam final Boolean up,
         @RequestBody final Model model
     ) {
         try {
-            firebaseService.verifyToken(model.getIdToken());
-            return ResponseEntity.ok(implementationService.postRecommendationVote(recommendationId, innovatorId, up));
+            String emailAddress = firebaseService.verifyToken(model.getIdToken());
+            Innovator innovator = innovatorService.getInnovator(emailAddress);
+            return ResponseEntity.ok(implementationService.postRecommendationVote(recommendationId, innovator.getId(), up));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
+            log.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -134,6 +141,7 @@ public class ImplementationController {
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
+            log.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

@@ -22,7 +22,7 @@ export class LogInGuard implements CanActivate {
       if (innovator) {
         return true;
       } else {
-        this._router.navigate(['Log In']);
+        this._router.navigate(['log-in']);
       }
     }
   

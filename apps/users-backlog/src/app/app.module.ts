@@ -11,7 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LayoutModule } from '@angular/cdk/layout';
 
-import { first } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,6 +26,7 @@ import { NewImplementationComponent } from './components/new-implementation/new-
 import { RecommendationComponent } from './components/recommendation/recommendation.component';
 import { ImplementationsComponent } from './components/implementations/implementations.component';
 import { URLService } from './services/url.service';
+import { InnovatorService } from './services/innovator.service';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,7 @@ import { URLService } from './services/url.service';
     {
       provide: APP_INITIALIZER,
       useFactory: appInitFactory,
-      deps: [URLService],
+      deps: [InnovatorService, URLService],
       multi: true
     }
   ],
@@ -68,6 +69,15 @@ import { URLService } from './services/url.service';
 })
 export class AppModule { }
 
-export function appInitFactory(urlService: URLService) {
-  return () => undefined;
+export function appInitFactory(innovatorService: InnovatorService, urlService: URLService) {
+  return () => new Promise((resolve) => {
+    const observable = innovatorService.innovator$.pipe(
+      tap(innovator => {
+        if (innovator !== undefined) {
+          resolve(true);
+          observable.unsubscribe();
+        }
+      })
+    ).subscribe();
+  });
 }

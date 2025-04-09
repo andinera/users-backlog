@@ -39,6 +39,7 @@ public class InnovatorController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing 'id' and 'emailAddress' parameter.");
             }
         } catch (Exception e) {
+            log.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
         
@@ -52,6 +53,7 @@ public class InnovatorController {
             firebaseService.verifyToken(innovator.getIdToken());
             return ResponseEntity.ok(innovatorService.postInnovator(innovator));
         } catch (Exception e) {
+            log.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

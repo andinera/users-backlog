@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col">
             <div class="float-right" style="margin-top:15px;margin-bottom:15px">
-                <button class="btn btn-primary my-2 my-sm-0" type="button" routerLink="/New Implementation">New Implementation</button>
+                <button class="btn btn-primary my-2 my-sm-0" type="button" routerLink="/new-implementation">New Implementation</button>
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@
             </div>
             <div class="right-container">
                 <div class="summary">
-                    <a routerLink="/Implementation/{{implementation.name}}">{{implementation.name}}</a>
+                    <a routerLink="/implementation/{{implementation.name}}">{{implementation.name}}</a>
                 </div>
                 <div class="categories">
                     <div class="category" *ngFor="let category of implementation.categories">
