@@ -47,7 +47,7 @@ export class IdeaComponent implements OnInit, OnDestroy {
       first(),
       tap((data: {idea: Idea}) => {
         this.idea = data.idea;
-        this.idea.recommendations.forEach(recommendation => recommendation.dateTimeCreated = new Date(Date.parse(recommendation.dateTimeCreated.toString())));
+        // this.idea.recommendations.forEach(recommendation => recommendation.dateTimeCreated = new Date(Date.parse(recommendation.dateTimeCreated.toString())));
         this.innovatorService.innovator$.pipe(
           tap((innovator: Innovator) => {
               this.deleteDisabled = (!innovator || this.idea.summary === 'Software Ideas');

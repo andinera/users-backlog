@@ -33,7 +33,7 @@
     <mat-tab [label]="tabLabels[3]">
         <div *ngFor="let recommendation of idea.recommendations">
             {{recommendation.message}}<br>
-            {{recommendation.dateTimeCreated.toLocaleString()}}
+            {{recommendation.dateTimeCreated}}
         </div>
         <form (ngSubmit)="addRecommendation(recommendationForm.value)">
             <div>

@@ -9,6 +9,7 @@ import { Service } from './service';
 import { InnovatorService } from './innovator.service';
 import { Router } from '@angular/router';
 import { SessionStorageService } from './session-storage.service';
+import { Product } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +46,21 @@ export class ImplementationService extends Service {
     return this._http.post<Implementation>(`${this._serviceURL}postImplementation`, implementation);
   }
 
+  deleteImplementation(implementation: Implementation): Observable<boolean> {
+    implementation.idToken = this._innovatorService.innovator$.value.idToken;
+    return this._http.post<boolean>(`${this._serviceURL}deleteImplementation`, implementation);
+  }
+
+  postProduct(product: Product): Observable<Product> {
+    product.idToken = this._innovatorService.innovator$.value.idToken;
+    return this._http.post<Product>(`${this._serviceURL}postProduct`, product);
+  }
+
+  deleteProduct(product: Product): Observable<boolean> {
+    product.idToken = this._innovatorService.innovator$.value.idToken;
+    return this._http.post<boolean>(`${this._serviceURL}deleteProduct`, product);
+  }
+
   postVote(implementationId: number, up: boolean): Observable<number> {
     const innovator = this._innovatorService.innovator$.value;
     if (!innovator) {
@@ -70,6 +86,11 @@ export class ImplementationService extends Service {
     }
   }
 
+  deleteRecommendation(recommendation: Recommendation): Observable<boolean> {
+    recommendation.idToken = this._innovatorService.innovator$.value.idToken;
+    return this._http.post<boolean>(`${this._serviceURL}deleteRecommendation`, recommendation);
+  }
+
   postRecommendationVote(recommendationId: number, up: boolean): Observable<number> {
     const innovator = this._innovatorService.innovator$.value;
     if (!innovator) {
@@ -93,5 +114,10 @@ export class ImplementationService extends Service {
       reply.idToken = this._innovatorService.innovator$.value.idToken;
       return this._http.post<Reply>(`${this._serviceURL}postRecommendationReply`, reply);
     }
+  }
+
+  deleteRecommendationReply(reply: Reply): Observable<boolean> {
+    reply.idToken = this._innovatorService.innovator$.value.idToken;
+    return this._http.post<boolean>(`${this._serviceURL}deleteRecommendationReply`, reply);
   }
 }

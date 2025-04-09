@@ -11,6 +11,7 @@ import users_backlog.dao.IdeaDAO;
 import users_backlog.dao.ImplementationDAO;
 import users_backlog.dao.ProductDAO;
 import users_backlog.models.Implementation;
+import users_backlog.models.Product;
 import users_backlog.models.Recommendation;
 import users_backlog.models.Reply;
 
@@ -59,6 +60,19 @@ public class ImplementationService {
         return implementation;
     }
 
+    public boolean deleteImplementation(final Implementation implementation) {
+        return implementationDAO.deleteImplementation(implementation);
+    }
+
+    public Product postProduct(final Product product) {
+        productDAO.postProduct(product);
+        return product;
+    }
+
+    public boolean deleteProduct(final Product product) {
+        return productDAO.deleteProduct(product);
+    }
+
     public Long postVote(Long implementationId, Long innovatorId, Boolean up) {
         return implementationDAO.postVote(implementationId, innovatorId, up);
     }
@@ -67,12 +81,20 @@ public class ImplementationService {
         return implementationDAO.postRecommendation(recommendation);
     }
 
+    public boolean deleteRecommendation(final Recommendation recommendation) {
+        return implementationDAO.deleteRecommendation(recommendation);
+    }
+
     public Long postRecommendationVote(Long recommendationId, Long innovatorId, Boolean up) {
         return implementationDAO.postRecommendationVote(recommendationId, innovatorId, up);
     }
 
     public Reply postRecommendationReply(Reply reply) {
         return implementationDAO.postRecommendationReply(reply);
+    }
+
+    public boolean deleteRecommendationReply(final Reply reply) {
+        return implementationDAO.deleteRecommendationReply(reply);
     }
 
 }

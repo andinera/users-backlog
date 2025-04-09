@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { tap, first, catchError, takeUntil } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
@@ -12,6 +12,8 @@ import { ReplyForm } from 'src/app/models/forms/reply.form';
 import { Reply } from 'src/app/models/reply.model';
 import { InnovatorService } from 'src/app/services/innovator.service';
 import { SessionStorageService } from 'src/app/services/session-storage.service';
+import { ProductForm } from 'src/app/models/forms/product.form';
+import { Product } from 'src/app/models/product.model';
 
 @Component({
   selector: 'app-implementation',
@@ -20,11 +22,21 @@ import { SessionStorageService } from 'src/app/services/session-storage.service'
 })
 export class ImplementationComponent implements OnInit, OnDestroy {
 
+  @ViewChild("newProduct") private newProductDropdown: ElementRef;
+
   implementation: Implementation;
-  editedRecommendation: Recommendation;
+  
   recommendationForm: FormGroup;
   editRecommendationForm: FormGroup;
+  editedRecommendation: Recommendation;
+
+  productForm: FormGroup;
+  editProductForm: FormGroup;
+  editedProduct: Product;
+
   replyForm: FormGroup;
+  editReplyForm: FormGroup;
+  editedReply: Reply;
     
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -40,13 +52,17 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.recommendationForm = this._formBuilder.group(new RecommendationForm());
     this.editRecommendationForm = this._formBuilder.group(new RecommendationForm());
+
+    this.productForm = this._formBuilder.group(new ProductForm());
+    this.editProductForm = this._formBuilder.group(new ProductForm());
+
     this.replyForm = this._formBuilder.group(new ReplyForm());
+    this.editReplyForm = this._formBuilder.group(new ReplyForm());
 
     this._route.data.pipe(
       first(),
       tap((data: {implementation: Implementation}) => {
         this.implementation = data.implementation;
-        this.implementation.recommendations.forEach(recommendation => recommendation.dateTimeCreated = new Date(Date.parse(recommendation.dateTimeCreated.toString())));
 
         let parameters = this._sessionStorageService.retrieveData('postVote');
         if (parameters) {
@@ -90,6 +106,84 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     this._router.navigate(['edit-implementation']);
   }
 
+  public deleteImplementation() {
+    this._implementationService.deleteImplementation(this.implementation).pipe(
+      first(),
+      tap((deleted: boolean) => {
+        if(deleted) {
+          this._router.navigate(['/']);
+        } else {
+          console.log('Failed to delete implementation.');
+        }
+      }),
+      catchError((error: any) => {
+        console.log(error);
+        return of(null);
+      }),
+      takeUntil(this._destroyed$)
+    ).subscribe();
+  }
+
+  public postProduct(productForm: FormGroup) {
+    if (productForm.invalid) {
+      productForm.markAllAsTouched()
+    } else {
+      const product = productForm.value as Product;
+      product.implementation = this.implementation;
+      this._implementationService.postProduct(product).pipe(
+        first(),
+        tap((updatedProduct: Product) => {
+          const products = this.implementation.products.filter(product => product.id !== updatedProduct.id);
+          products.push(updatedProduct);
+          this.implementation.products = products;
+          this.newProductDropdown.nativeElement.classList.remove('show');
+        }),
+        catchError((error: any) => {
+          console.log(error);
+          return of(null);
+        }),
+        takeUntil(this._destroyed$)
+      ).subscribe();
+    }
+  }
+
+  public deleteProduct(product: Product): void {
+    this._implementationService.deleteProduct(product).pipe(
+      first(),
+      tap((deleted: boolean) => {
+        if(deleted) {
+          const products = this.implementation.products.filter(p => p.id !== product.id);
+          this.implementation.products = products;
+        } else {
+          console.log('Failed to delete product.');
+        }
+      }),
+      takeUntil(this._destroyed$),
+      catchError((e: any) => {
+        console.log(e);
+        return of(null);
+      })
+    ).subscribe();
+  }
+
+  public openProductUrl(url: string) {
+    try {
+      const parsedURL = new URL(url);
+      window.open(parsedURL.href, '_blank');
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public openProductEdit(product: Product) {
+    this.editedProduct = product;
+    this.editProductForm.patchValue(product);
+  }
+
+  public cancelEditProduct() {
+    this.editedProduct = undefined;
+  }
+
   public postVote(up: boolean) {
     this._implementationService.postVote(this.implementation.id, up).pipe(
       first(),
@@ -124,7 +218,6 @@ export class ImplementationComponent implements OnInit, OnDestroy {
           } else {
             this.implementation.recommendations.push(returnedRecommendation);
           }
-          returnedRecommendation.dateTimeCreated = new Date(Date.parse(returnedRecommendation.dateTimeCreated.toString()));
         }),
         takeUntil(this._destroyed$),
         catchError((e: any) => {
@@ -135,8 +228,26 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     }
   }
 
+  public deleteRecommendation(recommendation: Recommendation): void {
+    this._implementationService.deleteRecommendation(recommendation).pipe(
+      first(),
+      tap((deleted: boolean) => {
+        if(deleted) {
+          const recommendations = this.implementation.recommendations.filter(r => r.id !== recommendation.id);
+          this.implementation.recommendations = recommendations;
+        } else {
+          console.log('Failed to delete recommendation.');
+        }
+      }),
+      takeUntil(this._destroyed$),
+      catchError((e: any) => {
+        console.log(e);
+        return of(null);
+      })
+    ).subscribe();
+  }
+
   public postRecommendationVote(recommendation: Recommendation, up: boolean) {
-    recommendation.implementation = this.implementation;
     this._implementationService.postRecommendationVote(recommendation.id, up).pipe(
       first(),
       tap((votes: number) => {
@@ -154,7 +265,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     this.editedRecommendation = undefined;
   }
 
-  public openEdit(recommendation) {
+  public openRecommendationEdit(recommendation: Recommendation) {
     this.editedRecommendation = recommendation;
     this.editRecommendationForm.patchValue(recommendation);
   }
@@ -182,7 +293,6 @@ export class ImplementationComponent implements OnInit, OnDestroy {
             }
             recommendation.replies.push(returnedReply);
           }
-          returnedReply.dateTimeCreated = new Date(Date.parse(returnedReply.dateTimeCreated.toString()));
         }),
         takeUntil(this._destroyed$),
         catchError((e: any) => {
@@ -191,6 +301,34 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         })
       ).subscribe();
     }
+  }
+
+  public deleteRecommendationReply(reply: Reply, recommendation: Recommendation): void {
+    this._implementationService.deleteRecommendationReply(reply).pipe(
+      first(),
+      tap((deleted: boolean) => {
+        if(deleted) {
+          const replies = recommendation.replies.filter(r => r.id !== reply.id);
+          recommendation.replies = replies;
+        } else {
+          console.log('Failed to delete reply.');
+        }
+      }),
+      takeUntil(this._destroyed$),
+      catchError((e: any) => {
+        console.log(e);
+        return of(null);
+      })
+    ).subscribe();
+  }
+
+  public cancelEditReply() {
+    this.editedReply = undefined;
+  }
+
+  public openReplyEdit(reply) {
+    this.editedReply = reply;
+    this.editReplyForm.patchValue(reply);
   }
 
   public claimOwnership(): void {

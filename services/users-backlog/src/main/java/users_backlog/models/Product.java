@@ -8,6 +8,7 @@ public class Product extends Model {
 
     private String url;
     private String description;
+    private Implementation implementation;
 
     public Product() {
     }
@@ -26,6 +27,14 @@ public class Product extends Model {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Implementation getImplementation() {
+        return this.implementation;
+    }
+
+    public void setImplementation(Implementation implementation) {
+        this.implementation = implementation;
     }
 
 }

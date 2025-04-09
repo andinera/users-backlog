@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import users_backlog.models.Implementation;
 import users_backlog.models.Innovator;
 import users_backlog.models.Model;
+import users_backlog.models.Product;
 import users_backlog.models.Recommendation;
 import users_backlog.models.Reply;
 import users_backlog.services.FirebaseService;
@@ -79,6 +80,51 @@ public class ImplementationController {
         }
     }
 
+    @PostMapping(path = "deleteImplementation")
+    public ResponseEntity<?> deleteImplementation(
+        @RequestBody final Implementation implementation
+    ) {
+        try {
+            firebaseService.verifyToken(implementation.getIdToken());
+            return ResponseEntity.ok(implementationService.deleteImplementation(implementation));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping(path = "postProduct")
+    public ResponseEntity<?> postProduct(
+        @RequestBody final Product product
+    ) {
+        try {
+            firebaseService.verifyToken(product.getIdToken());
+            return ResponseEntity.ok(implementationService.postProduct(product));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping(path = "deleteProduct")
+    public ResponseEntity<?> deleteProduct(
+        @RequestBody final Product product
+    ) {
+        try {
+            firebaseService.verifyToken(product.getIdToken());
+            return ResponseEntity.ok(implementationService.deleteProduct(product));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     @PostMapping(path = "postVote")
     public ResponseEntity<?> postVote(
         @RequestParam final Long implementationId,
@@ -112,6 +158,21 @@ public class ImplementationController {
         }
     }
 
+    @PostMapping(path = "deleteRecommendation")
+    public ResponseEntity<?> deleteRecommendation(
+        @RequestBody final Recommendation recommendation
+    ) {
+        try {
+            firebaseService.verifyToken(recommendation.getIdToken());
+            return ResponseEntity.ok(implementationService.deleteRecommendation(recommendation));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     @PostMapping(path = "postRecommendationVote")
     public ResponseEntity<?> postRecommendationVote(
         @RequestParam final Long recommendationId,
@@ -137,6 +198,21 @@ public class ImplementationController {
         try {
             firebaseService.verifyToken(reply.getIdToken());
             return ResponseEntity.ok(implementationService.postRecommendationReply(reply));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping(path = "deleteRecommendationReply")
+    public ResponseEntity<?> deleteRecommendationReply(
+        @RequestBody final Reply reply
+    ) {
+        try {
+            firebaseService.verifyToken(reply.getIdToken());
+            return ResponseEntity.ok(implementationService.deleteRecommendationReply(reply));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {

@@ -50,7 +50,7 @@ public class App extends SpringBootServletInitializer {
             final MysqlDataSource dataSource = new MysqlDataSource();
             dataSource.setUser("root");
             dataSource.setPassword("Go0b3r@#Drowsap3@1");
-            dataSource.setDatabaseName("iequals");
+            dataSource.setDatabaseName("users-backlog");
             return dataSource;
         } else {
             // The configuration object specifies behaviors for the connection pool.

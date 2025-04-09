@@ -37,18 +37,18 @@ public class ImplementationDAO extends DAO {
             "inv.id AS innovator_id, " +
             "inv.email_address, " +
             "inv.display_name, " +
-            "iv.votes " +
+            "COALESCE(iv.votes, 0) votes " +
         "FROM implementation impl " +
         "LEFT OUTER JOIN innovator inv " +
             "ON inv.id = impl.innovator_id " +
-        "INNER JOIN " +
+        "LEFT OUTER JOIN " +
             "(" +
                 "SELECT " +
                     "implementation_id, " +
                     "SUM(vote) votes " +
                 "FROM implementation_vote " +
                 "GROUP BY " +
-                    "implementation_id " +
+                    "implementation_id" +
             ") iv " +
             "ON impl.id = iv.implementation_id";
 
@@ -289,6 +289,23 @@ public class ImplementationDAO extends DAO {
         return implementation;
     }
 
+    private final String DELETE_IMPLEMENTATION = 
+        "DELETE " +
+        "FROM implementation impl " +
+        "WHERE impl.id = ?";
+
+    public boolean deleteImplementation(final Implementation implementation) {
+
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(DELETE_IMPLEMENTATION)) {
+            ps.setLong(1, implementation.getId());
+            return ps.executeUpdate() > 0;
+        } catch (final Exception e) {
+            log.severe(e.getMessage());
+        }
+
+        return false;
+    }
+
     private final String INSERT_VOTE =
         "INSERT " +
         "INTO implementation_vote (vote, implementation_id, innovator_id) " +
@@ -413,6 +430,23 @@ public class ImplementationDAO extends DAO {
         }
 
         return this.getRecommendation(recommendation.getImplementation().getId(), recommendation.getInnovator().getId(), recommendation.getDateTimeCreated());
+    }
+
+    private final String DELETE_RECOMMENDATION = 
+        "DELETE " +
+        "FROM implementation_recommendation ir " +
+        "WHERE ir.id = ?";
+
+    public boolean deleteRecommendation(final Recommendation recommendation) {
+
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(DELETE_RECOMMENDATION)) {
+            ps.setLong(1, recommendation.getId());
+            return ps.executeUpdate() > 0;
+        } catch (final Exception e) {
+            log.severe(e.getMessage());
+        }
+
+        return false;
     }
 
     private final String GET_RECOMMENDATIONS = 
@@ -686,6 +720,23 @@ public class ImplementationDAO extends DAO {
         reply.setInnovator(innovator);
 
         return reply;
+    }
+
+    private final String DELETE_RECOMMENDATION_REPLY = 
+        "DELETE " +
+        "FROM implementation_recommendation_reply irr " +
+        "WHERE irr.id = ?";
+
+    public boolean deleteRecommendationReply(final Reply reply) {
+
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(DELETE_RECOMMENDATION_REPLY)) {
+            ps.setLong(1, reply.getId());
+            return ps.executeUpdate() > 0;
+        } catch (final Exception e) {
+            log.severe(e.getMessage());
+        }
+
+        return false;
     }
 
 }
