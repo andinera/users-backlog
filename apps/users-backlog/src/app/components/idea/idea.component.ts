@@ -4,7 +4,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { ReplaySubject, of } from 'rxjs';
-import { takeUntil, tap, first, catchError } from 'rxjs/operators';
+import { takeUntil, tap, first, catchError, finalize } from 'rxjs/operators';
 
 import { IdeaService } from '../../services/idea.service';
 import { Idea } from '../../models/idea.model';
@@ -22,14 +22,20 @@ import { ReplyForm } from 'src/app/models/forms/reply.form';
 export class IdeaComponent implements OnInit, OnDestroy {
 
   idea: Idea;
+  ideaVote: boolean;
+  recommendationVotes: any;
   
   recommendationForm: FormGroup;
   editRecommendationForm: FormGroup;
   editedRecommendation: Recommendation<Idea>;
+  postingRecommendation = false;
+  deletingRecommendation = false;
 
   replyForm: FormGroup;
   editReplyForm: FormGroup;
   editedReply: Reply<Idea>;
+  postingReply = false;
+  deletingReply = false;
 
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -51,12 +57,14 @@ export class IdeaComponent implements OnInit, OnDestroy {
     
     this._route.data.pipe(
       first(),
-      tap((data: {idea: Idea}) => {
+      tap((data: {idea: Idea, votes: any}) => {
         this.idea = data.idea;
+        this.ideaVote = data.votes.ideas[this.idea.id];
+        this.recommendationVotes = data.votes.recommendations;
       }),
       catchError((error: any) => {
         console.error(error);
-        this._snackBar.open('Failed to load ideas.', 'Close');
+        this._snackBar.open('Failed to load idea and/or votes.', 'Close');
         return of(null);
       }),
       takeUntil(this._destroyed$)
@@ -93,18 +101,21 @@ export class IdeaComponent implements OnInit, OnDestroy {
   }
 
   public postVote(up: boolean) {
-    this._ideaService.postVote(this.idea, up).pipe(
-      first(),
-      tap((votes: number) => {
-        this.idea.votes = votes;
-      }),
-      catchError((error: any) => {
-        console.error(error);
-        this._snackBar.open('Failed to cast vote.', 'Close');
-        return of(null);
-      }),
-      takeUntil(this._destroyed$)
-    ).subscribe();
+    if (this.ideaVote != up) {
+      this._ideaService.postVote(this.idea, up).pipe(
+        first(),
+        tap((votes: number) => {
+          this.idea.votes = votes;
+          this.ideaVote = up;
+        }),
+        catchError((error: any) => {
+          console.error(error);
+          this._snackBar.open('Failed to cast vote.', 'Close');
+          return of(null);
+        }),
+        takeUntil(this._destroyed$)
+      ).subscribe();
+    }
   }
 
   public postRecommendation(recommendationForm: FormGroup): void {
@@ -112,6 +123,7 @@ export class IdeaComponent implements OnInit, OnDestroy {
     if (recommendationForm.controls.message.value.length === 0) {
       recommendationForm.markAllAsTouched();
     } else {
+      this.postingRecommendation = true;
       recommendation.parent = this.idea;
       this._ideaService.postRecommendation(recommendation).pipe(
         first(),
@@ -131,12 +143,16 @@ export class IdeaComponent implements OnInit, OnDestroy {
           console.error(e);
           this._snackBar.open('Failed to post recommendation.', 'Close');
           return of(null);
+        }),
+        finalize(() => {
+          this.postingRecommendation = false;
         })
       ).subscribe();
     }
   }
 
   public deleteRecommendation(recommendation: Recommendation<Idea>): void {
+    this.deletingRecommendation = true;
     this._ideaService.deleteRecommendation(recommendation).pipe(
       first(),
       tap((deleted: boolean) => {
@@ -152,23 +168,29 @@ export class IdeaComponent implements OnInit, OnDestroy {
         console.error(e);
         this._snackBar.open('Failed to delete recommendation.', 'Close');
         return of(null);
+      }),
+      finalize(() => {
+        this.deletingRecommendation = false;
       })
     ).subscribe();
   }
 
   public postRecommendationVote(recommendation: Recommendation<Idea>, up: boolean) {
-    this._ideaService.postRecommendationVote(recommendation, up).pipe(
-      first(),
-      tap((votes: number) => {
-        recommendation.votes = votes;
-      }),
-      takeUntil(this._destroyed$),
-      catchError((e: any) => {
-        console.error(e);
-        this._snackBar.open('Failed to cast vote.', 'Close');
-        return of(null);
-      })
-    ).subscribe();
+    if (this.recommendationVotes[recommendation.id] != up) {
+      this._ideaService.postRecommendationVote(recommendation, up).pipe(
+        first(),
+        tap((votes: number) => {
+          recommendation.votes = votes;
+          this.recommendationVotes[recommendation.id] = up;
+        }),
+        takeUntil(this._destroyed$),
+        catchError((e: any) => {
+          console.error(e);
+          this._snackBar.open('Failed to cast vote.', 'Close');
+          return of(null);
+        })
+      ).subscribe();
+    }
   }
 
   public cancelEditRecommendtion() {
@@ -185,6 +207,7 @@ export class IdeaComponent implements OnInit, OnDestroy {
     if (!replyForm.controls.message.value) {
       replyForm.markAllAsTouched();
     } else {
+      this.postingReply = true;
       reply.recommendation = recommendation;
       this._ideaService.postRecommendationReply(reply).pipe(
         first(),
@@ -207,12 +230,16 @@ export class IdeaComponent implements OnInit, OnDestroy {
           console.error(e);
           this._snackBar.open('Failed to post reply.', 'Close');
           return of(null);
+        }),
+        finalize(() => {
+          this.postingReply = false;
         })
       ).subscribe();
     }
   }
 
   public deleteRecommendationReply(reply: Reply<Idea>, recommendation: Recommendation<Idea>): void {
+    this.deletingReply = true;
     this._ideaService.deleteRecommendationReply(reply).pipe(
       first(),
       tap((deleted: boolean) => {
@@ -228,6 +255,9 @@ export class IdeaComponent implements OnInit, OnDestroy {
         console.error(e);
         this._snackBar.open('Failed to delete reply.', 'Close');
         return of(null);
+      }),
+      finalize(() => {
+        this.deletingReply = false;
       })
     ).subscribe();
   }

@@ -1,8 +1,8 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable, of, ReplaySubject, BehaviorSubject, from } from 'rxjs';
-import { tap, catchError, takeUntil, mergeMap } from 'rxjs/operators';
+import { Observable, of, ReplaySubject, BehaviorSubject, from, throwError } from 'rxjs';
+import { tap, catchError, takeUntil } from 'rxjs/operators';
 
 import { Innovator } from '../models/innovator.model';
 import { Service } from './service';
@@ -85,8 +85,7 @@ export class InnovatorService extends Service implements OnDestroy {
               }),
               catchError((error: any) => {
                 console.error(error);
-                this._snackBar.open('Failed to post innovator.', 'Close');
-                return of(null);
+                return throwError('Failed to post innovator.');
               }),
               takeUntil(this._destroyed$)
             ).subscribe();
@@ -94,8 +93,7 @@ export class InnovatorService extends Service implements OnDestroy {
         }),
         catchError((error: any) => {
           console.error(error);
-          this._snackBar.open('Failed to load innovator.', 'Close');
-          return of(null);
+          return throwError('Failed to load innovator.');
         }),
         takeUntil(this._destroyed$)
       ).subscribe();
@@ -104,63 +102,44 @@ export class InnovatorService extends Service implements OnDestroy {
     }
   }
 
-  private initializeGoogleApi(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this._ngZone.run(() => {
-        gapi.client.init({
+  private initializeGoogleApi(): Observable<any> {
+      const obs = this._ngZone.run(() => {
+        return from(gapi.client.init({
           apiKey: 'AIzaSyDSq3qOHBHL9YFahSGB5pO3koCIMUgTtuM',
           discoveryDocs: [],
           clientId: '809333411313-ig8j262oip33aj9in335obcf90da4all.apps.googleusercontent.com',
           scope: 'profile email openid'
-        }).then((response: any) => {
-          console.log("Google API Initialized");
-        }, (reason: any) => {
-          console.error("Google API Not Initialized");
-          console.error(reason);
-          this._snackBar.open('Failed to initialize Google API.', 'Close');
-        });
+        })).pipe(
+          tap((response: any) => {
+            console.log("Google API Initialized");
+          }),
+          catchError((reason: any) => {
+            console.error("Google API Not Initialized");
+            console.error(reason);
+            this._snackBar.open('Failed to initialize Google API.', 'Close');
+            return null;
+          })
+        )
       });
+      obs.subscribe();
+      return obs;
+  }
+
+  public createUser(emailAddress: string, password: string): Observable<any> {
+    this.logOut();
+    return this._ngZone.run(() => {
+      return from(firebase.auth().createUserWithEmailAndPassword(emailAddress, password)).pipe(
+        tap(() => {
+          this.logOut();
+        })
+      )
     });
   }
 
-  public createUser(emailAddress: string, password: string): Promise<string> {
+  public logIn(emailAddress: string, password: string): Observable<any> {
     this.logOut();
-    return new Promise((resolve, reject) => {
-      this._ngZone.run(() => {
-        firebase.auth().createUserWithEmailAndPassword(emailAddress, password)
-        .then(credential => {
-          return this.postInnovator({emailAddress: emailAddress} as Innovator).toPromise();
-        }).then(innovator => {
-          resolve("Account created. A verification email has been sent to your email address.");
-        }).catch(error => {
-          console.error(error);
-          this._snackBar.open('Failed to create user.', 'Close');
-          reject(error.message);
-        });
-      });
-    });
-  }
-
-  public logIn(emailAddress: string, password: string): Promise<string> {
-    this.logOut();
-    return new Promise((resolve, reject) => {
-      this._ngZone.run(() => {
-        firebase.auth().signInWithEmailAndPassword(emailAddress, password)
-        .then(credential => {
-          if (!credential || !credential.user) {
-            this._snackBar.open('Unknown credentials.', 'Close');
-            reject("Unknown credentials.");
-          } else if (!credential.user.emailVerified) {
-            this._snackBar.open('Email address has not been verified.', 'Close');
-            reject("Email address has not been verified.");
-          }
-          resolve("");
-        }).catch(error => {
-          console.error(error);
-          this._snackBar.open('Invalid email address or password.', 'Close');
-          reject("Invalid email address or password.");
-        });
-      });
+    return this._ngZone.run(() => {
+      return from(firebase.auth().signInWithEmailAndPassword(emailAddress, password));
     });
   };
 
@@ -177,7 +156,7 @@ export class InnovatorService extends Service implements OnDestroy {
   }
 
   public getIdToken(): Observable<string> {
-    return from(firebase.auth().currentUser.getIdToken()) as Observable<string>;
+    return from<string>(firebase.auth().currentUser.getIdToken());
   }
 
   public getInnovator(id?: string, emailAddress?: string): Observable<Innovator> {
@@ -194,18 +173,7 @@ export class InnovatorService extends Service implements OnDestroy {
   }
 
   public postInnovator(innovator: Innovator): Observable<Innovator> {
-    return this.getIdToken().pipe(
-      mergeMap((idToken: string) => {
-        innovator.idToken = idToken;
-        return this._http.post<Innovator>(`${this._serviceURL}postInnovator`, innovator).pipe(
-          tap((innovator: Innovator) => {
-            if (innovator) {
-              this.innovator$.next(innovator);
-            }
-          })
-        );
-      })
-    );
+    return this._http.post<Innovator>(`${this._serviceURL}postInnovator`, innovator);
   }
 
   

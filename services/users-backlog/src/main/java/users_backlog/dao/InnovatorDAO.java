@@ -93,8 +93,10 @@ public class InnovatorDAO extends DAO {
             sql = UPDATE_INNOVATOR;
         }
 
-        Innovator updatedInnovator = null;
         try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            if (innovator.getHideEmailAddress() == null) {
+                innovator.setHideEmailAddress(false);
+            }
             if (innovator.getDisplayName() == null) {
                 innovator.setDisplayName(innovator.getEmailAddress());
             }
@@ -105,14 +107,13 @@ public class InnovatorDAO extends DAO {
             if (sql.equals(UPDATE_INNOVATOR)) {
                 ps.setLong(i++, innovator.getId());
             }
-            if (ps.executeUpdate() != 0) {
-                updatedInnovator = innovator;
-            }
+            ps.executeUpdate();
         } catch (final Exception e) {
             log.severe(e.getMessage());
             throw e;
         }
-        return updatedInnovator;
+        innovator.setId(getInnovator(innovator.getEmailAddress()).getId());
+        return innovator;
     }
 
 }

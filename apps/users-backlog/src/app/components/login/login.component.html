@@ -33,18 +33,16 @@
         </div>
 
         <div class="col">
-            <button class="btn btn-primary" type="submit">Login</button>
+            <button class="btn btn-primary" type="submit" [disabled]="loggingIn">
+                Login
+                <mat-progress-bar *ngIf="loggingIn" mode="indeterminate"></mat-progress-bar>
+            </button>
         </div>
         <div class="col">
-            <button class="btn btn-light" (click)="createAccount(loginForm.value)">Create Account</button>
-        </div>
-        <div class="col">
-            <div *ngIf="errorMessage" class="text-danger">
-                {{errorMessage}}
-            </div>
-            <div *ngIf="successMessage" class="text-success">
-                {{successMessage}}
-            </div>
+            <button class="btn btn-light" type="button" (click)="createAccount(loginForm.value)" [disabled]="loggingIn">
+                Create Account
+                <mat-progress-bar *ngIf="loggingIn" mode="indeterminate"></mat-progress-bar>
+            </button>
         </div>
 
     </form>

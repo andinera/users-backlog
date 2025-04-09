@@ -1,6 +1,8 @@
 package users_backlog.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,6 +71,15 @@ public class IdeaService {
             elasticSearchService.delete(idea);
         }
         return deleted;
+    }
+
+    public Map<String, Map<Long, Boolean>> getInnovatorVotes(final Long ideaId, final Long innovatorId) {
+        Map<String, Map<Long, Boolean>> votes = new HashMap<>();
+        Map<Long, Boolean> ideasVotes = new HashMap<>();
+        votes.put("ideas", ideasVotes);
+        ideasVotes.put(ideaId, ideaDAO.getVote(ideaId, innovatorId));
+        votes.put("recommendations", ideaDAO.getRecommendationsVotes(ideaId, innovatorId));
+        return votes;
     }
 
     public Long postVote(Idea idea, Innovator innovator, Boolean up) {

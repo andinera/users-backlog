@@ -62,6 +62,14 @@ export class IdeaService extends Service {
     );
   }
 
+  getInnovatorVotes(ideaId: number): Observable<any> {
+    const params = new HttpParams()
+      .set('ideaId', String(ideaId))
+      .set('innovatorId', String(this._innovatorService.innovator$.value.id));
+    const options = {params: params};
+    return this._http.get<any>(`${this._serviceURL}getInnovatorVotes`, options);
+  }
+
   postVote(idea: Idea, up: boolean): Observable<number> {
     if (!this._innovatorService.innovator$.value) {
       this._sessionStorageService.storeData('postIdeaVote', {ideaId: idea.id, up: up});

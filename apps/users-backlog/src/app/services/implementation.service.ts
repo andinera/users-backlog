@@ -104,6 +104,14 @@ export class ImplementationService extends Service {
     );
   }
 
+  getInnovatorVotes(implementationId: number): Observable<any> {
+    const params = new HttpParams()
+      .set('implementationId', String(implementationId))
+      .set('innovatorId', String(this._innovatorService.innovator$.value.id));
+    const options = {params: params};
+    return this._http.get<any>(`${this._serviceURL}getInnovatorVotes`, options);
+  }
+
   postVote(implementation: Implementation, up: boolean): Observable<number> {
     if (!this._innovatorService.innovator$.value) {
       this._sessionStorageService.storeData('postImplementationVote', {implementationId: implementation.id, up: up});

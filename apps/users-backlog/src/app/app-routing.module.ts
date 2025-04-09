@@ -22,6 +22,8 @@ import { AccountComponent } from './components/account/account.component';
 import { SearchResultsComponent } from './components/search-results/search-results.component';
 import { SearchResolver } from './resolvers/search.resolver';
 import { HomepageComponent } from './components/homepage/homepage.component';
+import { IdeaInnovatorVotesResolver } from './resolvers/idea-innovator-votes.resolver';
+import { ImplementationInnovatorVotesResolver } from './resolvers/implementation-innovator-votes.resolver';
 
 
 const extraOptions = {
@@ -40,7 +42,8 @@ const routes: Routes = [
         path: 'idea/:id/:summary',
         component: IdeaComponent,
         resolve: {
-            idea: IdeaResolver
+            idea: IdeaResolver,
+            votes: IdeaInnovatorVotesResolver
         }
     },
     {
@@ -54,7 +57,8 @@ const routes: Routes = [
         path: 'implementation/:id/:name',
         component: ImplementationComponent,
         resolve: {
-            implementation: ImplementationResolver
+            implementation: ImplementationResolver,
+            votes: ImplementationInnovatorVotesResolver
         }
     },
     {

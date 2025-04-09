@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { first, tap, takeUntil, catchError } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
+import { first, tap, takeUntil, catchError, finalize } from 'rxjs/operators';
 
 import { Implementation } from 'src/app/models/implementation.model';
 import { ImplementationService } from 'src/app/services/implementation.service';
@@ -19,10 +19,11 @@ import { InnovatorService } from 'src/app/services/innovator.service';
 })
 export class NewImplementationComponent implements OnInit {
 
-  implementationForm: FormGroup;
   categoryForm: FormGroup;
   categoryOptions: Category[];
-  loggedIn = false;
+
+  implementationForm: FormGroup;
+  postingImplementation = false;
 
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -70,6 +71,7 @@ export class NewImplementationComponent implements OnInit {
     if (implementationForm.invalid) {
       implementationForm.markAllAsTouched();
     } else {
+      this.postingImplementation = true;
       const implementation = implementationForm.value;
       if (implementationForm.controls.isOwner.value) {
         implementation.innovator = this._innovatorService.innovator$.value;
@@ -86,6 +88,9 @@ export class NewImplementationComponent implements OnInit {
           console.error(e);
           this._snackBar.open('Failed to create implementation.', 'Close');
           return of(null);
+        }),
+        finalize(() => {
+          this.postingImplementation = false;
         })
       ).subscribe();
     }

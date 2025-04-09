@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
@@ -14,6 +17,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.DisMaxQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -25,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import users_backlog.models.Idea;
 import users_backlog.models.Implementation;
+import users_backlog.models.Innovator;
 import users_backlog.models.Model;
 
 
@@ -32,8 +38,18 @@ import users_backlog.models.Model;
 public class ElasticSearchService {
     
     private static final Logger log = Logger.getLogger(ElasticSearchService.class.getName());
+    private final String indices[] = {
+        Implementation.class.getSimpleName().toLowerCase(),
+        Idea.class.getSimpleName().toLowerCase(),
+        Innovator.class.getSimpleName().toLowerCase()
+    };
 
     @Autowired private RestHighLevelClient client;
+
+    @PostConstruct
+    public void init() {
+        createEverything();
+    }
 
     public void index(Model model) {
         try {
@@ -174,6 +190,40 @@ public class ElasticSearchService {
         }
 
         return ideas;
+    }
+
+    public void createEverything() {
+        GetIndexRequest getIndexRequest;
+
+        for (String index: indices) {
+            getIndexRequest = new GetIndexRequest(index);
+            try {
+                if (!client.indices().exists(getIndexRequest, RequestOptions.DEFAULT)) {
+                    CreateIndexRequest createIndexRequest = new CreateIndexRequest(index);
+                    client.indices().create(createIndexRequest, RequestOptions.DEFAULT);
+                }
+            } catch (IOException e) {
+                log.severe(e.getMessage());
+            }
+        }
+    }
+
+    public void deleteEverything() {
+        GetIndexRequest getIndexRequest;
+
+        for (String index: indices) {
+            getIndexRequest = new GetIndexRequest(index);
+            try {
+                if (client.indices().exists(getIndexRequest, RequestOptions.DEFAULT)) {
+                    DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(index);
+                    client.indices().delete(deleteIndexRequest, RequestOptions.DEFAULT);
+                }
+            } catch (IOException e) {
+                log.severe(e.getMessage());
+            }
+        }
+
+        createEverything();
     }
 
 }

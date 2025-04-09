@@ -3,10 +3,14 @@
         <div class="col">
             <div class="float-right" style="margin-top:15px;margin-bottom:15px">
                 <div class="row" *ngIf="canEdit()">
-                    <button class="btn btn-primary" type="button" (click)="editImplementation()">Edit Implementation</button>
+                    <button class="btn btn-primary" (click)="editImplementation()">
+                        Edit Implementation
+                    </button>
                 </div>
                 <!-- <div class="row" *ngIf="canDelete()">
-                    <button class="btn btn-primary" type="button" (click)="deleteImplementation()">Delete Implementation</button>
+                    <button class="btn btn-primary" (click)="deleteImplementation()">
+                        Delete Implementation
+                    </button>
                 </div>             -->
             </div>
         </div>
@@ -28,13 +32,83 @@
             </a>
         </div>
         <div *ngIf="!implementation.innovator">
-            <button class="btn btn-primary" type="button" (click)="claimOwnership()">Claim Ownership</button>
+            <button class="btn btn-primary" (click)="claimOwnership()" [disabled]="claimingOwnership">
+                Claim Ownership
+                <mat-progress-bar *ngIf="claimingOwnership" mode="indeterminate"></mat-progress-bar>
+            </button>
         </div>
     </div>
 
     <div class="row">
         <div class="col">
-            <button class="btn btn-primary" data-toggle="collapse" [attr.data-target]="'#newProduct'">New Product</button>
+            <div class="row">
+                Products
+            </div>
+            <div *ngFor="let product of implementation.products">
+                <div *ngIf="editedProduct !== product">
+                    <div class="row">
+                        <button class="btn btn-link" style="user-select: text" (click)="openProductUrl(product.url)">
+                            {{product.url}}
+                        </button>
+                    </div>
+                    <div class="row">
+                        {{product.description}}
+                    </div>
+                    <div class="row" *ngIf="(innovatorService.innovator$ | async) && (innovatorService.innovator$ | async).id === implementation.innovator.id">
+                        <div class="col">
+                            <button class="btn btn-light" (click)="openProductEdit(product)">
+                                Edit
+                            </button>
+                            <button class="btn btn-light float-right" (click)="deleteProduct(product)" [disabled]="deletingProduct">
+                                Delete
+                                <mat-progress-bar *ngIf="deletingProduct" mode="indeterminate"></mat-progress-bar>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="editedProduct === product">
+                    <form (ngSubmit)="postProduct(editProductForm)">
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>URL</mat-label>
+                            <input matInput [formControl]="editProductForm.controls.url">
+                            <mat-error *ngIf="editProductForm.controls.url.hasError('required')">
+                                URL is <strong>required</strong>
+                            </mat-error>
+                            <mat-error *ngIf="!editProductForm.controls.url.hasError('required') && editProductForm.controls.url.hasError('invalidURL')">
+                                Invalid URL
+                            </mat-error>
+                        </mat-form-field>
+            
+                        <mat-form-field appearance="fill">
+                            <textarea matInput [formControl]="editProductForm.controls.description"></textarea>
+                        </mat-form-field>
+            
+                        <div class="row">
+                            <div class="col">
+                                <button class="btn btn-primary" type="submit" [disabled]="postingProduct">
+                                    Submit
+                                    <mat-progress-bar *ngIf="postingProduct" mode="indeterminate"></mat-progress-bar>
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditProduct()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+            
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary" data-toggle="collapse" [attr.data-target]="'#newProduct'">
+                New Product
+            </button>
         </div>
     </div>
     <div class="collapse" #newProduct [attr.id]="'newProduct'">
@@ -59,58 +133,15 @@
         
                     <div class="row">
                         <div class="col">
-                            <button class="btn btn-primary" type="submit">Submit</button>
+                            <button class="btn btn-primary" type="submit" [disabled]="postingProduct">
+                                Submit
+                                <mat-progress-bar *ngIf="postingProduct" mode="indeterminate"></mat-progress-bar>
+                            </button>
                         </div>
                     </div>
         
                 </form>
             </div>
-        </div>
-    </div>
-
-    <div *ngFor="let product of implementation.products">
-        <div *ngIf="editedProduct !== product">
-            <div class="row">
-                <button class="btn btn-link" style="user-select: text" type="submit" (click)="openProductUrl(product.url)">{{product.url}}</button>
-            </div>
-            <div class="row">
-                {{product.description}}
-            </div>
-            <div class="row" *ngIf="(innovatorService.innovator$ | async) && (innovatorService.innovator$ | async).id === implementation.innovator.id">
-                <div class="col">
-                    <button class="btn btn-light" (click)="openProductEdit(product)">Edit</button>
-                    <button class="btn btn-light float-right" (click)="deleteProduct(product)">Delete</button>
-                </div>
-            </div>
-        </div>
-        <div *ngIf="editedProduct === product">
-            <form (ngSubmit)="postProduct(editProductForm)">
-
-                <mat-form-field appearance="fill">
-                    <mat-label>URL</mat-label>
-                    <input matInput [formControl]="editProductForm.controls.url">
-                    <mat-error *ngIf="editProductForm.controls.url.hasError('required')">
-                        URL is <strong>required</strong>
-                    </mat-error>
-                    <mat-error *ngIf="!editProductForm.controls.url.hasError('required') && editProductForm.controls.url.hasError('invalidURL')">
-                        Invalid URL
-                    </mat-error>
-                </mat-form-field>
-    
-                <mat-form-field appearance="fill">
-                    <textarea matInput [formControl]="editProductForm.controls.description"></textarea>
-                </mat-form-field>
-    
-                <div class="row">
-                    <div class="col">
-                        <button class="btn btn-primary" type="submit">Submit</button>
-                    </div>
-                    <div class="col">
-                        <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditProduct()">Cancel</button>
-                    </div>
-                </div>
-    
-            </form>
         </div>
     </div>
 
@@ -126,14 +157,19 @@
                         <a [routerLink]="['/idea', idea.id, idea.summary]">
                             {{idea.summary}}
                         </a>
-                        <button class="btn btn-primary float-right" (click)="disassociateWithIdea(idea)">Disassociate Idea</button>
+                        <button class="btn btn-primary float-right" (click)="disassociateWithIdea(idea)" [disabled]="disassociatingIdea">
+                            Disassociate Idea
+                            <mat-progress-bar *ngIf="disassociatingIdea" mode="indeterminate"></mat-progress-bar>
+                        </button>
                     </div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col">
-                    <button class="btn btn-primary" data-toggle="collapse" [attr.data-target]="'#associateIdea'">Associate Idea</button>
+                    <button class="btn btn-primary" data-toggle="collapse" [attr.data-target]="'#associateIdea'">
+                        Associate Idea
+                    </button>
                 </div>
             </div>
             <div class="collapse" #associateIdea [attr.id]="'associateIdea'">
@@ -150,8 +186,9 @@
                                     </mat-option>
                                 </mat-autocomplete>
                             </mat-form-field>
-                            <button mat-mini-fab color="primary" type="submit" [disabled]="!associateIdeaValid()">
-                                <mat-icon>add</mat-icon>
+                            <button class="btn btn-primary" type="submit" [disabled]="!associateIdeaValid() || associatingIdea">
+                                Submit
+                                <mat-progress-bar *ngIf="associatingIdea" mode="indeterminate"></mat-progress-bar>
                             </button>
                 
                         </form>
@@ -163,7 +200,10 @@
 
     <div class="row">
         <div class="col">
-            <button class="btn btn-light" style="text-transform: none;" type="button" (click)="postVote(true)">i++</button>
+            <button mat-mini-fab color="accent" (click)="postVote(true)">
+                <mat-icon *ngIf="implementationVote === true">exposure_plus_1</mat-icon>
+                <mat-icon *ngIf="implementationVote !== true">add</mat-icon>
+            </button>
         </div>
         <div class="col">
             <div class="votes">
@@ -171,7 +211,10 @@
             </div>
         </div>
         <div class="col">
-            <button class="btn btn-light" style="text-transform: none;" type="button" (click)="postVote(false)">i--</button>
+            <button mat-mini-fab color="accent" (click)="postVote(false)">
+                <mat-icon *ngIf="implementationVote === false">exposure_neg_1</mat-icon>
+                <mat-icon *ngIf="implementationVote !== false">remove</mat-icon>
+            </button>
         </div>
     </div>
 
@@ -184,7 +227,10 @@
                             <div class="col-2 text-center">
                                 <div class="row">
                                     <div class="col">
-                                        <button class="btn btn-light" (click)="postRecommendationVote(recommendation, true)">i++</button>
+                                        <button mat-mini-fab color="accent" (click)="postRecommendationVote(recommendation, true)">
+                                            <mat-icon *ngIf="recommendationVotes[recommendation.id] === true">exposure_plus_1</mat-icon>
+                                            <mat-icon *ngIf="recommendationVotes[recommendation.id] !== true">add</mat-icon>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -194,7 +240,10 @@
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        <button class="btn btn-light" (click)="postRecommendationVote(recommendation, false)">i--</button>
+                                        <button mat-mini-fab color="accent" (click)="postRecommendationVote(recommendation, false)">
+                                            <mat-icon *ngIf="recommendationVotes[recommendation.id] === false">exposure_neg_1</mat-icon>
+                                            <mat-icon *ngIf="recommendationVotes[recommendation.id] !== false">remove</mat-icon>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -219,8 +268,13 @@
                                     </div>
                                     <div *ngIf="(innovatorService.innovator$ | async) && (innovatorService.innovator$ | async).id === recommendation.innovator.id" class="row">
                                         <div class="col">
-                                            <button class="btn btn-light" (click)="openRecommendationEdit(recommendation)">Edit</button>
-                                            <button class="btn btn-light float-right" (click)="deleteRecommendation(recommendation)">Delete</button>
+                                            <button class="btn btn-light" (click)="openRecommendationEdit(recommendation)">
+                                                Edit
+                                            </button>
+                                            <button class="btn btn-light float-right" (click)="deleteRecommendation(recommendation)" [disabled]="deletingRecommendation">
+                                                Delete
+                                                <mat-progress-bar *ngIf="deletingRecommendation" mode="indeterminate"></mat-progress-bar>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -233,10 +287,15 @@
                             
                                         <div class="row">
                                             <div class="col">
-                                                <button class="btn btn-primary" type="submit">Submit</button>
+                                                <button class="btn btn-primary" type="submit" [disabled]="postingRecommendation">
+                                                    Submit
+                                                    <mat-progress-bar *ngIf="postingRecommendation" mode="indeterminate"></mat-progress-bar>
+                                                </button>
                                             </div>
                                             <div class="col">
-                                                <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditRecommendtion()">Cancel</button>
+                                                <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditRecommendtion()">
+                                                    Cancel
+                                                </button>
                                             </div>
                                         </div>
                             
@@ -244,7 +303,9 @@
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        <button class="btn btn-outline-dark btn-block" data-toggle="collapse" [attr.data-target]="'#replies' + recommendation.id">Replies</button>
+                                        <button class="btn btn-outline-dark btn-block" data-toggle="collapse" [attr.data-target]="'#replies' + recommendation.id">
+                                            Replies
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="collapse" [attr.id]="'replies' + recommendation.id">
@@ -270,8 +331,13 @@
                                             </div>
                                             <div *ngIf="(innovatorService.innovator$ | async) && (innovatorService.innovator$ | async).id === reply.innovator.id" class="row">
                                                 <div class="col">
-                                                    <button class="btn btn-light" (click)="openReplyEdit(reply)">Edit</button>
-                                                    <button class="btn btn-light float-right" (click)="deleteRecommendationReply(reply, recommendation)">Delete</button>
+                                                    <button class="btn btn-light" (click)="openReplyEdit(reply)">
+                                                        Edit
+                                                    </button>
+                                                    <button class="btn btn-light float-right" (click)="deleteRecommendationReply(reply, recommendation)" [disabled]="deletingReply">
+                                                        Delete
+                                                        <mat-progress-bar *ngIf="deletingReply" mode="indeterminate"></mat-progress-bar>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -284,10 +350,15 @@
                                     
                                                 <div class="row">
                                                     <div class="col">
-                                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                                        <button class="btn btn-primary" type="submit" [disabled]="postingReply">
+                                                            Submit
+                                                            <mat-progress-bar *ngIf="postingReply" mode="indeterminate"></mat-progress-bar>
+                                                        </button>
                                                     </div>
                                                     <div class="col">
-                                                        <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditReply()">Cancel</button>
+                                                        <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditReply()">
+                                                            Cancel
+                                                        </button>
                                                     </div>
                                                 </div>
                                     
@@ -305,7 +376,10 @@
                                         
                                                     <div class="row">
                                                         <div class="col">
-                                                            <button class="btn btn-primary" type="submit" data-toggle="collapse" [attr.data-target]="'#reply' + recommendation.id">Submit</button>
+                                                            <button class="btn btn-primary" type="submit" data-toggle="collapse" [attr.data-target]="'#reply' + recommendation.id" [disabled]="postingReply">
+                                                                Submit
+                                                                <mat-progress-bar *ngIf="postingReply" mode="indeterminate"></mat-progress-bar>
+                                                            </button>
                                                         </div>
                                                     </div>
                                         
@@ -315,7 +389,9 @@
                                     </div>
                                     <div class="row">
                                         <div class="col">
-                                            <a class="btn btn-outline-dark" data-toggle="collapse" [attr.data-target]="'#reply' + recommendation.id">Reply</a>
+                                            <a class="btn btn-outline-dark" data-toggle="collapse" [attr.data-target]="'#reply' + recommendation.id">
+                                                Reply
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -335,7 +411,10 @@
             </mat-form-field>
 
             <div class="col">
-                <button class="btn btn-primary" type="submit">New Recommendation</button>
+                <button class="btn btn-primary" type="submit" [disabled]="postingRecommendation">
+                    New Recommendation
+                    <mat-progress-bar *ngIf="postingRecommendation" mode="indeterminate"></mat-progress-bar>
+                </button>
             </div>
 
         </form>

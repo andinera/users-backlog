@@ -3,9 +3,12 @@ import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -25,13 +28,13 @@ import { LoginComponent } from './components/login/login.component';
 import { ImplementationComponent } from './components/implementation/implementation.component';
 import { InnovatorComponent } from './components/innovator/innovator.component';
 import { NewImplementationComponent } from './components/new-implementation/new-implementation.component';
-import { RecommendationComponent } from './components/recommendation/recommendation.component';
 import { ImplementationsComponent } from './components/implementations/implementations.component';
 import { URLService } from './services/url.service';
 import { InnovatorService } from './services/innovator.service';
 import { AccountComponent } from './components/account/account.component';
 import { SearchResultsComponent } from './components/search-results/search-results.component';
 import { HomepageComponent } from './components/homepage/homepage.component';
+import { ProductDialogComponent } from './components/implementation/product-dialog/product-dialog.component';
 
 @NgModule({
   declarations: [
@@ -45,10 +48,10 @@ import { HomepageComponent } from './components/homepage/homepage.component';
     InnovatorComponent,
     AccountComponent,
     NewImplementationComponent,
-    RecommendationComponent,
     ImplementationsComponent,
     SearchResultsComponent,
-    HomepageComponent
+    HomepageComponent,
+    ProductDialogComponent
   ],
   imports: [
     AppRoutingModule,
@@ -59,8 +62,11 @@ import { HomepageComponent } from './components/homepage/homepage.component';
     MatAutocompleteModule,
     MatButtonModule,
     MatCheckboxModule,
+    MatDialogModule,
     MatIconModule,
     MatInputModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
     MatSelectModule,
     MatSnackBarModule,
     MatFormFieldModule,
@@ -74,6 +80,9 @@ import { HomepageComponent } from './components/homepage/homepage.component';
       deps: [InnovatorService, URLService],
       multi: true
     }
+  ],
+  entryComponents: [
+    ProductDialogComponent
   ],
   bootstrap: [AppComponent]
 })

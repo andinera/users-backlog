@@ -52,10 +52,6 @@ public class InnovatorController {
         @RequestBody final Innovator innovator
     ) throws Exception {
         try {
-            String emailAddress = firebaseService.verifyToken(innovator.getIdToken());
-            if (!emailAddress.equals(innovator.getEmailAddress())) {
-                throw new SecurityException("Unauthorized to create an innovator with a different email address from that associated with your ID token.");
-            }
             return ResponseEntity.ok(innovatorService.postInnovator(innovator));
         } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

@@ -188,6 +188,19 @@ public class ImplementationController {
         }
     }
 
+    @GetMapping(path = "getInnovatorVotes")
+    public ResponseEntity<?> getInnovatorVotes(
+        @RequestParam final Long implementationId,
+        @RequestParam final Long innovatorId
+    ) {
+        try {
+            return ResponseEntity.ok(implementationService.getInnovatorVotes(implementationId, innovatorId));
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     @PostMapping(path = "postVote")
     public ResponseEntity<?> postVote(
         @RequestParam final Boolean up,

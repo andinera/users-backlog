@@ -48,7 +48,10 @@
         </div>
 
         <div class="col">
-            <button class="btn btn-primary" type="submit">Submit</button>
+            <button class="btn btn-primary" type="submit" [disabled]="postingImplementation">
+                Submit
+                <mat-progress-bar *ngIf="postingImplementation" mode="indeterminate"></mat-progress-bar>
+            </button>
         </div>
     </form>
 </div>

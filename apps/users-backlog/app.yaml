@@ -1,13 +1,10 @@
 runtime: python38
 api_version: '1'
 env: standard
-version: '0.0.1'
-threadsafe: true
 instance_class: F1
 handlers:
   - url: /
     redirect_http_response_code: 301
-    application_readable: false
     static_files: dist/users-backlog/index.html
     require_matching_file: false
     upload: dist/users-backlog/index.html
@@ -32,7 +29,6 @@ handlers:
     secure: always
   - url: /(.*)
     redirect_http_response_code: 301
-    application_readable: false
     static_files: dist/users-backlog/index.html
     require_matching_file: false
     upload: dist/users-backlog/index.html

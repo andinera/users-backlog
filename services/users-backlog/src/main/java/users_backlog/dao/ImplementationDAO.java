@@ -8,7 +8,9 @@ import java.sql.Types;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -395,11 +397,15 @@ public class ImplementationDAO extends DAO {
             "AND innovator_id = ?)";
 
     public Boolean getVote(final Implementation implementation, final Innovator innovator) {
+        return getVote(implementation.getId(), innovator.getId());
+    }
+
+    public Boolean getVote(final Long implementationId, final Long innovatorId) {
         Boolean vote = null;
         try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_VOTE)) {
             int i = 1;
-            ps.setLong(i++, implementation.getId());
-            ps.setLong(i++, innovator.getId());
+            ps.setLong(i++, implementationId);
+            ps.setLong(i++, innovatorId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     vote = rs.getLong("vote") == 1;
@@ -629,6 +635,34 @@ public class ImplementationDAO extends DAO {
             log.severe(e.getMessage());
         }
         return vote;
+    }
+
+    private final String GET_RECOMMENDATIONS_VOTES = 
+        "SELECT " +
+            "ir.id, " +
+            "iv.vote " +
+        "FROM implementation_recommendation ir " +
+        "INNER JOIN implementation_recommendation_vote iv " +
+            "ON iv.implementation_recommendation_id = ir.id " +
+        "WHERE (ir.implementation_id = ? " +
+            "AND ir.innovator_id = ?)";
+
+    public Map<Long, Boolean> getRecommendationsVotes(final Long implementationId, final Long innovatorId) {
+        Map<Long, Boolean> votes = new HashMap<>();
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_RECOMMENDATIONS_VOTES)) {
+            int i = 1;
+            ps.setLong(i++, implementationId);
+            ps.setLong(i++, innovatorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    votes.put(rs.getLong("id"), rs.getLong("vote") == 1);
+                }
+            }
+        } catch (final Exception e) {
+            votes = null;
+            log.severe(e.getMessage());
+        }
+        return votes;
     }
 
     private final String INSERT_RECOMMENDATION_REPLY =

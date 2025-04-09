@@ -52,11 +52,11 @@ public class App extends SpringBootServletInitializer {
     DataSource dataSource() throws SQLException {
         
         String environment = System.getenv("environment");
-        if (environment != null && environment.equals("local")) {
+        if (environment != null && environment.equals("development")) {
             final MysqlDataSource dataSource = new MysqlDataSource();
             dataSource.setUser("root");
             dataSource.setPassword("Go0b3r@#Drowsap3@1");
-            dataSource.setDatabaseName("users-backlog");
+            dataSource.setUrl("jdbc:mysql://localhost:3306/users-backlog?allowMultiQueries=true");
             return dataSource;
         } else {
             // The configuration object specifies behaviors for the connection pool.
@@ -84,7 +84,23 @@ public class App extends SpringBootServletInitializer {
 
     @Bean(destroyMethod = "close")
     public RestHighLevelClient client() {
-        RestHighLevelClient client = new RestHighLevelClient(
+        RestHighLevelClient client;
+        String environment = System.getenv("environment");
+        if (environment != null && environment.equals("development")) {
+            client = new RestHighLevelClient(
+                RestClient.builder(
+                    new HttpHost("localhost", 9200, "http")
+                )
+                .setHttpClientConfigCallback(new HttpClientConfigCallback() {
+                    @Override
+                    public HttpAsyncClientBuilder customizeHttpClient(
+                            HttpAsyncClientBuilder httpClientBuilder) {
+                        return httpClientBuilder;
+                    }
+                })
+            );
+        } else {
+            client = new RestHighLevelClient(
                 RestClient.builder(
                     new HttpHost("0ad0a1a4418d4beca0ff5bf26ee9bf83.us-central1.gcp.cloud.es.io", 9243, "https")
                 )
@@ -98,6 +114,7 @@ public class App extends SpringBootServletInitializer {
                     }
                 })
             );
+        }
         return client;
     }
 }

@@ -3,10 +3,14 @@
         <div class="col">
             <div class="float-right" style="margin-top:15px;margin-bottom:15px">
                 <div class="row">
-                    <button class="btn btn-primary" type="button" (click)="editIdea()">Edit Idea</button>
+                    <button class="btn btn-primary" type="button" (click)="editIdea()">
+                        Edit Idea
+                    </button>
                 </div>
                 <!-- <div class="row">
-                    <button class="btn btn-primary" type="button" (click)="deleteIdea()">Delete Idea</button>
+                    <button class="btn btn-primary" type="button" (click)="deleteIdea()">
+                        Delete Idea
+                    </button>
                 </div> -->
             </div>
         </div>
@@ -49,7 +53,10 @@
 
     <div class="row">
         <div class="col">
-            <button class="btn btn-light" style="text-transform: none;" type="button" (click)="postVote(true)">i++</button>
+            <button mat-mini-fab color="accent" (click)="postVote(true)">
+                <mat-icon *ngIf="ideaVote === true">exposure_plus_1</mat-icon>
+                <mat-icon *ngIf="ideaVote !== true">add</mat-icon>
+            </button>
         </div>
         <div class="col">
             <div class="votes">
@@ -57,7 +64,10 @@
             </div>
         </div>
         <div class="col">
-            <button class="btn btn-light" style="text-transform: none;" type="button" (click)="postVote(false)">i--</button>
+            <button mat-mini-fab color="accent" (click)="postVote(false)">
+                <mat-icon *ngIf="ideaVote === false">exposure_neg_1</mat-icon>
+                <mat-icon *ngIf="ideaVote !== false">remove</mat-icon>
+            </button>
         </div>
     </div>
 
@@ -70,7 +80,10 @@
                             <div class="col-2 text-center">
                                 <div class="row">
                                     <div class="col">
-                                        <button class="btn btn-light" (click)="postRecommendationVote(recommendation, true)">i++</button>
+                                        <button mat-mini-fab color="accent" (click)="postRecommendationVote(recommendation, true)">
+                                            <mat-icon *ngIf="recommendationVotes[recommendation.id] === true">exposure_plus_1</mat-icon>
+                                            <mat-icon *ngIf="recommendationVotes[recommendation.id] !== true">add</mat-icon>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -80,7 +93,10 @@
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        <button class="btn btn-light" (click)="postRecommendationVote(recommendation, false)">i--</button>
+                                        <button mat-mini-fab color="accent" (click)="postRecommendationVote(recommendation, false)">
+                                            <mat-icon *ngIf="recommendationVotes[recommendation.id] === false">exposure_neg_1</mat-icon>
+                                            <mat-icon *ngIf="recommendationVotes[recommendation.id] !== false">remove</mat-icon>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -105,8 +121,13 @@
                                     </div>
                                     <div *ngIf="(innovatorService.innovator$ | async) && (innovatorService.innovator$ | async).id === recommendation.innovator.id" class="row">
                                         <div class="col">
-                                            <button class="btn btn-light" (click)="openRecommendationEdit(recommendation)">Edit</button>
-                                            <button class="btn btn-light float-right" (click)="deleteRecommendation(recommendation)">Delete</button>
+                                            <button class="btn btn-light" (click)="openRecommendationEdit(recommendation)">
+                                                Edit
+                                            </button>
+                                            <button class="btn btn-light float-right" (click)="deleteRecommendation(recommendation)" [disabled]="deletingRecommendation">
+                                                Delete
+                                                <mat-progress-bar *ngIf="deletingRecommendation" mode="indeterminate"></mat-progress-bar>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -119,10 +140,15 @@
                             
                                         <div class="row">
                                             <div class="col">
-                                                <button class="btn btn-primary" type="submit">Submit</button>
+                                                <button class="btn btn-primary" type="submit" [disabled]="postingRecommendation">
+                                                    Submit
+                                                    <mat-progress-bar *ngIf="postingRecommendation" mode="indeterminate"></mat-progress-bar>
+                                                </button>
                                             </div>
                                             <div class="col">
-                                                <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditRecommendtion()">Cancel</button>
+                                                <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditRecommendtion()">
+                                                    Cancel
+                                                </button>
                                             </div>
                                         </div>
                             
@@ -130,7 +156,9 @@
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        <button class="btn btn-outline-dark btn-block" data-toggle="collapse" [attr.data-target]="'#replies' + recommendation.id">Replies</button>
+                                        <button class="btn btn-outline-dark btn-block" data-toggle="collapse" [attr.data-target]="'#replies' + recommendation.id">
+                                            Replies
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="collapse" [attr.id]="'replies' + recommendation.id">
@@ -156,8 +184,13 @@
                                             </div>
                                             <div *ngIf="(innovatorService.innovator$ | async) && (innovatorService.innovator$ | async).id === reply.innovator.id" class="row">
                                                 <div class="col">
-                                                    <button class="btn btn-light" (click)="openReplyEdit(reply)">Edit</button>
-                                                    <button class="btn btn-light float-right" (click)="deleteRecommendationReply(reply, recommendation)">Delete</button>
+                                                    <button class="btn btn-light" (click)="openReplyEdit(reply)">
+                                                        Edit
+                                                    </button>
+                                                    <button class="btn btn-light float-right" (click)="deleteRecommendationReply(reply, recommendation)" [disabled]="deletingReply">
+                                                        Delete
+                                                        <mat-progress-bar *ngIf="deletingReply" mode="indeterminate"></mat-progress-bar>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -170,10 +203,15 @@
                                     
                                                 <div class="row">
                                                     <div class="col">
-                                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                                        <button class="btn btn-primary" type="submit" [disabled]="postingReply">
+                                                            Submit
+                                                            <mat-progress-bar *ngIf="postingReply" mode="indeterminate"></mat-progress-bar>
+                                                        </button>
                                                     </div>
                                                     <div class="col">
-                                                        <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditReply()">Cancel</button>
+                                                        <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditReply()">
+                                                            Cancel
+                                                        </button>
                                                     </div>
                                                 </div>
                                     
@@ -191,7 +229,10 @@
                                         
                                                     <div class="row">
                                                         <div class="col">
-                                                            <button class="btn btn-primary" type="submit" data-toggle="collapse" [attr.data-target]="'#reply' + recommendation.id">Submit</button>
+                                                            <button class="btn btn-primary" type="submit" data-toggle="collapse" [attr.data-target]="'#reply' + recommendation.id" [disabled]="postingReply">
+                                                                Submit
+                                                                <mat-progress-bar *ngIf="postingReply" mode="indeterminate"></mat-progress-bar>
+                                                            </button>
                                                         </div>
                                                     </div>
                                         
@@ -201,7 +242,9 @@
                                     </div>
                                     <div class="row">
                                         <div class="col">
-                                            <a class="btn btn-outline-dark" data-toggle="collapse" [attr.data-target]="'#reply' + recommendation.id">Reply</a>
+                                            <a class="btn btn-outline-dark" data-toggle="collapse" [attr.data-target]="'#reply' + recommendation.id">
+                                                Reply
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -221,7 +264,10 @@
             </mat-form-field>
 
             <div class="col">
-                <button class="btn btn-primary" type="submit">New Recommendation</button>
+                <button class="btn btn-primary" type="submit" [disabled]="postingRecommendation">
+                    New Recommendation
+                    <mat-progress-bar *ngIf="postingRecommendation" mode="indeterminate"></mat-progress-bar>
+                </button>
             </div>
 
         </form>

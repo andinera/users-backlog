@@ -94,6 +94,19 @@ public class IdeaController {
     //     }
     // }
 
+    @GetMapping(path = "getInnovatorVotes")
+    public ResponseEntity<?> getInnovatorVotes(
+        @RequestParam final Long ideaId,
+        @RequestParam final Long innovatorId
+    ) {
+        try {
+            return ResponseEntity.ok(ideaService.getInnovatorVotes(ideaId, innovatorId));
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     @PostMapping(path = "postVote")
     public ResponseEntity<?> postVote(
         @RequestParam final Boolean up,

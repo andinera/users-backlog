@@ -12,7 +12,9 @@
         </div>
 
         <div class="col">
-            <mat-checkbox [formControl]="accountForm.controls.hideEmailAddress">Hide Email Address</mat-checkbox>
+            <mat-checkbox [formControl]="accountForm.controls.hideEmailAddress">
+                Hide Email Address
+            </mat-checkbox>
         </div>
 
         <div class="col">
@@ -23,7 +25,10 @@
         </div>
 
         <div class="col">
-            <button class="btn btn-primary" type="submit">Update</button>
+            <button class="btn btn-primary" type="submit" [disabled]="updatingAccount">
+                Update
+                <mat-progress-bar *ngIf="updatingAccount" mode="indeterminate"></mat-progress-bar>
+            </button>
         </div>
 
     </form>

@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { tap, catchError, first, takeUntil } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
+import { tap, catchError, first, takeUntil, finalize } from 'rxjs/operators';
 
 import { IdeaService } from 'src/app/services/idea.service';
 import { Idea } from 'src/app/models/idea.model';
@@ -19,9 +19,10 @@ import { CategoryForm } from 'src/app/models/forms/category.form';
 export class NewIdeaComponent implements OnInit, OnDestroy {
   
   categoryForm: FormGroup;
-  ideaForm: FormGroup;
   categoryOptions: Category[];
-  idea: Idea;
+  
+  ideaForm: FormGroup;
+  postingIdea = false;
     
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -74,6 +75,7 @@ export class NewIdeaComponent implements OnInit, OnDestroy {
     if(this.ideaForm.invalid) {
       this.ideaForm.markAllAsTouched();
     } else {
+      this.postingIdea = true;
       this._ideaService.postIdea(idea).pipe(
         first(),
         tap((newIdea: Idea) => {
@@ -86,6 +88,9 @@ export class NewIdeaComponent implements OnInit, OnDestroy {
           console.error(e);
           this._snackBar.open('Failed to create idea.', 'Close');
           return of(null);
+        }),
+        finalize(() => {
+          this.postingIdea = false;
         })
       ).subscribe();
     }

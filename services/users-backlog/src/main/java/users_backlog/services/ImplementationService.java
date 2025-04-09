@@ -1,6 +1,8 @@
 package users_backlog.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,6 +92,15 @@ public class ImplementationService {
 
     public Boolean disassociateWithIdea(final Implementation implementation, final Long ideaId) {
         return implementationDAO.disassociateWithIdea(implementation, ideaId);
+    }
+
+    public Map<String, Map<Long, Boolean>> getInnovatorVotes(final Long implementationId, final Long innovatorId) {
+        Map<String, Map<Long, Boolean>> votes = new HashMap<>();
+        Map<Long, Boolean> implementationsVotes = new HashMap<>();
+        votes.put("implementations", implementationsVotes);
+        implementationsVotes.put(implementationId, implementationDAO.getVote(implementationId, innovatorId));
+        votes.put("recommendations", implementationDAO.getRecommendationsVotes(implementationId, innovatorId));
+        return votes;
     }
 
     public Long postVote(Implementation implementation, Innovator innovator, Boolean up) {

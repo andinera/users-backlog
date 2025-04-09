@@ -7,7 +7,9 @@ import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -234,8 +236,8 @@ public class IdeaDAO extends DAO {
             log.severe(e.getMessage());
         }
 
-        Idea updatedIdea = this.getIdea(idea.getSummary());
-        return associateCategoriesWithIdea(updatedIdea);
+        idea.setId(this.getIdea(idea.getSummary()).getId());
+        return associateCategoriesWithIdea(idea);
     }
 
     private final String DISASSOCIATE_IDEA_WITH_CATEGORY =
@@ -353,11 +355,15 @@ public class IdeaDAO extends DAO {
             "AND innovator_id = ?)";
 
     public Boolean getVote(final Idea idea, final Innovator innovator) {
+        return getVote(idea.getId(), innovator.getId());
+    }
+
+    public Boolean getVote(final Long ideaId, final Long innovatorId) {
         Boolean vote = null;
         try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_VOTE)) {
             int i = 1;
-            ps.setLong(i++, idea.getId());
-            ps.setLong(i++, innovator.getId());
+            ps.setLong(i++, ideaId);
+            ps.setLong(i++, innovatorId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     vote = rs.getLong("vote") == 1;
@@ -588,6 +594,34 @@ public class IdeaDAO extends DAO {
             log.severe(e.getMessage());
         }
         return vote;
+    }
+
+    private final String GET_RECOMMENDATIONS_VOTES = 
+        "SELECT " +
+            "ir.id, " +
+            "iv.vote " +
+        "FROM idea_recommendation ir " +
+        "INNER JOIN idea_recommendation_vote iv " +
+            "ON iv.idea_recommendation_id = ir.id " +
+        "WHERE (ir.idea_id = ? " +
+            "AND ir.innovator_id = ?)";
+
+    public Map<Long, Boolean> getRecommendationsVotes(final Long ideaId, final Long innovatorId) {
+        Map<Long, Boolean> votes = new HashMap<>();
+        try (Connection connection = dataSource.getConnection(); PreparedStatement ps = connection.prepareStatement(GET_RECOMMENDATIONS_VOTES)) {
+            int i = 1;
+            ps.setLong(i++, ideaId);
+            ps.setLong(i++, innovatorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    votes.put(rs.getLong("id"), rs.getLong("vote") == 1);
+                }
+            }
+        } catch (final Exception e) {
+            votes = null;
+            log.severe(e.getMessage());
+        }
+        return votes;
     }
 
     private final String INSERT_RECOMMENDATION_REPLY =

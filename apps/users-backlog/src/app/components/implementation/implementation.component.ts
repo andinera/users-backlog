@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { tap, first, catchError, takeUntil } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
 import { of, ReplaySubject } from 'rxjs';
+import { tap, first, catchError, takeUntil, finalize } from 'rxjs/operators';
 
 import { Implementation } from 'src/app/models/implementation.model';
 import { ImplementationService } from 'src/app/services/implementation.service';
@@ -18,6 +19,7 @@ import { Product } from 'src/app/models/product.model';
 import { IdeaAssociationForm } from 'src/app/models/forms/idea-association.form';
 import { SearchService } from 'src/app/services/search.service';
 import { Idea } from 'src/app/models/idea.model';
+import { ProductDialogComponent } from './product-dialog/product-dialog.component';
 
 @Component({
   selector: 'app-implementation',
@@ -29,21 +31,32 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   @ViewChild("newProduct") private newProductDropdown: ElementRef;
 
   implementation: Implementation;
+  implementationVote: boolean;
+  recommendationVotes: any;
+  claimingOwnership = false;
 
   productForm: FormGroup;
   editProductForm: FormGroup;
   editedProduct: Product;
+  postingProduct = false;
+  deletingProduct = false;
 
   ideaAssociationForm: FormGroup;
   ideaOptions: Idea[] = [];
+  associatingIdea = false;
+  disassociatingIdea = false;
   
   recommendationForm: FormGroup;
   editRecommendationForm: FormGroup;
   editedRecommendation: Recommendation<Implementation>;
+  postingRecommendation = false;
+  deletingRecommendation = false;
 
   replyForm: FormGroup;
   editReplyForm: FormGroup;
   editedReply: Reply<Implementation>;
+  postingReply = false;
+  deletingReply = false;
     
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -55,7 +68,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     public readonly innovatorService: InnovatorService,
     private readonly _sessionStorageService: SessionStorageService,
     private readonly _searchService: SearchService,
-    private readonly _snackBar: MatSnackBar
+    private readonly _snackBar: MatSnackBar,
+    private readonly _dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -97,8 +111,10 @@ export class ImplementationComponent implements OnInit, OnDestroy {
 
     this._route.data.pipe(
       first(),
-      tap((data: {implementation: Implementation}) => {
+      tap((data: {implementation: Implementation, votes: any}) => {
         this.implementation = data.implementation;
+        this.implementationVote = data.votes.implementations[this.implementation.id];
+        this.recommendationVotes = data.votes.recommendations;
 
         let parameters = this._sessionStorageService.retrieveData('postImplementationVote');
         if (parameters) {
@@ -174,6 +190,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     if (productForm.invalid) {
       productForm.markAllAsTouched()
     } else {
+      this.postingProduct = true;
       const product = productForm.value as Product;
       product.implementation = this.implementation;
       this._implementationService.postProduct(product).pipe(
@@ -189,12 +206,16 @@ export class ImplementationComponent implements OnInit, OnDestroy {
           this._snackBar.open('Failed to post product.', 'Close');
           return of(null);
         }),
-        takeUntil(this._destroyed$)
+        takeUntil(this._destroyed$),
+        finalize(() => {
+          this.postingProduct = false;
+        })
       ).subscribe();
     }
   }
 
   public deleteProduct(product: Product): void {
+    this.deletingProduct = true;
     this._implementationService.deleteProduct(product).pipe(
       first(),
       tap((deleted: boolean) => {
@@ -210,17 +231,17 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         console.error(e);
         this._snackBar.open('Failed to delete product.', 'Close');
         return of(null);
+      }),
+      finalize(() => {
+        this.deletingProduct = false;
       })
     ).subscribe();
   }
 
   public openProductUrl(url: string) {
-    try {
-      const parsedURL = new URL(url);
-      window.open(parsedURL.href, '_blank');
-    } catch (error) {
-      console.error(error);
-    }
+    this._dialog.open(ProductDialogComponent, {
+      data: {url: url}
+    });
   }
 
   public openProductEdit(product: Product) {
@@ -237,6 +258,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   }
 
   public associateWithIdea() {
+    this.associatingIdea = true;
     const idea = this.ideaOptions.filter(idea => idea.summary === this.ideaAssociationForm.controls.summary.value)[0];
     this._implementationService.associateWithIdea(this.implementation, idea).pipe(
       first(),
@@ -250,11 +272,15 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         console.error(e);
         this._snackBar.open('Failed to associate with idea.', 'Close');
         return of(null);
+      }),
+      finalize(() => {
+        this.associatingIdea = false;
       })
     ).subscribe();
   }
 
   public disassociateWithIdea(idea: Idea) {
+    this.disassociatingIdea = true;
     this._implementationService.disassociateWithIdea(this.implementation, idea).pipe(
       first(),
       tap((removed: boolean) => {
@@ -267,6 +293,9 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         console.error(e);
         this._snackBar.open('Failed to disassociate with idea.', 'Close');
         return of(null);
+      }),
+      finalize(() => {
+        this.disassociatingIdea = false;
       })
     ).subscribe();
   }
@@ -276,6 +305,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       first(),
       tap((votes: number) => {
         this.implementation.votes = votes;
+        this.implementationVote = up;
       }),
       catchError((error: any) => {
         console.error(error);
@@ -291,6 +321,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     if (recommendationForm.controls.message.value.length === 0) {
       recommendationForm.markAllAsTouched();
     } else {
+      this.postingRecommendation = true;
       recommendation.parent = this.implementation;
       this._implementationService.postRecommendation(recommendation).pipe(
         first(),
@@ -310,12 +341,16 @@ export class ImplementationComponent implements OnInit, OnDestroy {
           console.error(e);
           this._snackBar.open('Failed to post recommendation.', 'Close');
           return of(null);
+        }),
+        finalize(() => {
+          this.postingRecommendation = false;
         })
       ).subscribe();
     }
   }
 
   public deleteRecommendation(recommendation: Recommendation<Implementation>): void {
+    this.deletingRecommendation = true;
     this._implementationService.deleteRecommendation(recommendation).pipe(
       first(),
       tap((deleted: boolean) => {
@@ -331,6 +366,9 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         console.error(e);
         this._snackBar.open('Failed to delete recommendation.', 'Close');
         return of(null);
+      }),
+      finalize(() => {
+        this.deletingRecommendation = false;
       })
     ).subscribe();
   }
@@ -340,6 +378,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       first(),
       tap((votes: number) => {
         recommendation.votes = votes;
+        this.recommendationVotes[recommendation.id] = up;
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {
@@ -364,6 +403,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     if (!replyForm.controls.message.value) {
       replyForm.markAllAsTouched();
     } else {
+      this.postingReply = true;
       reply.recommendation = recommendation;
       this._implementationService.postRecommendationReply(reply).pipe(
         first(),
@@ -386,12 +426,16 @@ export class ImplementationComponent implements OnInit, OnDestroy {
           console.error(e);
           this._snackBar.open('Failed to post reply.', 'Close');
           return of(null);
+        }),
+        finalize(() => {
+          this.postingReply = false;
         })
       ).subscribe();
     }
   }
 
   public deleteRecommendationReply(reply: Reply<Implementation>, recommendation: Recommendation<Implementation>): void {
+    this.deletingReply = true;
     this._implementationService.deleteRecommendationReply(reply).pipe(
       first(),
       tap((deleted: boolean) => {
@@ -407,6 +451,9 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         console.error(e);
         this._snackBar.open('Failed to delete reply.', 'Close');
         return of(null);
+      }),
+      finalize(() => {
+        this.deletingReply = false;
       })
     ).subscribe();
   }
@@ -421,6 +468,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   }
 
   public claimOwnership(): void {
+    this.claimingOwnership = true;
     const innovator = this.innovatorService.innovator$.value;
     this.implementation.innovator = innovator;
     this._implementationService.postImplementation(this.implementation).pipe(
@@ -433,6 +481,9 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         console.error(e);
         this._snackBar.open('Failed to claim ownership.', 'Close');
         return of(null);
+      }),
+      finalize(() => {
+        this.claimingOwnership = false;
       })
     ).subscribe();
   }
