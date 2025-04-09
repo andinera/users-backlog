@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 
 import { Implementation } from '../models/implementation.model';
 import { Recommendation } from '../models/recommendation.model';
@@ -50,7 +50,7 @@ export class ImplementationService extends Service {
     if (!innovator) {
       this._sessionStorageService.storeData('postVote', {implementationId: implementationId, up: up});
       this._router.navigate(['/log-in']);
-      return of(null);
+      return throwError('Not logged in.');
     } else {
       const model = {idToken: innovator.idToken};
       const parameters = `implementationId=${implementationId}&up=${up}`;
@@ -59,8 +59,15 @@ export class ImplementationService extends Service {
   }
 
   postRecommendation(recommendation: Recommendation): Observable<Recommendation> {
-    recommendation.idToken = this._innovatorService.innovator$.value.idToken;
-    return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation);
+    const innovator = this._innovatorService.innovator$.value;
+    if (!innovator) {
+      this._sessionStorageService.storeData('postRecommendation', {recommendation: recommendation});
+      this._router.navigate(['/log-in']);
+      return throwError('Not logged in.');
+    } else {
+      recommendation.idToken = this._innovatorService.innovator$.value.idToken;
+      return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation);
+    }
   }
 
   postRecommendationVote(recommendationId: number, up: boolean): Observable<number> {
@@ -68,7 +75,7 @@ export class ImplementationService extends Service {
     if (!innovator) {
       this._sessionStorageService.storeData('postRecommendationVote', {recommendationId: recommendationId, up: up});
       this._router.navigate(['/log-in']);
-      return of(null);
+      return throwError('Not logged in.');
     } else {
       const model = {idToken: this._innovatorService.innovator$.value.idToken};
       const parameters = `recommendationId=${recommendationId}&up=${up}`;
@@ -77,7 +84,14 @@ export class ImplementationService extends Service {
   }
 
   postRecommendationReply(reply: Reply): Observable<Reply> {
-    reply.idToken = this._innovatorService.innovator$.value.idToken;
-    return this._http.post<Reply>(`${this._serviceURL}postRecommendationReply`, reply);
+    const innovator = this._innovatorService.innovator$.value;
+    if (!innovator) {
+      this._sessionStorageService.storeData('postRecommendationReply', {reply: reply});
+      this._router.navigate(['/log-in']);
+      return throwError('Not logged in.');
+    } else {
+      reply.idToken = this._innovatorService.innovator$.value.idToken;
+      return this._http.post<Reply>(`${this._serviceURL}postRecommendationReply`, reply);
+    }
   }
 }

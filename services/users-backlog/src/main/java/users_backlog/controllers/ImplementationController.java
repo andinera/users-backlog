@@ -99,11 +99,10 @@ public class ImplementationController {
 
     @PostMapping(path = "postRecommendation")
     public ResponseEntity<?> postRecommendation(
-        @RequestBody final Recommendation recommendation,
-        @RequestBody final Model model
+        @RequestBody final Recommendation recommendation
     ) {
         try {
-            firebaseService.verifyToken(model.getIdToken());
+            firebaseService.verifyToken(recommendation.getIdToken());
             return ResponseEntity.ok(implementationService.postRecommendation(recommendation));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

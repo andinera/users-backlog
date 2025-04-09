@@ -53,10 +53,23 @@ export class ImplementationComponent implements OnInit, OnDestroy {
           this.postVote(parameters.up);
         }
     
+        parameters = this._sessionStorageService.retrieveData('postRecommendation');
+        if (parameters) {
+          this.recommendationForm.patchValue(parameters.recommendation);
+          this.postRecommendation(this.recommendationForm);
+        }
+    
         parameters = this._sessionStorageService.retrieveData('postRecommendationVote');
         if (parameters) {
           const recommendation = this.implementation.recommendations.filter(r => r.id = parameters.recommendationId)[0];
           this.postRecommendationVote(recommendation, parameters.up);
+        }
+    
+        parameters = this._sessionStorageService.retrieveData('postRecommendationReply');
+        if (parameters) {
+          this.replyForm.patchValue(parameters.reply);
+          const recommendation = this.implementation.recommendations.filter(r => r.id = parameters.reply.recommendation.id)[0];
+          this.postReply(this.replyForm, recommendation);
         }
       }),
       catchError((error: any) => {
