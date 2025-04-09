@@ -22,6 +22,11 @@ public class ImplementationController {
 
     @Autowired ImplementationDAO implementationDAO;
 
+    @GetMapping(path= "getImplementation")
+    public Implementation getImplementation(@RequestParam final String name) {
+        return implementationDAO.getImplementation(name);
+    }
+
     @GetMapping(path= "getImplementations")
     public List<Implementation> getImplementations(@RequestParam final String summary) {
         return implementationDAO.getImplementations(summary);

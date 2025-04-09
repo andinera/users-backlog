@@ -27,7 +27,7 @@ export class LoginComponent {
 
   login(form: FormGroup): void {
     const innovator: Innovator = form.value;
-    this.innovatorService.getInnovator(innovator).subscribe((innovator: Innovator) => {
+    this.innovatorService.getInnovator(innovator.emailAddress).subscribe((innovator: Innovator) => {
       if (innovator) {
         this.router.navigate([this.urlService.previousURL]);
       } else {

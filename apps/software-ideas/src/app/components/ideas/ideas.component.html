@@ -1,5 +1,3 @@
-<button routerLink="/addIdea">Add Idea</button>
-
 <p *ngFor="let idea of ideas">
     <button routerLink="/idea/{{idea.summary}}">{{idea.summary}}</button>
 </p>

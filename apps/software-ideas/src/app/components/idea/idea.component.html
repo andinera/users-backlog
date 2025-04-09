@@ -2,12 +2,12 @@ Summary: {{idea.summary}}
 <br/>
 Description: {{idea.description}}
 <br/>
-Innovator: {{idea.innovator.emailAddress}}
+Innovator: <button routerLink="/innovator/{{idea.innovator.emailAddress}}">{{idea.innovator.emailAddress}}</button>
 <br/>
 Implementations: 
-<span *ngFor="let implementation of idea.implementations">
-    <a href="{{implementation.source}}">{{implementation.source}}</a>
-</span>
+<div *ngFor="let implementation of idea.implementations">
+    <button routerLink="/implementation/{{implementation.name}}">{{implementation.name}}</button>
+</div>
 <br/>
 <button class="button" type="button" (click)="delete()" [disabled]="deleteDisabled">Delete Idea</button>
 

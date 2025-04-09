@@ -15,6 +15,10 @@ export class ImplementationService {
     private readonly http: HttpClient
   ) { }
 
+  getImplementation(name: string): Observable<Implementation> {
+    return this.http.get<Implementation>(`${this.serviceURL}getImplementation?name=${encodeURIComponent(name)}`);
+  }
+
   postImplementation(implementation: Implementation): Observable<Implementation> {
     return this.http.post<Implementation>(`${this.serviceURL}postImplementation`, implementation);
   }

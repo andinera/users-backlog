@@ -5,6 +5,7 @@ public class Implementation {
     private String source;
     private Innovator implementer;
     private Idea idea;
+    private String name;
 
     public Implementation() {
     }
@@ -31,5 +32,13 @@ public class Implementation {
 
     public void setIdea(Idea idea) {
         this.idea = idea;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

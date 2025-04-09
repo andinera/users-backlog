@@ -4,5 +4,6 @@ import { Idea } from './idea';
 export interface Implementation {
     source: string,
     implementer: Innovator,
-    idea: Idea
+    idea: Idea,
+    name: string
 }

@@ -16,11 +16,11 @@ export class InnovatorService {
 
   constructor(private readonly http: HttpClient) { }
 
-  getInnovator(innovator: Innovator): Observable<Innovator> {
+  getInnovator(emailAddress: string): Observable<Innovator> {
     if (this.innovator) {
       return of(this.innovator);
     } else {
-      return this.http.get<Innovator>(`${this.serviceURL}getInnovator?emailAddress=${encodeURIComponent(innovator.emailAddress)}`).pipe(
+      return this.http.get<Innovator>(`${this.serviceURL}getInnovator?emailAddress=${encodeURIComponent(emailAddress)}`).pipe(
         tap((innovator: Innovator) => {
           this.innovator = innovator;
         })

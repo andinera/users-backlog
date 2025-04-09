@@ -15,6 +15,10 @@ import { AuthGuard } from './guards/auth.guard';
 import { IdeaResolver } from './resolvers/idea.resolver';
 import { LostComponent } from './components/lost/lost.component';
 import { LoginComponent } from './components/login/login.component';
+import { ImplementationComponent } from './components/implementation/implementation.component';
+import { ImplementationResolver } from './resolvers/implementation.resolver';
+import { InnovatorComponent } from './components/innovator/innovator.component';
+import { InnovatorResolver } from './resolvers/innovator.resolver';
 
 const routes: Routes = [
   {
@@ -26,6 +30,20 @@ const routes: Routes = [
     component: IdeaComponent,
     resolve: {
       idea: IdeaResolver
+    }
+  },
+  {
+    path: 'implementation/:name',
+    component: ImplementationComponent,
+    resolve: {
+      implementation: ImplementationResolver
+    }
+  },
+  {
+    path: 'innovator/:emailAddress',
+    component: InnovatorComponent,
+    resolve: {
+      innovator: InnovatorResolver
     }
   },
   {
@@ -55,7 +73,9 @@ const routes: Routes = [
     IdeasComponent,
     AddIdeaComponent,
     LostComponent,
-    LoginComponent
+    LoginComponent,
+    ImplementationComponent,
+    InnovatorComponent
   ],
   imports: [
     BrowserModule,
