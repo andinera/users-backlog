@@ -1,6 +1,40 @@
-.mat-card-content {
-    display: inline-block;
-    width: 100px;
-    height: 100px;
+:host {
+    --card-block-button-width: 25px;
+}
+
+.card-block-container {
+    margin-left: var(--card-block-button-width);
+    margin-right: var(--card-block-button-width);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.card-block {
+    white-space: normal;
+    text-align: center;
+    height: auto;
+    min-height: 100px;
+    max-height: 100px;
+    width: auto;
+    min-width: 200px;
+    max-width: 200px;
     border: 1px solid black;
+    display: inline-grid;
+}
+
+.card-block:hover {
+    transform: scale(1.25, 1.25);
+    transition: all .25s;
+}
+
+.card-block-button {
+    z-index: 1;
+    position: absolute;
+    height: 100px;
+    width: var(--card-block-button-width);
+    min-width: var(--card-block-button-width);
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    /* background-color: var(--clr-header-6-bg-color); */
 }

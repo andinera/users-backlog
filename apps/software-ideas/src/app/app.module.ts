@@ -10,6 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ClarityModule } from '@clr/angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -37,8 +38,10 @@ import { CategoryComponent } from './components/category/category.component';
     CategoryComponent
   ],
   imports: [
+    AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
+    ClarityModule,
     FormsModule,
     HttpClientModule,
     MatButtonModule,
@@ -48,8 +51,7 @@ import { CategoryComponent } from './components/category/category.component';
     MatMenuModule,
     MatSelectModule,
     MatToolbarModule,
-    ReactiveFormsModule,
-    AppRoutingModule
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

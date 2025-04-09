@@ -1,10 +1,14 @@
-<mat-card *ngFor="let cOfI of categoriesOfIdeas">
-    <mat-card-header routerLink="/category/{{cOfI.category.name}}">
-        <mat-card-title>
-            {{cOfI.category.name}}
-        </mat-card-title>
-    </mat-card-header>
-    <mat-card-content *ngFor="let idea of cOfI.ideas" routerLink="/idea/{{idea.summary}}">
-        {{idea.summary}}
-    </mat-card-content>
-</mat-card>
+<div class="card" *ngFor="let cOfI of categoriesOfIdeas">
+    <div class="card-header">
+        {{cOfI.category.name}}
+    </div>
+    <button attr.id="left-button-{{cOfI.category.name}}" class="card-block-button" style="left:0" (click)="onLeftClick($event, cOfI.category.name)"><clr-icon shape="rewind"></clr-icon></button>
+    <button class="card-block-button" style="right:0" (click)="onRightClick($event, cOfI.category.name)"><clr-icon shape="fast-forward"></clr-icon></button>
+    <div [attr.id]="cOfI.category.name" class="card-block-container">
+        <div class="card-block" *ngFor="let idea of cOfI.ideas" routerLink="/idea/{{idea.summary}}">
+            <div class="card-title">
+                {{idea.summary}}
+            </div>
+        </div>
+    </div>
+</div>

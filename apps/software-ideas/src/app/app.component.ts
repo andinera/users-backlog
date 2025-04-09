@@ -13,6 +13,7 @@ import { URLService } from './services/url.service';
 export class AppComponent implements OnInit, OnDestroy {
 
     loggedIn = false;
+    userName = 'guest';
     
     private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -26,6 +27,11 @@ export class AppComponent implements OnInit, OnDestroy {
         this._authenticationService.innovator.pipe(
             tap((innovator: Innovator) => {
                 this.loggedIn = (!!innovator);
+                if (innovator) {
+                    this.userName = innovator.emailAddress;
+                } else {
+                    this.userName = 'guest';
+                }
             }),
             catchError((error: any) => {
                 console.log(error);
