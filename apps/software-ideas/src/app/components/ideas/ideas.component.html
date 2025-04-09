@@ -1,33 +1,9 @@
-<div class="card" *ngFor="let cOfI of categoriesOfIdeas">
-
-    <a class="card-header" routerLink="/category/{{cOfI.category.name}}">
-        {{cOfI.category.name}}
-    </a>
-
-    <div class="card-block-button-container left-card-block-button-container">
-        <button
-            class="card-block-button"
-            attr.id="left-button-{{cOfI.category.name}}"
-            (click)="onLeftClick($event, cOfI.category.name)">
-            <clr-icon shape="rewind"></clr-icon>
-        </button>
-    </div>
-
-    <div class="card-block-button-container right-card-block-button-container">
-        <button
-            class="card-block-button"
-            (click)="onRightClick($event, cOfI.category.name)">
-            <clr-icon shape="fast-forward"></clr-icon>
-        </button>
-    </div>
-
-    <div
-        class="card-block-container"
-        [attr.id]="cOfI.category.name">
-        <a class="card-block" *ngFor="let idea of cOfI.ideas" routerLink="/idea/{{idea.summary}}">
-            <div class="card-title">
+<mat-tab-group>
+    <mat-tab *ngFor="let category of categories" [label]="category.name">
+        <mat-nav-list>
+            <a mat-list-item *ngFor="let idea of category.ideas" routerLink="/Idea/{{idea.summary}}">
                 {{idea.summary}}
-            </div>
-        </a>
-    </div>
-</div>
+            </a>
+        </mat-nav-list>
+    </mat-tab>
+</mat-tab-group>

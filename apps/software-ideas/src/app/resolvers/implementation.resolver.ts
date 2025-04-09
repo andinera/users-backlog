@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { Observable, of, EMPTY } from 'rxjs';
-import { first, mergeMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { first, map } from 'rxjs/operators';
 
 import { Implementation } from '../models/implementation';
 import { ImplementationService } from '../services/implementation.service';
@@ -18,15 +18,14 @@ export class ImplementationResolver implements Resolve<Implementation> {
     private readonly _router: Router
   ) { }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Implementation> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Implementation> {
     return this._implementationService.getImplementation(route.paramMap.get('name')).pipe(
       first(),
-      mergeMap((implementation: Implementation) => {
+      map((implementation: Implementation) => {
         if (implementation) {
-          return of(implementation);
+          return implementation;
         } else {
           this._router.navigate([this._urlService.previousURL]);
-          return EMPTY;
         }
       })
     );

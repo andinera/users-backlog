@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Resolve, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Observable, of, EMPTY } from 'rxjs';
-import { first, mergeMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { first, map } from 'rxjs/operators';
 
 import { Category } from '../models/category';
 import { CategoryService } from '../services/category.service';
@@ -18,15 +18,14 @@ export class CategoriesResolver implements Resolve<Category[]> {
     private readonly _urlService: URLService
   ) { }
   
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Category[]> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Category[]> {
     return this._categoryService.getAllCategories().pipe(
       first(),
-      mergeMap((categories: Category[]) => {
+      map((categories: Category[]) => {
         if (categories) {
-          return of(categories);
+          return categories;
         } else {
           this._router.navigate([this._urlService.previousURL]);
-          return EMPTY;
         }
       })
     );

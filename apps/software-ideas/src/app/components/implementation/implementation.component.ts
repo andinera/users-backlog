@@ -7,7 +7,8 @@ import { Implementation } from 'src/app/models/implementation';
 
 @Component({
   selector: 'app-implementation',
-  templateUrl: './implementation.component.html'
+  templateUrl: './implementation.component.html',
+  styleUrls: ['./implementation.component.css']
 })
 export class ImplementationComponent implements OnInit, OnDestroy {
 

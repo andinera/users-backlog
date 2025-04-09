@@ -1,3 +1,6 @@
+import { Idea } from './idea';
+
 export interface Category {
-    name: string
+    name: string,
+    ideas: Idea[]
 }

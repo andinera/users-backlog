@@ -1,18 +1,25 @@
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>
-            {{implementation.name}}
-        </mat-card-title>
-        <mat-card-subtitle routerLink="/innovator/{{implementation.innovator.emailAddress}}">{{implementation.innovator.emailAddress}}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-        {{implementation.description}}
-    </mat-card-content>
-    <mat-card-actions>
-        Products:
-        <div *ngFor="let product of implementation.products">
-            <a href="{{product.url}}">{{product.url}}</a>
-            <div>{{product.description}}</div>
-        </div>
-    </mat-card-actions>
-</mat-card>
+<mat-tab-group>
+    <mat-tab label="Products">
+        <span style="color:red">
+            <mat-icon>warning</mat-icon>
+            These links may load an external webpage.
+        </span>
+        <mat-nav-list>
+            <a mat-list-item *ngFor="let product of implementation.products" href="{{product.url}}" target="_blank">
+                {{implementation.name}}
+            </a>
+        </mat-nav-list>
+    </mat-tab>
+    <mat-tab label="Innovator">
+        <mat-nav-list>
+            <a mat-list-item routerLink="/Innovator/{{implementation.innovator.emailAddress}}">{{implementation.innovator.emailAddress}}</a>
+        </mat-nav-list>
+    </mat-tab>
+    <mat-tab label="Ideas">
+        <mat-nav-list>
+            <a mat-list-item *ngFor="let idea of implementation.ideas" routerLink="/Idea/{{idea.summary}}">
+                {{implementation.name}}
+            </a>
+        </mat-nav-list>
+    </mat-tab>
+</mat-tab-group>

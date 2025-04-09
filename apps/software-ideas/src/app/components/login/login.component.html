@@ -1,31 +1,28 @@
-
-<mat-accordion>
-    <mat-expansion-panel [expanded]="true">
-        <form [formGroup]="loginForm" (ngSubmit)="login(loginForm)">
-
-            <div>
-                <mat-form-field>
-                    <mat-label for="emailAddress">Email Address</mat-label>
-                    <input matInput id="emailAddress" [formControl]="loginForm.controls.emailAddress">
-                    <mat-error *ngIf="loginForm.controls.emailAddress.hasError('email') && !loginForm.controls.emailAddress.hasError('requred')">
-                        Please enter a valid email address
-                    </mat-error>
-                    <mat-error *ngIf="loginForm.controls.emailAddress.hasError('required')">
-                        Email is <strong>required</strong>
-                    </mat-error>
-                </mat-form-field>
-            </div>
+<form (ngSubmit)="login(loginForm)" style="margin:.84375em">
+    
+    <div>
+        <mat-form-field appearance="fill">
+            <mat-label for="emailAddress">Email Address</mat-label>
+            <input matInput required [formControl]="loginForm.controls.emailAddress">
+            <mat-error *ngIf="loginForm.controls.emailAddress.hasError('email') && !loginForm.controls.emailAddress.hasError('requred')">
+                Please enter a valid email address
+            </mat-error>
+            <mat-error *ngIf="loginForm.controls.emailAddress.hasError('required')">
+                Email is <strong>required</strong>
+            </mat-error>
+        </mat-form-field>
+    </div>
         
-            <div>
-                <button mat-stroked-button type="submit" [disabled]="loginForm.invalid">Login</button>
-                <button mat-stroked-button type="button" [disabled]="loginForm.invalid" (click)="createAccount(loginForm)">Create Account</button>
-                <mat-error *ngIf="loginFailed">
-                    Invalid email address
-                </mat-error>
-                <mat-error *ngIf="createAccountFailed">
-                    Email address already exists
-                </mat-error>
-            </div>
-        </form>
-    </mat-expansion-panel>
-</mat-accordion>
+    <div>
+        <button mat-flat-button color="primary" type="submit">Login</button>
+        <button mat-stroked-button type="button" (click)="createAccount(loginForm)">Create Account</button>
+        <mat-error *ngIf="loginFailed">
+            Invalid email address
+        </mat-error>
+        <mat-error *ngIf="createAccountFailed">
+            Email address already exists
+        </mat-error>
+    </div>
+
+</form>
+

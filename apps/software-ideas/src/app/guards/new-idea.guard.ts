@@ -9,7 +9,7 @@ import { Innovator } from '../models/innovator';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate {
+export class NewIdeaGuard implements CanActivate {
 
   constructor(
     private readonly _authenticationService: AuthenticationService,
@@ -27,7 +27,7 @@ export class AuthGuard implements CanActivate {
           if (innovator) {
             return true;
           } else {
-            this._router.navigate(['/login']);
+            this._router.navigate(['Login']);
           }
       }))
     }

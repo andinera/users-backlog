@@ -11,10 +11,11 @@ import { IdeaForm } from 'src/app/models/forms/idea.form';
 import { CategoryForm } from 'src/app/models/forms/category.form';
 
 @Component({
-  selector: 'app-add-idea',
-  templateUrl: './add-idea.component.html'
+  selector: 'app-new-idea',
+  templateUrl: './new-idea.component.html',
+  styleUrls: ['./new-idea.component.css']
 })
-export class AddIdeaComponent implements OnInit, OnDestroy {
+export class NewIdeaComponent implements OnInit, OnDestroy {
   
   categoryForm: FormGroup;
   ideaForm: FormGroup;
@@ -53,20 +54,23 @@ export class AddIdeaComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(idea: Idea) {
-    console.log(idea);
-    this._ideaService.postIdea(idea).pipe(
-      first(),
-      tap((newIdea: Idea) => {
-        if (newIdea) {
-          this._router.navigateByUrl('/ideas');
-        }
-      }),
-      takeUntil(this._destroyed$),
-      catchError((e: any) => {
-        console.log(e);
-        return of(null);
-      })
-    ).subscribe();
+    if(this.ideaForm.invalid) {
+      this.ideaForm.markAllAsTouched();
+    } else {
+      this._ideaService.postIdea(idea).pipe(
+        first(),
+        tap((newIdea: Idea) => {
+          if (newIdea) {
+            this._router.navigateByUrl(`/Idea/${newIdea.summary}`);
+          }
+        }),
+        takeUntil(this._destroyed$),
+        catchError((e: any) => {
+          console.log(e);
+          return of(null);
+        })
+      ).subscribe();
+    }
   }
 
   addCategory(category: Category) {

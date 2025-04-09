@@ -18,7 +18,8 @@ import idea_service.models.Product;
 public class ProductDAO {
     
     private final String GET_PRODUCTS = 
-        "SELECT p.url, " +
+        "SELECT " +
+            "p.url, " +
             "p.description " +
         "FROM product p " +
         "WHERE p.implementation_name = ?";

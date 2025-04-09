@@ -7,7 +7,8 @@ import { Innovator } from 'src/app/models/innovator';
 
 @Component({
   selector: 'app-innovator',
-  templateUrl: './innovator.component.html'
+  templateUrl: './innovator.component.html',
+  styleUrls: ['./innovator.component.css']
 })
 export class InnovatorComponent implements OnInit, OnDestroy {
 

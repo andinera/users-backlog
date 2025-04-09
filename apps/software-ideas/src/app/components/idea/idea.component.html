@@ -1,28 +1,37 @@
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>{{idea.summary}}</mat-card-title>
-        <mat-card-subtitle routerLink="/innovator/{{idea.innovator.emailAddress}}">{{idea.innovator.emailAddress}}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-        {{idea.description}}
-    </mat-card-content>
-    <mat-card-actions>
-        Implementations:
-        <div *ngFor="let implementation of idea.implementations">
-            <button mat-stroked-button routerLink="/implementation/{{implementation.name}}">{{implementation.name}}</button>
-        </div>
-        <div *ngIf="!deleteDisabled">
-            <button mat-stroked-button type="button" (click)="delete()">Delete Idea</button>
-        </div>
-    </mat-card-actions>
-    <mat-card-footer>
+<mat-tab-group [animationDuration]="0" [selectedIndex]="selectedIndex" (selectedTabChange)="onSelectedTabChange($event)">
+
+    <mat-tab [label]="tabLabels[0]">
+        <p>
+            {{idea.description}}
+        </p>
+    </mat-tab>
+
+    <mat-tab [label]="tabLabels[1]">
+        <mat-nav-list>
+            <a mat-list-item *ngFor="let implementation of idea.implementations" routerLink="/Implementation/{{implementation.name}}">
+                {{implementation.name}}
+            </a>
+        </mat-nav-list>
         <mat-accordion>
-            <mat-expansion-panel>
+            <mat-expansion-panel [disabled]="!(authenticationService.innovator | async)">
                 <mat-expansion-panel-header>
-                    Add Implementation
+                    <mat-panel-title>
+                        New Implementation
+                    </mat-panel-title>
                 </mat-expansion-panel-header>
-                <app-add-implementation [idea]="idea"></app-add-implementation>
+                <app-new-implementation [idea]="idea"></app-new-implementation>
             </mat-expansion-panel>
         </mat-accordion>
-    </mat-card-footer>
-</mat-card>
+    </mat-tab>
+
+    <mat-tab [label]="tabLabels[2]">
+        <mat-nav-list>
+            <a mat-list-item routerLink="/Innovator/{{idea.innovator.emailAddress}}">{{idea.innovator.emailAddress}}</a>
+        </mat-nav-list>
+    </mat-tab>
+
+    <mat-tab [label]="tabLabels[3]">
+
+    </mat-tab>
+
+</mat-tab-group>

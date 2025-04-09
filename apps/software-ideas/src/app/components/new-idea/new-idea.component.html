@@ -1,9 +1,9 @@
-<form (ngSubmit)="onSubmit(ideaForm.value)">
+<form (ngSubmit)="onSubmit(ideaForm.value)" style="margin:.84375em">
 
     <div>
-        <mat-form-field>
+        <mat-form-field appearance="fill">
             <mat-label for="summary">Summary</mat-label>
-            <input matInput [formControl]="ideaForm.controls.summary">
+            <input matInput required [formControl]="ideaForm.controls.summary">
             <mat-error *ngIf="ideaForm.controls.summary.hasError('required')">
                 Summary is <strong>required</strong>
             </mat-error>
@@ -11,16 +11,16 @@
     </div>
 
     <div>
-        <mat-form-field>
+        <mat-form-field appearance="fill">
             <mat-label for="description">Description</mat-label>
             <textarea cdkTextareaAutosize matInput [formControl]="ideaForm.controls.description"></textarea>
         </mat-form-field>
     </div>
 
     <div>
-        <mat-form-field>
+        <mat-form-field appearance="fill">
             <mat-label for="categories">Categories</mat-label>
-            <mat-select [formControl]="ideaForm.controls.categories" multiple>
+            <mat-select required [formControl]="ideaForm.controls.categories" multiple>
                 <mat-option *ngFor="let category of categoryOptions" [value]="category">{{category.name}}</mat-option>
             </mat-select>
             <mat-error *ngIf="ideaForm.controls.categories.hasError('required')">
@@ -34,8 +34,10 @@
             <mat-label for="otherCategory">Other Category</mat-label>
             <input matInput [formControl]="categoryForm.controls.name">
         </mat-form-field>
-        <button mat-stroked-button type="submit" [disabled]="categoryForm.invalid">Add Category</button>
+        <button mat-mini-fab color="primary" type="submit" [disabled]="categoryForm.invalid">
+            <mat-icon>add</mat-icon>
+        </button>
     </form>
 
-    <button mat-stroked-button type="submit" [disabled]="ideaForm.invalid">Add Idea</button>
+    <button mat-raised-button color="primary" type="submit">New Idea</button>
 </form>

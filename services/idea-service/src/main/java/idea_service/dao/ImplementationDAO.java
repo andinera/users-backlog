@@ -17,31 +17,38 @@ import idea_service.models.Innovator;
 
 @Repository
 public class ImplementationDAO {
-    
-    private final String GET_IMPLEMENTATION = 
-        "SELECT impl.innovator_email_address, " +
-            "impl.name, impl.description " +
-        "FROM implementation impl " +
+
+    private final String GET_ALL_IMPLEMENTATIONS = 
+        "SELECT " +
+            "impl.innovator_email_address, " +
+            "impl.name, " +
+            "impl.description " +
+        "FROM implementation impl";
+    private final String GET_IMPLEMENTATION_BY_NAME = 
+        GET_ALL_IMPLEMENTATIONS + " " +
         "WHERE impl.name = ?";
     private final String GET_IMPLEMENTATIONS_BY_IDEA = 
-        "SELECT impl.innovator_email_address, " +
-            "impl.name " +
-        "FROM implementation impl " +
-        "WHERE impl.idea_summary = ?";
+        GET_ALL_IMPLEMENTATIONS + " " +
+        "INNER JOIN idea_implementation ii " +
+            "ON ii.implementation_name = impl.name " +
+            "AND ii.idea_summary = ?";
     private final String GET_IMPLEMENTATIONS_BY_INNOVATOR = 
-        "SELECT impl.innovator_email_address, " +
-            "impl.name " +
-        "FROM implementation impl " +
+        GET_ALL_IMPLEMENTATIONS + " " +
         "WHERE impl.innovator_email_address = ?";
     private final String POST_IMPLEMENTATION = 
-        "INSERT INTO implementation (innovator_email_address, idea_summary, name) " +
-        "VALUES (?, ?, ?)";
+        "INSERT " +
+        "INTO implementation (innovator_email_address, name) " +
+        "VALUES (?, ?)";
+    private final String ASSOCIATE_IMPLEMENTATION_WITH_IDEA =
+        "INSERT " +
+        "INTO idea_implementation (idea_summary, implementation_name) " +
+        "VALUES (?, ?)";
 
     @Autowired DataSource dataSource;
 
     public Implementation getImplementation(final String name) {
         Implementation implementation = null;
-        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IMPLEMENTATION)) {
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IMPLEMENTATION_BY_NAME)) {
             int i = 1;
             ps.setString(i++, name);
             try (ResultSet rs = ps.executeQuery()) {
@@ -110,7 +117,6 @@ public class ImplementationDAO {
         try (PreparedStatement ps = dataSource.getConnection().prepareStatement(POST_IMPLEMENTATION)) {
             int i = 1;
             ps.setString(i++, implementation.getInnovator().getEmailAddress());
-            ps.setString(i++, implementation.getIdea().getSummary());
             ps.setString(i++, implementation.getName());
             if (ps.executeUpdate() == 0) {
                 updatedImplementation = implementation;
@@ -118,7 +124,30 @@ public class ImplementationDAO {
         } catch (final SQLException e) {
             System.out.println(e.getMessage());
         }
-        return updatedImplementation;
+        return associateImplementatioWithIdea(updatedImplementation);
+    }
+
+    private Implementation associateImplementatioWithIdea(final Implementation implementation) {
+        List<Idea> updatedIdeas = null;
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(ASSOCIATE_IMPLEMENTATION_WITH_IDEA)) {
+            for (Idea idea : implementation.getIdeas()) {
+                int i = 1;
+                ps.setString(i++, idea.getSummary());
+                ps.setString(i++, implementation.getName());
+                ps.addBatch();
+            }
+            int[] updatedCount = ps.executeBatch();
+            updatedIdeas = new ArrayList<>();
+            for (int i = 0; i < updatedCount.length; i++) {
+                if (updatedCount[i] > 0) {
+                    updatedIdeas.add(implementation.getIdeas().get(i));
+                }
+            }
+        } catch (final SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        implementation.setIdeas(updatedIdeas);
+        return implementation;
     }
 
 }

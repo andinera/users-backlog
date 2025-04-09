@@ -15,11 +15,13 @@ import idea_service.models.Innovator;
 public class InnovatorDAO {
 
     final private String GET_INNOVATOR = 
-        "SELECT inv.email_address " +
+        "SELECT " +
+            "inv.email_address " +
         "FROM innovator inv " +
         "WHERE inv.email_address = ?";
     final private String POST_INNOVATOR = 
-        "INSERT INTO innovator (email_address) " +
+        "INSERT " +
+        "INTO innovator (email_address) " +
         "VALUES (?)";
 
     @Autowired DataSource dataSource;

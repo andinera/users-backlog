@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class Implementation {
     
     private Innovator innovator;
-    private Idea idea;
+    private List<Idea> ideas;
     private String name;
     private String description;
     private List<Product> products;
@@ -26,12 +26,12 @@ public class Implementation {
         this.innovator = innovator;
     }
 
-    public Idea getIdea() {
-        return this.idea;
+    public List<Idea> getIdeas() {
+        return this.ideas;
     }
 
-    public void setIdea(Idea idea) {
-        this.idea = idea;
+    public void setIdeas(List<Idea> ideas) {
+        this.ideas = ideas;
     }
 
     public String getName() {

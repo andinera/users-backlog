@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { of, Observable, EMPTY } from 'rxjs';
-import { mergeMap, first } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { first, map } from 'rxjs/operators';
 
 import { IdeaService } from '../services/idea.service';
 import { Idea } from '../models/idea';
@@ -18,15 +18,14 @@ export class IdeaResolver implements Resolve<Idea> {
     private readonly _urlService: URLService
   ) { }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Idea> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Idea> {
     return this._ideaService.getIdea(route.paramMap.get('summary')).pipe(
       first(),
-      mergeMap((idea: Idea) => {
+      map((idea: Idea) => {
         if (idea) {
-          return of(idea);
+          return idea;
         } else {
           this._router.navigate([this._urlService.previousURL]);
-          return EMPTY;
         }
       })
     )

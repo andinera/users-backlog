@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import idea_service.models.Category;
 import idea_service.models.Idea;
+import idea_service.models.Implementation;
 import idea_service.models.Innovator;
 
 @Repository
@@ -21,15 +22,21 @@ public class IdeaDAO {
     @Autowired DataSource dataSource;
 
     private final String GET_ALL_IDEAS = 
-        "SELECT idea.summary, " +
+        "SELECT " +
+            "idea.summary, " +
             "idea.description, " +
             "idea.innovator_email_address " +
         "FROM idea";
     private final String GET_IDEAS_BY_CATEGORY_NAME = 
         GET_ALL_IDEAS + " " +
-        "JOIN idea_category ic " +
-            "ON idea.summary = ic.idea_summary " +
-        "WHERE ic.category_name = ?";
+        "INNER JOIN idea_category ic " +
+            "ON ic.idea_summary = idea.summary " +
+            "AND ic.category_name = ?";
+    private final String GET_IDEAS_BY_IMPLEMENTATION = 
+        GET_ALL_IDEAS + " " +
+        "INNER JOIN idea_implementation ii " +
+            "ON ii.idea_summary = idea.summary " +
+            "AND ii.implementation_name = ?";
     private final String GET_IDEAS_BY_INNOVATOR = 
         GET_ALL_IDEAS + " " +
         "WHERE idea.innovator_email_address = ?";
@@ -37,13 +44,16 @@ public class IdeaDAO {
         GET_ALL_IDEAS + " " + 
         "WHERE idea.summary = ?";
     private final String POST_IDEA = 
-        "INSERT INTO idea (summary, description, innovator_email_address) " +
+        "INSERT " +
+        "INTO idea (summary, description, innovator_email_address) " +
         "VALUES (?, ?, ?)";
     private final String ASSOCIATE_IDEA_WITH_CATEGORY =
-        "INSERT INTO idea_category (idea_summary, category_name) " +
+        "INSERT " +
+        "INTO idea_category (idea_summary, category_name) " +
         "VALUES (?, ?)";
     private final String DELETE_IDEA = 
-        "DELETE FROM idea " +
+        "DELETE " +
+        "FROM idea " +
         "WHERE idea.summary = ?";
 
     public List<Idea> getIdeas(final String categoryName) {
@@ -51,6 +61,25 @@ public class IdeaDAO {
         try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEAS_BY_CATEGORY_NAME)) {
             int i = 1;
             ps.setString(i++, categoryName);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    final Idea idea = new Idea();
+                    idea.setSummary(rs.getString("summary"));
+                    ideas.add(idea);
+                }
+            }
+        } catch (final SQLException e) {
+            ideas = null;
+            System.out.println(e.getMessage());
+        }
+        return ideas;
+    }
+
+    public List<Idea> getIdeas(final Implementation implementation) {
+        List<Idea> ideas = new ArrayList<>();
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEAS_BY_IMPLEMENTATION)) {
+            int i = 1;
+            ps.setString(i++, implementation.getName());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     final Idea idea = new Idea();

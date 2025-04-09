@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { of, EMPTY, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { URLService } from '../services/url.service';
 import { Innovator } from '../models/innovator';
-import { first, mergeMap } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { InnovatorService } from '../services/innovator.service';
 
 @Injectable({
@@ -18,15 +18,14 @@ export class InnovatorResolver implements Resolve<Innovator> {
     private readonly _router: Router
   ) { }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Innovator> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Innovator> {
     return this._innovatorService.getInnovator(route.paramMap.get('emailAddress')).pipe(
       first(),
-      mergeMap((innovator: Innovator) => {
+      map((innovator: Innovator) => {
         if (innovator) {
-          return of(innovator);
+          return innovator;
         } else {
           this._router.navigate([this._urlService.previousURL]);
-          return EMPTY;
         }
       })
     )

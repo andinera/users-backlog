@@ -4,7 +4,7 @@ import { Product } from './product';
 
 export interface Implementation {
     innovator: Innovator,
-    idea: Idea,
+    ideas: Idea[],
     name: string,
     description: string,
     products: Product[]

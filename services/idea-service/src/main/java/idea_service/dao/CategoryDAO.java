@@ -20,15 +20,17 @@ public class CategoryDAO {
     @Autowired DataSource dataSource;
 
     private final String GET_ALL_CATEGORIES = 
-        "SELECT category.name " +
+        "SELECT " +
+            "category.name " +
         "FROM category";
     private final String GET_CATEGORIES_BY_IDEA = 
         GET_ALL_CATEGORIES + " " +
-        "JOIN idea_category ic " +
-            "ON category.name = ic.category_name " +
+        "INNER JOIN idea_category ic " +
+            "ON ic.category_name = category.name " +
         "WHERE ic.idea_summary = ?";
     private final String POST_CATEGORY =
-        "INSERT INTO category (name) " +
+        "INSERT " +
+        "INTO category (name) " +
         "VALUES (?)";
 
     public List<Category> getAllCategories() {

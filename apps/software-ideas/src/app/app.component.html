@@ -1,33 +1,32 @@
-<header class="header-5">
-
-    <div class="branding">
-        <a class="nav-link" routerLink="/ideas">
-            <clr-icon shape="vm-bug"></clr-icon>
-            <span class="title">Software Ideas</span>
+<mat-toolbar>
+    <mat-toolbar-row>
+        <a routerLink="/Ideas">
+            <img src="assets/bree-serif-dark.png" style="height:inherit">
         </a>
-    </div>
-
-    <!-- <div class="search">
-        <label for="search_input">
-            <input id="search_input" type="text" placeholder="Search for keywords...">
-        </label>
-    </div> -->
-
-    <div class="header-actions">
-        <a class="nav-link nav-text" routerLink="/addIdea">New Idea</a>
-        <clr-dropdown>
-            <button class="nav-text" clrDropdownTrigger aria-label="toggle settings menu">
-                Hello, {{userName}}
-                <clr-icon shape="caret down"></clr-icon>
+        <span class="content-type">{{contentType}}</span>
+        <span style="flex:auto"></span>
+        <span>
+            <button mat-flat-button color="primary">
+                <a routerLink="/New Idea">New Idea</a>
             </button>
-            <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
-                <a clrDropdownItem routerLink="/about">About</a>
-                <a clrDropdownItem routerLink="/preferences">Preferences</a>
-                <a *ngIf="!loggedIn" clrDropdownItem routerLink="/login">Login</a>
-                <a *ngIf="loggedIn" clrDropdownItem (click)="logOut()">Logout</a>
-            </clr-dropdown-menu>
-        </clr-dropdown>
-    </div>
+            <button mat-button style="color:white" [matMenuTriggerFor]="toolbarMenu">
+                Menu
+                <mat-icon>arrow_drop_down</mat-icon>
+            </button>
+        </span>
+    </mat-toolbar-row>
+    <mat-toolbar-row *ngIf="equalityContent" class="equality-content">
+        {{equalityContent}}
+    </mat-toolbar-row>
+</mat-toolbar>
 
-</header>
+<mat-menu #toolbarMenu="matMenu">
+    <button *ngIf="!(authenticationService.innovator | async)" mat-menu-item (click)="login()">
+        Login
+    </button>
+    <button *ngIf="authenticationService.innovator | async" mat-menu-item (click)="logout()">
+        Logout
+    </button>
+</mat-menu>
+
 <router-outlet></router-outlet>

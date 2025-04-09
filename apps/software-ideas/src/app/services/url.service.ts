@@ -14,7 +14,7 @@ export class URLService {
     private readonly _router: Router
   ) {
     this._router.events.pipe(
-      filter((evt: any) => evt instanceof RoutesRecognized),
+      filter((event: any) => event instanceof RoutesRecognized),
       pairwise()
     ).subscribe((events: RoutesRecognized[]) => {
       this.previousURL = decodeURIComponent(events[0].urlAfterRedirects);

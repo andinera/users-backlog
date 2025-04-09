@@ -1,5 +1,5 @@
 import { NgModule } from "@angular/core";
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, ExtraOptions } from '@angular/router';
 
 import { IdeasComponent } from './components/ideas/ideas.component';
 import { IdeaComponent } from './components/idea/idea.component';
@@ -8,79 +8,78 @@ import { ImplementationComponent } from './components/implementation/implementat
 import { ImplementationResolver } from './resolvers/implementation.resolver';
 import { InnovatorComponent } from './components/innovator/innovator.component';
 import { InnovatorResolver } from './resolvers/innovator.resolver';
-import { AddIdeaComponent } from './components/add-idea/add-idea.component';
-import { AuthGuard } from './guards/auth.guard';
-import { LoginComponent } from './components/login/login.component';
+import { NewIdeaComponent } from './components/new-idea/new-idea.component';
 import { LostComponent } from './components/lost/lost.component';
-import { CategoryComponent } from './components/category/category.component';
-import { CategoryResolver } from './resolvers/category.resolver';
 import { CategoriesResolver } from './resolvers/categories.resolver';
+import { IdeasResolver } from './resolvers/ideas.resolver';
+import { NewIdeaGuard } from './guards/new-idea.guard';
+import { LoginComponent } from './components/login/login.component';
 
+
+const extraOptions = {
+    // enableTracing: true
+} as ExtraOptions;
 
 const routes: Routes = [
     {
-        path: 'ideas',
-        component: IdeasComponent
+        path: 'Ideas',
+        component: IdeasComponent,
+        resolve: {
+            categories: IdeasResolver
+        }
     },
     {
-        path: 'idea/:summary',
+        path: 'Idea/:summary',
         component: IdeaComponent,
         resolve: {
             idea: IdeaResolver
         }
     },
     {
-        path: 'implementation/:name',
+        path: 'Implementation/:name',
         component: ImplementationComponent,
         resolve: {
             implementation: ImplementationResolver
         }
     },
     {
-        path: 'innovator/:emailAddress',
+        path: 'Innovator/:emailAddress',
         component: InnovatorComponent,
         resolve: {
             innovator: InnovatorResolver
         }
     },
     {
-        path: 'addIdea',
-        component: AddIdeaComponent,
-        canActivate: [AuthGuard],
+        path: 'New Idea',
+        component: NewIdeaComponent,
         resolve: {
             categories: CategoriesResolver
-        }
+        },
+        canActivate: [NewIdeaGuard]
     },
     {
-        path: 'category/:categoryName',
-        component: CategoryComponent,
-        resolve: {
-            ideas: CategoryResolver
-        }
+        path: 'Login',
+        component: LoginComponent
     },
     {
-        path: 'login',
-        component: LoginComponent,
-    },
-    {
-        path: 'lost',
+        path: 'Lost',
         component: LostComponent
     },
     {
         path: '',
-        redirectTo: 'ideas',
+        redirectTo: 'Ideas',
         pathMatch: 'full'
     },
     {
         path: '**',
-        redirectTo: 'lost',
+        redirectTo: 'Lost',
         pathMatch: 'full'
     }
 ];
 
 @NgModule({
     imports: [
-        RouterModule.forRoot(routes)
+        RouterModule.forRoot(routes, extraOptions)
     ],
     exports: [
         RouterModule

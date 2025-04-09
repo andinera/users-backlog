@@ -1,0 +1,12 @@
+.list-group-item-container {
+    text-decoration: none;
+}
+
+.list-group-item {
+    color: var(--clr-link-color);
+}
+
+.list-group-item:hover {
+    background-color: var(--clr-link-color);
+    color: white;
+}
