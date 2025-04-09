@@ -5,15 +5,17 @@ import { map } from 'rxjs/operators';
 
 import { AuthenticationService } from '../services/authentication.service';
 import { Innovator } from '../models/innovator.model';
+import { URLService } from '../services/url.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class NewIdeaGuard implements CanActivate {
+export class RedirectGuard implements CanActivate {
 
   constructor(
     private readonly _authenticationService: AuthenticationService,
-    private readonly _router: Router
+    private readonly _router: Router,
+    private readonly _urlService: URLService
   ) {
 
   }
@@ -21,13 +23,12 @@ export class NewIdeaGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-
       return this._authenticationService.innovator.pipe(
         map((innovator: Innovator) => {
           if (innovator) {
-            return true;
+            this._router.navigate([this._urlService.previousURL]);
           } else {
-            this._router.navigate(['Login']);
+            return true;
           }
       }))
     }

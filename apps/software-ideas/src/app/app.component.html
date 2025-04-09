@@ -1,32 +1,14 @@
-<mat-toolbar>
-    <mat-toolbar-row>
+<nav class="navbar navbar-dark bg-dark">
+    <div class="navbar-brand">
         <a routerLink="/Implementations">
-            <img src="assets/bree-serif-dark.png" style="height:inherit">
+            <img src="assets/bree-serif-dark.ico" width="30" height="30">
         </a>
-        <span class="content-type">{{contentType}}</span>
-        <span style="flex:auto"></span>
-        <span>
-            <button mat-flat-button color="primary">
-                <a routerLink="/New Idea">New Idea</a>
-            </button>
-            <button mat-button style="color:white" [matMenuTriggerFor]="toolbarMenu">
-                Menu
-                <mat-icon>arrow_drop_down</mat-icon>
-            </button>
-        </span>
-    </mat-toolbar-row>
-    <mat-toolbar-row *ngIf="equalityContent" class="equality-content">
-        {{equalityContent}}
-    </mat-toolbar-row>
-</mat-toolbar>
-
-<mat-menu #toolbarMenu="matMenu">
-    <button *ngIf="!(authenticationService.innovator | async)" mat-menu-item (click)="login()">
-        Login
+    </div>
+    <button *ngIf="!(authenticationService.innovator | async)" class="btn btn-primary my-2 my-sm-0" type="button" routerLink="/Log In">
+        Log in
     </button>
-    <button *ngIf="authenticationService.innovator | async" mat-menu-item (click)="logout()">
-        Logout
+    <button *ngIf="authenticationService.innovator | async"  class="btn btn-secondary my-2 my-sm-0" type="button" (click)="logOut()">
+        Log out
     </button>
-</mat-menu>
-
+</nav>
 <router-outlet></router-outlet>

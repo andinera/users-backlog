@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class Innovator extends Model {
 
     private String emailAddress;
+    private String displayName;
     private List<Idea> ideas;
     private List<Implementation> implementations;
 
@@ -21,6 +22,14 @@ public class Innovator extends Model {
 
     public void setEmailAddress(final String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public String getDisplayName() {
+        return this.displayName;
+    }
+
+    public void setDisplayName(final String displayName) {
+        this.displayName = displayName;
     }
 
     public List<Idea> getIdeas() {

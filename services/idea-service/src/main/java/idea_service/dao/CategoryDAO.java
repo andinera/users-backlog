@@ -82,6 +82,26 @@ public class CategoryDAO extends DAO {
         return categories;
     }
 
+    private final String GET_CATEGORY_BY_NAME = 
+        GET_ALL_CATEGORIES + " " +
+        "WHERE category.name = ?";
+
+    public Category getCategoryByName(final String name) {
+        Category category = null;
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_CATEGORY_BY_NAME)) {
+            ps.setString(1, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    category = categoryMapper(rs);
+                }
+            }
+        } catch (final Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return category;
+    }
+
     private final String POST_CATEGORY =
         "INSERT " +
         "INTO category (name) " +
@@ -97,6 +117,9 @@ public class CategoryDAO extends DAO {
                 }
             }
             ps.executeBatch();
+            for (Category category: categories) {
+                category.setId(this.getCategoryByName(category.getName()).getId());
+            }
         } catch (final Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();

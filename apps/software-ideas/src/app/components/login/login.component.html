@@ -1,28 +1,55 @@
-<form (ngSubmit)="login(loginForm)" style="margin:.84375em">
-    
-    <div>
-        <mat-form-field appearance="fill">
-            <mat-label for="emailAddress">Email Address</mat-label>
-            <input matInput required [formControl]="loginForm.controls.emailAddress">
-            <mat-error *ngIf="loginForm.controls.emailAddress.hasError('email') && !loginForm.controls.emailAddress.hasError('requred')">
-                Please enter a valid email address
-            </mat-error>
-            <mat-error *ngIf="loginForm.controls.emailAddress.hasError('required')">
-                Email is <strong>required</strong>
-            </mat-error>
-        </mat-form-field>
-    </div>
-        
-    <div>
-        <button mat-flat-button color="primary" type="submit">Login</button>
-        <button mat-stroked-button type="button" (click)="createAccount(loginForm)">Create Account</button>
-        <mat-error *ngIf="loginFailed">
-            Invalid email address
-        </mat-error>
-        <mat-error *ngIf="createAccountFailed">
-            Email address already exists
-        </mat-error>
-    </div>
+<div class="container d-flex align-self-stretch justify-content-center" style="margin-top:50px">
+    <!-- <div class="row"> -->
 
-</form>
+        <!-- <div class="col-12"> -->
+    <form (ngSubmit)="login(loginForm.value)">
 
+        <div class="col" style="margin-bottom:30px">
+            <button mat-stroked-button type="button" (click)="openGoogleAuthenticator()" style="width:100%">
+                <img src="assets/512px-Google__G__Logo.svg.webp" width="15" height="15">
+                Log in with Google
+            </button>
+        </div>
+
+        <div class="col">
+            <mat-form-field appearance="fill">
+                <mat-label>Email Address</mat-label>
+                <input matInput type="email" [formControl]="loginForm.controls.emailAddress">
+                <mat-error *ngIf="loginForm.controls.emailAddress.hasError('email') && !loginForm.controls.emailAddress.hasError('requred')">
+                    Please enter a valid email address
+                </mat-error>
+                <mat-error *ngIf="loginForm.controls.emailAddress.hasError('required')">
+                    Email is <strong>required</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="col">
+            <mat-form-field appearance="fill">
+                <mat-label>Password</mat-label>
+                <input matInput type="password" [formControl]="loginForm.controls.password">
+                <mat-error *ngIf="loginForm.controls.password.hasError('required')">
+                    Password is <strong>required</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="col">
+            <button mat-flat-button color="primary" type="submit">Login</button>
+        </div>
+        <div class="col">
+            <button mat-stroked-button type="button" (click)="createAccount(loginForm.value)">Create Account</button>
+        </div>
+        <div class="col">
+            <div *ngIf="errorMessage" class="text-danger">
+                {{errorMessage}}
+            </div>
+            <div *ngIf="successMessage" class="text-success">
+                {{successMessage}}
+            </div>
+        </div>
+
+    </form>
+        <!-- </div> -->
+    <!-- </div> -->
+</div>

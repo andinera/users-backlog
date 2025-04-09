@@ -1,25 +1,82 @@
-<mat-tab-group [animationDuration]="0">
-    <mat-tab label="Products">
-        <span style="color:red">
-            <mat-icon>warning</mat-icon>
-            These links may load an external webpage.
-        </span>
-        <mat-nav-list>
-            <a mat-list-item *ngFor="let product of implementation.products" href="{{product.url}}" target="_blank">
-                {{implementation.name}}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="float-right" style="margin-top:15px;margin-bottom:15px">
+                <button class="btn btn-primary my-2 my-sm-0" type="button" (click)="editImplementation()">Edit Implementation</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="name">
+            {{implementation.name}}
+        </div>
+    </div>
+        
+    <div class="row">
+        {{implementation.description}}
+    </div>
+
+    <div class="row">
+        <div class="innovator">
+            <a routerLink="/Innovator/{{implementation.innovator.emailAddress}}">
+                {{implementation.innovator.emailAddress}}
             </a>
-        </mat-nav-list>
-    </mat-tab>
-    <mat-tab label="Innovator">
-        <mat-nav-list>
-            <a mat-list-item routerLink="/Innovator/{{implementation.innovator.emailAddress}}">{{implementation.innovator.emailAddress}}</a>
-        </mat-nav-list>
-    </mat-tab>
-    <mat-tab label="Ideas">
-        <mat-nav-list>
-            <a mat-list-item *ngFor="let idea of implementation.ideas" routerLink="/Idea/{{idea.summary}}">
-                {{implementation.name}}
+        </div>
+    </div>
+
+    <div class="row">
+        <div *ngFor="let product of implementation.products">
+            <a href="{{product.url}}" target="_blank">
+                {{product.url}}
             </a>
-        </mat-nav-list>
-    </mat-tab>
-</mat-tab-group>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-light my-2 my-sm-0" style="text-transform: none;" type="button" (click)="postVote(true)">i++</button>
+        </div>
+        <div class="col">
+            <div class="votes">
+                {{implementation.votes}}
+            </div>
+        </div>
+        <div class="col">
+            <button class="btn btn-light my-2 my-sm-0" style="text-transform: none;" type="button" (click)="postVote(false)">i--</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <ul class="list-group">
+            <div class="recommendation" *ngFor="let recommendation of implementation.recommendations">
+                <li class="list-group-item">
+                    <div class="message">
+                        {{recommendation.message}}
+                    </div>
+                </li>
+                <div class="recommendation-footer">
+                    <div class="date-time-created">
+                        {{recommendation.dateTimeCreated}}
+                    </div>
+                    <div class="display-name">
+                        {{recommendation.innovator.displayName}}
+                    </div>
+                </div>
+            </div>
+        </ul>
+    </div>
+
+    <div class="row">
+        <form (ngSubmit)="addRecommendation(recommendationForm.value)">
+
+            <mat-form-field appearance="fill">
+                <textarea matInput [formControl]="recommendationForm.controls.message"></textarea>
+            </mat-form-field>
+
+            <div class="col">
+                <button mat-flat-button color="primary" type="submit">Submit</button>
+            </div>
+
+        </form>
+    </div>
+</div>

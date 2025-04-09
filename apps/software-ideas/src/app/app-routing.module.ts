@@ -12,10 +12,12 @@ import { NewIdeaComponent } from './components/new-idea/new-idea.component';
 import { LostComponent } from './components/lost/lost.component';
 import { CategoriesResolver } from './resolvers/categories.resolver';
 import { IdeasResolver } from './resolvers/ideas.resolver';
-import { NewIdeaGuard } from './guards/new-idea.guard';
 import { LoginComponent } from './components/login/login.component';
 import { ImplementationsComponent } from './components/implementations/implementations.component';
 import { ImplementationsResolver } from './resolvers/implementations.resolver';
+import { NewImplementationComponent } from './components/new-implementation/new-implementation.component';
+import { LogInGuard } from './guards/log-in.guard';
+import { RedirectGuard } from './guards/redirect.guard';
 
 
 const extraOptions = {
@@ -42,7 +44,7 @@ const routes: Routes = [
         path: 'Implementations',
         component: ImplementationsComponent,
         resolve: {
-            categories: ImplementationsResolver
+            implementations: ImplementationsResolver
         }
     },
     {
@@ -65,7 +67,7 @@ const routes: Routes = [
         resolve: {
             categories: CategoriesResolver
         },
-        canActivate: [NewIdeaGuard]
+        canActivate: [LogInGuard]
     },
     {
         path: 'Edit Idea/:summary',
@@ -74,11 +76,28 @@ const routes: Routes = [
             idea: IdeaResolver,
             categories: CategoriesResolver
         },
-        canActivate: [NewIdeaGuard]
+        canActivate: [LogInGuard]
     },
     {
-        path: 'Login',
-        component: LoginComponent
+        path: 'New Implementation',
+        component: NewImplementationComponent,
+        resolve: {
+            categories: CategoriesResolver
+        },
+        canActivate: [LogInGuard]
+    },
+    {
+        path: 'Edit Implementation',
+        component: NewImplementationComponent,
+        resolve: {
+            categories: CategoriesResolver
+        },
+        canActivate: [LogInGuard]
+    },
+    {
+        path: 'Log In',
+        component: LoginComponent,
+        canActivate: [RedirectGuard]
     },
     {
         path: 'Lost',

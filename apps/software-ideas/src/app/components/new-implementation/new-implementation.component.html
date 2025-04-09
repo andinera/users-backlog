@@ -1,43 +1,50 @@
-<form [formGroup]="implementationForm" (ngSubmit)="addImplementation(implementationForm.value)">
-    
-    <div>
-        <mat-form-field>
-            <mat-label for="name">Name</mat-label>
-            <input matInput id="name" [formControl]="implementationForm.controls.name">
-            <mat-error *ngIf="implementationForm.controls.name.hasError('required')">
-                Name is <strong>required</strong>
-            </mat-error>
-        </mat-form-field>
-    </div>
+<div class="container d-flex align-self-stretch justify-content-center" style="margin-top:50px">
 
-    <div>
-        <mat-form-field>
-            <mat-label for="source">URL</mat-label>
-            <input matInput id="source" [formControl]="implementationForm.controls.source">
-        </mat-form-field>
-    </div>
+    <form (ngSubmit)="addImplementation(implementationForm.value)">
 
-    <div>
-        <mat-form-field appearance="fill">
-            <mat-label for="categories">Categories</mat-label>
-            <mat-select required [formControl]="implementationForm.controls.categories" multiple>
-                <mat-option *ngFor="let category of categoryOptions" [value]="category">{{category.name}}</mat-option>
-            </mat-select>
-            <mat-error *ngIf="implementationForm.controls.categories.hasError('required')">
-                At least 1 category is <strong>required</strong>
-            </mat-error>
-        </mat-form-field>
-    </div>
+        <div class="col">
+            <mat-form-field appearance="fill">
+                <mat-label>Name</mat-label>
+                <input matInput [formControl]="implementationForm.controls.name">
+                <mat-error *ngIf="implementationForm.controls.name.hasError('required')">
+                    Name is <strong>required</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
 
-    <form (ngSubmit)="addCategory(categoryForm.value)">
-        <mat-form-field>
-            <mat-label for="otherCategory">Other Category</mat-label>
-            <input matInput [formControl]="categoryForm.controls.name">
-        </mat-form-field>
-        <button mat-mini-fab color="primary" type="submit" [disabled]="!newCategoryIsValid()">
-            <mat-icon>add</mat-icon>
-        </button>
+        <div class="col">
+            <mat-form-field appearance="fill">
+                <mat-label>Description</mat-label>
+                <textarea matInput [formControl]="implementationForm.controls.description"></textarea>
+            </mat-form-field>
+        </div>
+
+        <div class="col">
+            <mat-form-field appearance="fill">
+                <mat-label>Categories</mat-label>
+                <mat-select [formControl]="implementationForm.controls.categories" multiple>
+                    <mat-option *ngFor="let category of categoryOptions" [value]="category">{{category.name}}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="implementationForm.controls.categories.hasError('required')">
+                    At least 1 category is <strong>required</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="col">
+            <form (ngSubmit)="addCategory(categoryForm.value)">
+                <mat-form-field appearance="fill">
+                    <mat-label for="otherCategory">New Category</mat-label>
+                    <input matInput [formControl]="categoryForm.controls.name">
+                </mat-form-field>
+                <button mat-mini-fab color="primary" type="submit" [disabled]="!categoryForm.controls.name.value">
+                    <mat-icon>add</mat-icon>
+                </button>
+            </form>
+        </div>
+
+        <div class="col">
+            <button mat-flat-button color="primary" type="submit">Submit</button>
+        </div>
     </form>
-
-    <button  mat-stroked-button type="submit">New Implementation</button>
-</form>
+</div>

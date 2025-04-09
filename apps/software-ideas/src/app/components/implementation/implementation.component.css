@@ -1,12 +1,47 @@
-.list-group-item-container {
-    text-decoration: none;
+.name {
+    font-size: 30px;
+    margin-top: 15px;
 }
 
-.list-group-item {
-    color: var(--clr-link-color);
+.votes {
+    font-size: 15px;
+    margin-top: 5px;
 }
 
-.list-group-item:hover {
-    background-color: var(--clr-link-color);
-    color: white;
+.recommendation {
+    margin-top: 15px;
+}
+
+.list-group {
+    width: 100%;
+}
+
+.message {
+
+}
+
+.recommendation-footer {
+
+}
+
+.date-time-created {
+    display: inline-block;
+}
+
+.display-name {
+    display: inline-block;
+    float: right;
+}
+
+.full-width {
+    width: 100%;
+}
+
+form {
+    margin-top: 45px;
+    width: 100%;
+}
+
+form > mat-form-field {
+    width:100%;
 }

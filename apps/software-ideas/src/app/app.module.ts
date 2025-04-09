@@ -1,14 +1,16 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -17,7 +19,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ClarityModule } from '@clr/angular';
 import { LayoutModule } from '@angular/cdk/layout';
-import { MatSidenavModule } from '@angular/material/sidenav';
+
+import { first } from 'rxjs/operators';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -31,6 +34,7 @@ import { InnovatorComponent } from './components/innovator/innovator.component';
 import { NewImplementationComponent } from './components/new-implementation/new-implementation.component';
 import { RecommendationComponent } from './components/recommendation/recommendation.component';
 import { ImplementationsComponent } from './components/implementations/implementations.component';
+import { AuthenticationService } from './services/authentication.service';
 
 @NgModule({
   declarations: [
@@ -57,6 +61,7 @@ import { ImplementationsComponent } from './components/implementations/implement
     MatCardModule,
     MatDialogModule,
     MatExpansionModule,
+    MatGridListModule,
     MatIconModule,
     MatInputModule,
     MatListModule,
@@ -69,7 +74,22 @@ import { ImplementationsComponent } from './components/implementations/implement
     ReactiveFormsModule,
     LayoutModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appInitFactory,
+      deps: [AuthenticationService],
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+export function appInitFactory(authenticationService: AuthenticationService): () => Promise<any> {
+  return () => new Promise((resolve, reject) => {
+    authenticationService.innovator.pipe(first()).subscribe((innovator) => {
+      resolve(true);
+    });
+  });
+}

@@ -33,7 +33,7 @@ public class InnovatorService {
         return innovator;
     }
 
-    public Innovator postInnovator(final Innovator innovator) {
+    public Innovator postInnovator(final Innovator innovator) throws Exception {
         return innovatorDAO.postInnovator(innovator);
     }
 

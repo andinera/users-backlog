@@ -13,7 +13,8 @@ public class InnovatorDAO extends DAO {
     final private String GET_ALL_INNOVATORS = 
         "SELECT " +
             "inv.id, " +
-            "inv.email_address " +
+            "inv.email_address, " +
+            "inv.display_name " +
         "FROM innovator inv";
 
     final private String GET_INNOVATOR_BY_ID = 
@@ -29,6 +30,7 @@ public class InnovatorDAO extends DAO {
                     innovator = new Innovator();
                     innovator.setId(rs.getLong("id"));
                     innovator.setEmailAddress(rs.getString("email_address"));
+                    innovator.setDisplayName(rs.getString("display_name"));
                 }
             }
         } catch (final Exception e) {
@@ -52,6 +54,7 @@ public class InnovatorDAO extends DAO {
                     innovator = new Innovator();
                     innovator.setId(rs.getLong("id"));
                     innovator.setEmailAddress(rs.getString("email_address"));
+                    innovator.setDisplayName(rs.getString("display_name"));
                 }
             }
         } catch (final Exception e) {
@@ -64,19 +67,28 @@ public class InnovatorDAO extends DAO {
 
     final private String POST_INNOVATOR = 
         "INSERT " +
-        "INTO innovator (email_address) " +
-        "VALUES (?)";
+        "INTO innovator (" +
+            "email_address," +
+            "display_name" +
+        ") " +
+        "VALUES (?, ?)";
 
-    public Innovator postInnovator(final Innovator innovator) {
+    public Innovator postInnovator(final Innovator innovator) throws Exception {
         Innovator updatedInnovator = null;
         try (PreparedStatement ps = dataSource.getConnection().prepareStatement(POST_INNOVATOR)) {
-            ps.setString(1, innovator.getEmailAddress());
+            if (innovator.getDisplayName() == null) {
+                innovator.setDisplayName(innovator.getEmailAddress());
+            }
+            int i = 1;
+            ps.setString(i++, innovator.getEmailAddress());
+            ps.setString(i++, innovator.getDisplayName());
             if (ps.executeUpdate() != 0) {
                 updatedInnovator = innovator;
             }
         } catch (final Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
+            throw e;
         }
         return updatedInnovator;
     }

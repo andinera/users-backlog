@@ -36,7 +36,7 @@ public class InnovatorController {
     }
 
     @PostMapping(path = "postInnovator")
-    public Innovator postInnovator(@RequestBody final Innovator innovator) {
+    public Innovator postInnovator(@RequestBody final Innovator innovator) throws Exception {
         return innovatorService.postInnovator(innovator);
     }
 }

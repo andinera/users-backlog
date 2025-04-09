@@ -15,6 +15,8 @@ public class Implementation extends Model {
     private String description;
     private List<Category> categories;
     private List<Product> products;
+    private Long votes;
+    private List<Recommendation> recommendations;
 
     public Implementation() {
     }
@@ -65,5 +67,21 @@ public class Implementation extends Model {
 
     public void setProducts(final List<Product> products) {
         this.products = products;
+    }
+
+    public Long getVotes() {
+        return this.votes;
+    }
+
+    public void setVotes(final Long votes) {
+        this.votes = votes;
+    }
+
+    public List<Recommendation> getRecommendations() {
+        return this.recommendations;
+    }
+
+    public void setRecommendations(List<Recommendation> recommendations) {
+        this.recommendations = recommendations;
     }
 }

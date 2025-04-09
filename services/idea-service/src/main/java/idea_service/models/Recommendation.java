@@ -9,8 +9,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class Recommendation extends Model {
 
     private Idea idea;
+    private Implementation implementation;
     private String message;
     private ZonedDateTime dateTimeCreated;
+    private ZonedDateTime dateTimeModified;
     private Innovator innovator;
 
     public Recommendation() {
@@ -22,6 +24,14 @@ public class Recommendation extends Model {
 
     public void setIdea(Idea idea) {
         this.idea = idea;
+    }
+
+    public Implementation getImplementation() {
+        return this.implementation;
+    }
+
+    public void setImplementation(Implementation implementation) {
+        this.implementation = implementation;
     }
 
     public String getMessage() {
@@ -38,6 +48,14 @@ public class Recommendation extends Model {
 
     public void setDateTimeCreated(ZonedDateTime dateTimeCreated) {
         this.dateTimeCreated = dateTimeCreated;
+    }
+
+    public ZonedDateTime getDateTimeModified() {
+        return this.dateTimeModified;
+    }
+
+    public void setDateTimeModified(ZonedDateTime dateTimeModified) {
+        this.dateTimeModified = dateTimeModified;
     }
 
     public Innovator getInnovator() {

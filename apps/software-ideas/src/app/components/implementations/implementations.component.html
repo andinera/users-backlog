@@ -1,9 +1,34 @@
-<mat-tab-group [animationDuration]="0">
-    <mat-tab *ngFor="let category of categories" [label]="category.name">
-        <mat-nav-list>
-            <a mat-list-item *ngFor="let implementation of category.implementations" routerLink="/Implementation/{{implementation.name}}">
-                {{implementation.name}}
-            </a>
-        </mat-nav-list>
-    </mat-tab>
-</mat-tab-group>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="float-right" style="margin-top:15px;margin-bottom:15px">
+                <button class="btn btn-primary my-2 my-sm-0" type="button" routerLink="/New Implementation">New Implementation</button>
+            </div>
+        </div>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item" *ngFor="let implementation of implementations">
+            <div class="left-container">
+                <div class="votes">
+                    <div>
+                        Votes
+                    </div>
+                    <div>
+                        {{implementation.votes}}
+                    </div>
+                </div>         
+            </div>
+            <div class="right-container">
+                <div class="summary">
+                    <a routerLink="/Implementation/{{implementation.name}}">{{implementation.name}}</a>
+                </div>
+                <div class="categories">
+                    <div class="category" *ngFor="let category of implementation.categories">
+                        {{category.name}}
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+

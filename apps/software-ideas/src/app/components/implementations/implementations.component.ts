@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { first, tap, catchError, takeUntil } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
 
-import { Idea } from 'src/app/models/idea.model';
+import { Implementation } from 'src/app/models/implementation.model';
 
 @Component({
   selector: 'app-implementations',
@@ -12,7 +12,7 @@ import { Idea } from 'src/app/models/idea.model';
 })
 export class ImplementationsComponent implements OnInit {
   
-  categories = [];
+  implementations = [];
     
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -24,8 +24,9 @@ export class ImplementationsComponent implements OnInit {
 
     this._route.data.pipe(
       first(),
-      tap((data: {categories: Idea[]}) => {
-        this.categories = data.categories;
+      tap((data: {implementations: Implementation[]}) => {
+        this.implementations = data.implementations;
+        console.log(this.implementations);
       }),
       catchError((error: any) => {
         return of(null);

@@ -10,6 +10,7 @@ import idea_service.dao.IdeaDAO;
 import idea_service.dao.ImplementationDAO;
 import idea_service.dao.ProductDAO;
 import idea_service.models.Implementation;
+import idea_service.models.Recommendation;
 
 @Service
 public class ImplementationService {
@@ -20,12 +21,17 @@ public class ImplementationService {
     @Autowired ProductDAO productDAO;
 
     public List<Implementation> getImplementations(String categoryName) {
-        return implementationDAO.getImplementations(categoryName);
+        List<Implementation> implementations = implementationDAO.getImplementations(categoryName);
+        for (Implementation implementation: implementations) {
+            implementation.setCategories(categoryDAO.getCategories(implementation));
+        }
+        return implementations;
     }
 
     public Implementation getImplementation(final long id) {
         Implementation implementation = implementationDAO.getImplementation(id);
         if (implementation != null) {
+            implementation.setCategories(categoryDAO.getCategories(implementation));
             implementation.setProducts(productDAO.getProducts(implementation));
             implementation.setIdeas(ideaDAO.getIdeas(implementation));
         }
@@ -35,6 +41,7 @@ public class ImplementationService {
     public Implementation getImplementation(final String name) {
         Implementation implementation = implementationDAO.getImplementation(name);
         if (implementation != null) {
+            implementation.setCategories(categoryDAO.getCategories(implementation));
             implementation.setProducts(productDAO.getProducts(implementation));
             implementation.setIdeas(ideaDAO.getIdeas(implementation));
         }
@@ -46,6 +53,14 @@ public class ImplementationService {
         implementationDAO.postImplementation(implementation);
         implementation.setCategories(categoryDAO.getCategories(implementation));
         return implementation;
+    }
+
+    public Long postVote(Long implementationId, Long innovatorId, Boolean up) {
+        return implementationDAO.postVote(implementationId, innovatorId, up);
+    }
+
+    public Recommendation postRecommendation(Recommendation recommendation) {
+        return implementationDAO.postRecommendation(recommendation);
     }
 
 }

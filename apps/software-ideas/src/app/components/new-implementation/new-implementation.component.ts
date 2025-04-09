@@ -1,17 +1,16 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import { first, tap, takeUntil, catchError } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
 
 import { Implementation } from 'src/app/models/implementation.model';
 import { ImplementationService } from 'src/app/services/implementation.service';
-import { Idea } from 'src/app/models/idea.model';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { Innovator } from 'src/app/models/innovator.model';
 import { Category } from 'src/app/models/category.model';
 import { ImplementationForm } from 'src/app/models/forms/implementation.form';
 import { CategoryForm } from 'src/app/models/forms/category.form';
-import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-new-implementation [idea]',
@@ -19,8 +18,6 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./new-implementation.component.css']
 })
 export class NewImplementationComponent implements OnInit {
-
-  @Input() idea: Idea;
 
   implementationForm: FormGroup;
   categoryForm: FormGroup;
@@ -34,6 +31,7 @@ export class NewImplementationComponent implements OnInit {
     private readonly _implementationService: ImplementationService,
     private readonly authenticationService: AuthenticationService,
     private readonly _route: ActivatedRoute,
+    private readonly _router: Router
   ) { }
 
   ngOnInit(): void {
@@ -52,6 +50,12 @@ export class NewImplementationComponent implements OnInit {
       }),
       takeUntil(this._destroyed$)
     ).subscribe();
+
+    if (this._implementationService.implementationForEditing) {
+      this.implementationForm.patchValue(this._implementationService.implementationForEditing);
+      this.implementationForm.controls.categories.setValue(this.categoryOptions.filter(category => this._implementationService.implementationForEditing.categories.map(cat => cat.name).includes(category.name)));
+      this._implementationService.implementationForEditing = undefined;
+    }
   }
 
   ngOnDestroy(): void {
@@ -66,12 +70,11 @@ export class NewImplementationComponent implements OnInit {
       this.authenticationService.innovator.pipe(
         tap((innovator: Innovator) => {
           implementation.innovator = innovator;
-          implementation.ideas = [this.idea];
           this._implementationService.postImplementation(implementation).pipe(
             first(),
             tap((newImplementation: Implementation) => {
               if (newImplementation) {
-                this.idea.implementations.push(newImplementation);
+                this._router.navigate([`/Implementation/${newImplementation.name}`])
               }
             }),
             takeUntil(this._destroyed$),
@@ -90,19 +93,11 @@ export class NewImplementationComponent implements OnInit {
     }
   }
 
-  newCategoryIsValid() {
-    const categoryOptionsNames = this.categoryOptions.map(category => category.name);
-    if (!this.categoryForm.controls.name.value ||
-        categoryOptionsNames.includes(this.categoryForm.controls.name.value)) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   addCategory(category: Category) {
     const categoryOptionsNames = this.categoryOptions.map(category => category.name);
-    if (!categoryOptionsNames.includes(category.name)) {
+    if (categoryOptionsNames.includes(category.name)) {
+      category = this.categoryOptions.filter(options => options.name === category.name)[0];
+    } else {
       this.categoryOptions.push(category);
     }
     const selectedCategoryNames = this.implementationForm.value.categories.map(category => category.name);
