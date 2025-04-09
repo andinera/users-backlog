@@ -184,6 +184,9 @@ export class ImplementationComponent implements OnInit, OnDestroy {
                 recommendation.replies.splice(index, 1, returnedReply);
                 this.editedRecommendation = undefined;
               } else {
+                if (!recommendation.replies) {
+                  recommendation.replies = [];
+                }
                 recommendation.replies.push(returnedReply);
               }
               returnedReply.dateTimeCreated = new Date(Date.parse(returnedReply.dateTimeCreated.toString()));

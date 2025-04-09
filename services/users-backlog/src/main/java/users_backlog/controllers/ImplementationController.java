@@ -4,7 +4,6 @@ package users_backlog.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +16,6 @@ import users_backlog.models.Recommendation;
 import users_backlog.models.Reply;
 import users_backlog.services.ImplementationService;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/implementation")
 public class ImplementationController {
