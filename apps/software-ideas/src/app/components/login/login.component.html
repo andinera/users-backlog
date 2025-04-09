@@ -1,0 +1,9 @@
+<form [formGroup]="loginForm" (ngSubmit)="login(loginForm)">
+
+    <div>
+        <label for="emailAddress">Email Address</label>
+        <input id="emailAddress" type="text" formControlName="emailAddress">
+    </div>
+
+    <button class="button" type="submit">Login</button>
+</form>

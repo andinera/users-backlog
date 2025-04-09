@@ -1,0 +1,14 @@
+<form [formGroup]="submitForm" (ngSubmit)="onSubmit(submitForm)">
+
+    <div>
+        <label for="summary">Summary</label>
+        <input id="summary" type="text" formControlName="summary">
+    </div>
+
+    <div>
+        <label for="description">Description</label>
+        <textarea id="description" formControlName="description"></textarea>
+    </div>
+
+    <button class="button" type="submit">Add Idea</button>
+</form>
