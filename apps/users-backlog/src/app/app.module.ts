@@ -25,7 +25,6 @@ import { InnovatorComponent } from './components/innovator/innovator.component';
 import { NewImplementationComponent } from './components/new-implementation/new-implementation.component';
 import { RecommendationComponent } from './components/recommendation/recommendation.component';
 import { ImplementationsComponent } from './components/implementations/implementations.component';
-import { AuthenticationService } from './services/authentication.service';
 import { URLService } from './services/url.service';
 
 @NgModule({

@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
-
-import { AuthenticationService } from './services/authentication.service';
+import { InnovatorService } from './services/innovator.service';
 
 @Component({
     selector: 'app-root',
@@ -15,7 +14,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
     constructor (
-        public readonly authenticationService: AuthenticationService
+        public readonly innovatorService: InnovatorService
     ) {
     }
 
@@ -28,6 +27,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     public logOut(): void {
-        this.authenticationService.logOut();
+        this.innovatorService.logOut();
     }
 }

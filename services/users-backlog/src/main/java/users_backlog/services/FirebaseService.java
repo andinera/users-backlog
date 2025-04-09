@@ -39,7 +39,7 @@ public class FirebaseService {
                 throw e;
             }
         }
-        return null;
+        throw new SecurityException("Unable to validate user.");
     }
 
 }

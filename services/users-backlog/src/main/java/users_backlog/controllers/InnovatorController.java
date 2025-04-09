@@ -2,7 +2,11 @@ package users_backlog.controllers;
 
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import users_backlog.models.Innovator;
+import users_backlog.services.FirebaseService;
 import users_backlog.services.InnovatorService;
 
 @RestController
@@ -20,25 +25,37 @@ public class InnovatorController {
     private static final Logger log = Logger.getLogger(InnovatorController.class.getName());
 
     @Autowired InnovatorService innovatorService;
+    @Autowired FirebaseService firebaseService;
 
     @GetMapping(path="getInnovator")
-    public Innovator getInnovator(
+    public ResponseEntity<?> getInnovator(
         @RequestParam(required = false) final Long id,
         @RequestParam(required = false) final String emailAddress
     ) {
-        if (id != null) {
-            return innovatorService.getInnovator(id);
-        } else if (emailAddress != null) {
-            return innovatorService.getInnovator(emailAddress);
-        } else {
-            return null;
-            // throw error, identical to if no parameters are passed
+        try {
+            if (id != null) {
+                return ResponseEntity.ok(innovatorService.getInnovator(id));
+            } else if (emailAddress != null) {
+                return ResponseEntity.ok(innovatorService.getInnovator(emailAddress));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing 'id' and 'emailAddress' parameter.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
         
     }
 
     @PostMapping(path = "postInnovator")
-    public Innovator postInnovator(@RequestBody final Innovator innovator) throws Exception {
-        return innovatorService.postInnovator(innovator);
+    public ResponseEntity<?> postInnovator(
+        @RequestBody final Innovator innovator,
+        HttpServletRequest request
+    ) throws Exception {
+        try {
+            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            return ResponseEntity.ok(innovatorService.postInnovator(innovator));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 }

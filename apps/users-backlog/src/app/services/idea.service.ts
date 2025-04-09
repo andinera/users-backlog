@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 import { Idea } from '../models/idea.model';
-import { AuthenticationService } from './authentication.service';
-import { Innovator } from '../models/innovator.model';
 import { Service } from './service';
+import { InnovatorService } from './innovator.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +15,7 @@ export class IdeaService extends Service {
 
   constructor(
     private readonly _http: HttpClient,
-    private readonly _authenticationService: AuthenticationService
+    private readonly _innovatorService: InnovatorService
   ) {
     super();
   }
@@ -31,16 +29,14 @@ export class IdeaService extends Service {
   }
 
   postIdea(idea: Idea): Observable<Idea> {
-    const innovator = this._authenticationService.innovator$.value;
-    if (innovator) {
-      idea.innovator = innovator;
-      return this._http.post<Idea>(`${this._serviceURL}postIdea`, idea);
-    } else {
-      return of(null);
-    }
+    const headers = {'ID-TOKEN': this._innovatorService.innovator$.value.idToken};
+    const innovator = this._innovatorService.innovator$.value;
+    idea.innovator = innovator;
+    return this._http.post<Idea>(`${this._serviceURL}postIdea`, idea, {headers});
   }
 
   deleteIdea(id: number) {
-    return this._http.delete<string>(`${this._serviceURL}deleteIdea?id=${encodeURIComponent(id)}`);
+    const headers = {'ID-TOKEN': this._innovatorService.innovator$.value.idToken};
+    return this._http.delete<string>(`${this._serviceURL}deleteIdea?id=${encodeURIComponent(id)}`, {headers});
   }
 }

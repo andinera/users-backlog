@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { InnovatorService } from '../services/innovator.service';
 
-import { AuthenticationService } from '../services/authentication.service';
-import { Innovator } from '../models/innovator.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +9,7 @@ import { Innovator } from '../models/innovator.model';
 export class LogInGuard implements CanActivate {
 
   constructor(
-    private readonly _authenticationService: AuthenticationService,
+    private readonly _innovatorService: InnovatorService,
     private readonly _router: Router
   ) {
 
@@ -21,7 +18,7 @@ export class LogInGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): boolean {
-      const innovator = this._authenticationService.innovator$.value;
+      const innovator = this._innovatorService.innovator$.value;
       if (innovator) {
         return true;
       } else {

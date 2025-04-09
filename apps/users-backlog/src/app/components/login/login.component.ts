@@ -3,9 +3,9 @@ import { Router } from '@angular/router';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ReplaySubject } from 'rxjs';
 
-import { AuthenticationService } from 'src/app/services/authentication.service';
 import { URLService } from 'src/app/services/url.service';
 import { LoginForm } from 'src/app/models/forms/login.form';
+import { InnovatorService } from 'src/app/services/innovator.service';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +23,7 @@ export class LoginComponent implements OnDestroy {
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
-    private readonly _authenticationService: AuthenticationService,
+    private readonly _innovatorService: InnovatorService,
     private readonly _formBuilder: FormBuilder,
     private readonly _urlService: URLService,
     private readonly _router: Router
@@ -40,7 +40,7 @@ export class LoginComponent implements OnDestroy {
     if(this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
     } else {
-      this._authenticationService.createUser(value.emailAddress, value.password)
+      this._innovatorService.createUser(value.emailAddress, value.password)
       .then(success => {
         this.errorMessage = null;
         this.successMessage = success;
@@ -56,7 +56,7 @@ export class LoginComponent implements OnDestroy {
       this.loginForm.markAllAsTouched();
     } else {
       this.loginFailed = false;
-      this._authenticationService.logIn(value.emailAddress, value.password)
+      this._innovatorService.logIn(value.emailAddress, value.password)
       .then(credential => {
         this._router.navigate([this._urlService.previousURL]);
       }).catch(error => {
@@ -68,7 +68,7 @@ export class LoginComponent implements OnDestroy {
 
   public openGoogleAuthenticator() {
     history.replaceState(history.state, '', this._urlService.previousURL);
-    this._authenticationService.signInWithGoogle();
+    this._innovatorService.signInWithGoogle();
   }
 
 }

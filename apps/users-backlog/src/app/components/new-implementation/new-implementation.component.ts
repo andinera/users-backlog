@@ -6,11 +6,10 @@ import { of, ReplaySubject } from 'rxjs';
 
 import { Implementation } from 'src/app/models/implementation.model';
 import { ImplementationService } from 'src/app/services/implementation.service';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { Innovator } from 'src/app/models/innovator.model';
 import { Category } from 'src/app/models/category.model';
 import { ImplementationForm } from 'src/app/models/forms/implementation.form';
 import { CategoryForm } from 'src/app/models/forms/category.form';
+import { InnovatorService } from 'src/app/services/innovator.service';
 
 @Component({
   selector: 'app-new-implementation [idea]',
@@ -29,7 +28,7 @@ export class NewImplementationComponent implements OnInit {
   constructor(
     private readonly _formBuilder: FormBuilder,
     private readonly _implementationService: ImplementationService,
-    private readonly _authenticationService: AuthenticationService,
+    private readonly _innovatorService: InnovatorService,
     private readonly _route: ActivatedRoute,
     private readonly _router: Router
   ) { }
@@ -69,9 +68,9 @@ export class NewImplementationComponent implements OnInit {
       implementationForm.markAllAsTouched();
     } else {
       const implementation = implementationForm.value;
-      const innovator = this._authenticationService.innovator$.value;
+      const innovator = this._innovatorService.innovator$.value;
       if (implementationForm.controls.isOwner.value) {
-        const innovator = this._authenticationService.innovator$.value;
+        const innovator = this._innovatorService.innovator$.value;
         implementation.innovator = innovator;
       } else {
         implementation.innovator = null;

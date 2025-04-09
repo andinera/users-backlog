@@ -8,10 +8,9 @@ import { ImplementationService } from 'src/app/services/implementation.service';
 import { RecommendationForm } from 'src/app/models/forms/recommendation.form';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Recommendation } from 'src/app/models/recommendation.model';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { Innovator } from 'src/app/models/innovator.model';
 import { ReplyForm } from 'src/app/models/forms/reply.form';
 import { Reply } from 'src/app/models/reply.model';
+import { InnovatorService } from 'src/app/services/innovator.service';
 
 @Component({
   selector: 'app-implementation',
@@ -33,7 +32,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     private readonly _route: ActivatedRoute,
     private readonly _router: Router,
     private readonly _formBuilder: FormBuilder,
-    private readonly _authenticationService: AuthenticationService,
+    private readonly _innovatorService: InnovatorService,
   ) { }
 
   ngOnInit(): void {
@@ -66,7 +65,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   }
 
   public postVote(up: boolean) {
-    const innovator = this._authenticationService.innovator$.value;
+    const innovator = this._innovatorService.innovator$.value;
     this._implementationService.postVote(this.implementation.id, innovator.id, up).pipe(
       first(),
       tap((votes: number) => {
@@ -85,7 +84,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     if (recommendationForm.controls.message.value.length === 0) {
       recommendationForm.markAllAsTouched();
     } else {
-      const innovator = this._authenticationService.innovator$.value;
+      const innovator = this._innovatorService.innovator$.value;
       recommendation.innovator = innovator;
       recommendation.implementation = this.implementation;
       this._implementationService.postRecommendation(recommendation).pipe(
@@ -113,7 +112,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
 
   public postRecommendationVote(recommendation: Recommendation, up: boolean) {
     recommendation.implementation = this.implementation;
-    const innovator = this._authenticationService.innovator$.value;
+    const innovator = this._innovatorService.innovator$.value;
     recommendation.innovator = innovator;
     recommendation.implementation = this.implementation;
     this._implementationService.postRecommendationVote(recommendation.id, innovator.id, up).pipe(
@@ -143,7 +142,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     if (!replyForm.controls.message.value) {
       replyForm.markAllAsTouched();
     } else {
-      const innovator = this._authenticationService.innovator$.value;
+      const innovator = this._innovatorService.innovator$.value;
       reply.innovator = innovator;
       reply.recommendation = recommendation;
       this._implementationService.postRecommendationReply(reply).pipe(
@@ -173,7 +172,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   }
 
   public claimOwnership(): void {
-    const innovator = this._authenticationService.innovator$.value;
+    const innovator = this._innovatorService.innovator$.value;
     this.implementation.innovator = innovator;
     this._implementationService.postImplementation(this.implementation).pipe(
       first(),

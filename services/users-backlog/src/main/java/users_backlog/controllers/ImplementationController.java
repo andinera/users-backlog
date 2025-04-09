@@ -23,6 +23,7 @@ import users_backlog.services.FirebaseService;
 import users_backlog.services.ImplementationService;
 import users_backlog.services.InnovatorService;
 
+
 @RestController
 @RequestMapping("/implementation")
 public class ImplementationController {
@@ -34,74 +35,110 @@ public class ImplementationController {
     @Autowired FirebaseService firebaseService;
 
     @GetMapping(path="getImplementations")
-    public ResponseEntity<List<Implementation>> getImplementations(
+    public ResponseEntity<?> getImplementations(
         @RequestParam(required = false) final String categoryName
     ) {
-        List<Implementation> implementations = implementationService.getImplementations(categoryName);
-        return new ResponseEntity<List<Implementation>>(implementations, HttpStatus.OK);
+        try {
+            return ResponseEntity.ok(implementationService.getImplementations(categoryName));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @GetMapping(path= "getImplementation")
-    public Implementation getImplementation(
+    public ResponseEntity<?> getImplementation(
         @RequestParam(required = false) final Long id,
         @RequestParam(required = false) final String name
     ) {
-        if (id != null) {
-            return implementationService.getImplementation(id);
-        } else if (name != null) {
-            return implementationService.getImplementation(name);
-        } else {
-            return null;
-            // throw error, identical to if no parameters are passed
+        try {
+            if (id != null) {
+                return ResponseEntity.ok(implementationService.getImplementation(id));
+            } else if (name != null) {
+                return ResponseEntity.ok(implementationService.getImplementation(name));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing 'id' and 'name' parameter.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @PostMapping(path = "postImplementation")
-    public Implementation postImplementation(@RequestBody final Implementation implementation) {
-        return implementationService.postImplementation(implementation);
+    public ResponseEntity<?> postImplementation(
+        @RequestBody final Implementation implementation,
+        HttpServletRequest request
+    ) {
+        try {
+            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            return ResponseEntity.ok(implementationService.postImplementation(implementation));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PostMapping(path = "postVote")
-    public ResponseEntity<Long> postVote(
+    public ResponseEntity<?> postVote(
         @RequestParam final Long implementationId,
         @RequestParam final Long innovatorId,
         @RequestParam final Boolean up,
         HttpServletRequest request
     ) {
-        String emailAddress;
         try {
-            emailAddress = firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            return ResponseEntity.ok(implementationService.postVote(implementationId, innovatorId, up));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
-            return new ResponseEntity<Long>(0L, HttpStatus.UNAUTHORIZED);
-        }
-        
-        if (innovatorService.getInnovator(emailAddress) != null) {
-            return new ResponseEntity<Long>(implementationService.postVote(implementationId, innovatorId, up), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<Long>(0L, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @PostMapping(path = "postRecommendation")
-    public Recommendation postRecommendation(
-        @RequestBody final Recommendation recommendation
+    public ResponseEntity<?> postRecommendation(
+        @RequestBody final Recommendation recommendation,
+        HttpServletRequest request
     ) {
-        return implementationService.postRecommendation(recommendation);
+        try {
+            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            return ResponseEntity.ok(implementationService.postRecommendation(recommendation));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PostMapping(path = "postRecommendationVote")
-    public Long postRecommendationVote(
+    public ResponseEntity<?> postRecommendationVote(
         @RequestParam final Long recommendationId,
         @RequestParam final Long innovatorId,
-        @RequestParam final Boolean up
+        @RequestParam final Boolean up,
+        HttpServletRequest request
     ) {
-        return implementationService.postRecommendationVote(recommendationId, innovatorId, up);
+        try {
+            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            return ResponseEntity.ok(implementationService.postRecommendationVote(recommendationId, innovatorId, up));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PostMapping(path = "postRecommendationReply")
-    public Reply postRecommendationReply(
-        @RequestBody final Reply reply
+    public ResponseEntity<?> postRecommendationReply(
+        @RequestBody final Reply reply,
+        HttpServletRequest request
     ) {
-        return implementationService.postRecommendationReply(reply);
+        try {
+            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            return ResponseEntity.ok(implementationService.postRecommendationReply(reply));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 }

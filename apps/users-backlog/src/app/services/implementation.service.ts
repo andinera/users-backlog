@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 import { Implementation } from '../models/implementation.model';
 import { Recommendation } from '../models/recommendation.model';
 import { Reply } from '../models/reply.model';
 import { Service } from './service';
-import { AuthenticationService } from './authentication.service';
-import { Innovator } from '../models/innovator.model';
+import { InnovatorService } from './innovator.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +19,7 @@ export class ImplementationService extends Service {
 
   constructor(
     private readonly _http: HttpClient,
-    private readonly _authenticationService: AuthenticationService
+    private readonly _innovatorService: InnovatorService
   ) {
     super();
   }
@@ -39,28 +37,29 @@ export class ImplementationService extends Service {
   }
 
   postImplementation(implementation: Implementation): Observable<Implementation> {
-    return this._http.post<Implementation>(`${this._serviceURL}postImplementation`, implementation);
+    const headers = {'ID-TOKEN': this._innovatorService.innovator$.value.idToken};
+    return this._http.post<Implementation>(`${this._serviceURL}postImplementation`, implementation, {headers});
   }
 
   postVote(implementationId: number, innovatorId: number, up: boolean): Observable<number> {
-    const innovator = this._authenticationService.innovator$.value;
-    const headers = {'ID-TOKEN': innovator.idToken};
+    const headers = {'ID-TOKEN': this._innovatorService.innovator$.value.idToken};
     const parameters = `implementationId=${implementationId}&innovatorId=${innovatorId}&up=${up}`;
     return this._http.post<number>(`${this._serviceURL}postVote?${parameters}`, null, {headers});
   }
 
   postRecommendation(recommendation: Recommendation): Observable<Recommendation> {
-    return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation);
+    const headers = {'ID-TOKEN': this._innovatorService.innovator$.value.idToken};
+    return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation, {headers});
   }
 
   postRecommendationVote(recommendationId: number, innovatorId: number, up: boolean): Observable<number> {
-    const innovator = this._authenticationService.innovator$.value;
-    const headers = {'ID-TOKEN': innovator.idToken};
+    const headers = {'ID-TOKEN': this._innovatorService.innovator$.value.idToken};
     const parameters = `recommendationId=${recommendationId}&innovatorId=${innovatorId}&up=${up}`;
-    return this._http.post<number>(`${this._serviceURL}postRecommendationVote?${parameters}`, headers);
+    return this._http.post<number>(`${this._serviceURL}postRecommendationVote?${parameters}`, {headers});
   }
 
   postRecommendationReply(reply: Reply): Observable<Reply> {
-    return this._http.post<Reply>(`${this._serviceURL}postRecommendationReply`, reply);
+    const headers = {'ID-TOKEN': this._innovatorService.innovator$.value.idToken};
+    return this._http.post<Reply>(`${this._serviceURL}postRecommendationReply`, reply, {headers});
   }
 }

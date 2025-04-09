@@ -7,20 +7,20 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mr-auto">
-            <div *ngIf="!(authenticationService.innovator$ | async)">
+            <div *ngIf="!(innovatorService.innovator$ | async)">
                 <li class="nav-item">
                     <a class="nav-link" routerLink="/Log In">
                     Log In</a>
                 </li>
             </div>
-            <div *ngIf="authenticationService.innovator$ | async">
+            <div *ngIf="innovatorService.innovator$ | async">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         User
                     </a>
                     <div class="dropdown-menu" aria-labelledBy="navbarDropdownMenuLink">
-                        <a class="dropdown-item" routerLink="/Innovator/{{(authenticationService.innovator$ | async).id}}">Profile</a>
-                        <a class="dropdown-item" routerLink="/Innovator/{{(authenticationService.innovator$ | async).id}}">Account</a>
+                        <a class="dropdown-item" routerLink="/Innovator/{{(innovatorService.innovator$ | async).id}}">Profile</a>
+                        <a class="dropdown-item" routerLink="/Innovator/{{(innovatorService.innovator$ | async).id}}">Account</a>
                         <a class="dropdown-item" (click)="logOut()">Log out</a>
                     </div>
                 </li>

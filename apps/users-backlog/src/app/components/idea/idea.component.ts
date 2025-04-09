@@ -8,11 +8,11 @@ import { takeUntil, tap, first, catchError } from 'rxjs/operators';
 
 import { IdeaService } from '../../services/idea.service';
 import { Idea } from '../../models/idea.model';
-import { AuthenticationService } from 'src/app/services/authentication.service';
 import { Innovator } from 'src/app/models/innovator.model';
 import { RecommendationForm } from 'src/app/models/forms/recommendation.form';
 import { Recommendation } from 'src/app/models/recommendation.model';
 import { RecommendationService } from 'src/app/services/recommendation.service';
+import { InnovatorService } from 'src/app/services/innovator.service';
 
 @Component({
   selector: 'app-idea',
@@ -34,7 +34,7 @@ export class IdeaComponent implements OnInit, OnDestroy {
     private readonly _ideaService: IdeaService,
     private readonly _router: Router,
     private readonly _route: ActivatedRoute,
-    public readonly authenticationService: AuthenticationService,
+    public readonly innovatorService: InnovatorService,
     private readonly _formBuilder: FormBuilder,
     private readonly _recommendationService: RecommendationService
   ) { }
@@ -48,7 +48,7 @@ export class IdeaComponent implements OnInit, OnDestroy {
       tap((data: {idea: Idea}) => {
         this.idea = data.idea;
         this.idea.recommendations.forEach(recommendation => recommendation.dateTimeCreated = new Date(Date.parse(recommendation.dateTimeCreated.toString())));
-        this.authenticationService.innovator$.pipe(
+        this.innovatorService.innovator$.pipe(
           tap((innovator: Innovator) => {
               this.deleteDisabled = (!innovator || this.idea.summary === 'Software Ideas');
           }),

@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
-import { AuthenticationService } from './authentication.service';
-import { Innovator } from '../models/innovator.model';
 import { Recommendation } from '../models/recommendation.model';
 import { Service } from './service';
+import { InnovatorService } from './innovator.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,18 +15,15 @@ export class RecommendationService extends Service {
 
   constructor(
     private readonly _http: HttpClient,
-    private readonly _authenticationService: AuthenticationService
+    private readonly _innovatorService: InnovatorService
   ) {
     super();
   }
 
   postRecommendation(recommendation: Recommendation): Observable<Recommendation> {
-    const innovator = this._authenticationService.innovator$.value;
-    if (innovator) {
-      recommendation.innovator = innovator;
-      return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation);
-    } else {
-      return of(null);
-    }
+    const headers = {'ID-TOKEN': this._innovatorService.innovator$.value.idToken};
+    const innovator = this._innovatorService.innovator$.value;
+    recommendation.innovator = innovator;
+    return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation, {headers});
   }
 }
