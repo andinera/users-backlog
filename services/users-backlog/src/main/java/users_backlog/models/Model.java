@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class Model {
     
     private long id;
+    private String idToken;
 
     public Model() {
     }
@@ -17,5 +18,13 @@ public class Model {
 
     public void setId(final long id) {
         this.id = id;
+    }
+
+    public String getIdToken() {
+        return this.idToken;
+    }
+
+    public void setIdToken(final String idToken) {
+        this.idToken = idToken;
     }
 }

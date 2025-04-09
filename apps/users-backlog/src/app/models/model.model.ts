@@ -1,4 +1,5 @@
 
 export interface Model {
-    id: number
+    id: number,
+    idToken: string
 }

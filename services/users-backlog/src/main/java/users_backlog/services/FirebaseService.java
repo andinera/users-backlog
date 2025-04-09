@@ -33,6 +33,9 @@ public class FirebaseService {
         if (idToken != null) {
             try {
                 FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
+                if (!decodedToken.isEmailVerified()) {
+                    throw new SecurityException("Email address has not been verified.");
+                }
                 return decodedToken.getEmail();
             } catch (Exception e) {
                 log.warning(e.getMessage());

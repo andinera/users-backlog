@@ -21,9 +21,8 @@ export class RecommendationService extends Service {
   }
 
   postRecommendation(recommendation: Recommendation): Observable<Recommendation> {
-    const headers = {'ID-TOKEN': this._innovatorService.innovator$.value.idToken};
-    const innovator = this._innovatorService.innovator$.value;
-    recommendation.innovator = innovator;
-    return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation, {headers});
+    recommendation.idToken = this._innovatorService.innovator$.value.idToken;
+    recommendation.innovator = this._innovatorService.innovator$.value;
+    return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation);
   }
 }

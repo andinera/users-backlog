@@ -1,10 +1,7 @@
 
 package users_backlog.controllers;
 
-import java.util.List;
 import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import users_backlog.models.Implementation;
+import users_backlog.models.Model;
 import users_backlog.models.Recommendation;
 import users_backlog.models.Reply;
 import users_backlog.services.FirebaseService;
@@ -65,11 +63,10 @@ public class ImplementationController {
 
     @PostMapping(path = "postImplementation")
     public ResponseEntity<?> postImplementation(
-        @RequestBody final Implementation implementation,
-        HttpServletRequest request
+        @RequestBody final Implementation implementation
     ) {
         try {
-            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            firebaseService.verifyToken(implementation.getIdToken());
             return ResponseEntity.ok(implementationService.postImplementation(implementation));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -83,10 +80,10 @@ public class ImplementationController {
         @RequestParam final Long implementationId,
         @RequestParam final Long innovatorId,
         @RequestParam final Boolean up,
-        HttpServletRequest request
+        @RequestBody final Model model
     ) {
         try {
-            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            firebaseService.verifyToken(model.getIdToken());
             return ResponseEntity.ok(implementationService.postVote(implementationId, innovatorId, up));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -98,10 +95,10 @@ public class ImplementationController {
     @PostMapping(path = "postRecommendation")
     public ResponseEntity<?> postRecommendation(
         @RequestBody final Recommendation recommendation,
-        HttpServletRequest request
+        @RequestBody final Model model
     ) {
         try {
-            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            firebaseService.verifyToken(model.getIdToken());
             return ResponseEntity.ok(implementationService.postRecommendation(recommendation));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -115,10 +112,10 @@ public class ImplementationController {
         @RequestParam final Long recommendationId,
         @RequestParam final Long innovatorId,
         @RequestParam final Boolean up,
-        HttpServletRequest request
+        @RequestBody final Model model
     ) {
         try {
-            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            firebaseService.verifyToken(model.getIdToken());
             return ResponseEntity.ok(implementationService.postRecommendationVote(recommendationId, innovatorId, up));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -129,11 +126,10 @@ public class ImplementationController {
 
     @PostMapping(path = "postRecommendationReply")
     public ResponseEntity<?> postRecommendationReply(
-        @RequestBody final Reply reply,
-        HttpServletRequest request
+        @RequestBody final Reply reply
     ) {
         try {
-            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            firebaseService.verifyToken(reply.getIdToken());
             return ResponseEntity.ok(implementationService.postRecommendationReply(reply));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

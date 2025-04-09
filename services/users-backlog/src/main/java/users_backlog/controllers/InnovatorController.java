@@ -2,8 +2,6 @@ package users_backlog.controllers;
 
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,11 +46,10 @@ public class InnovatorController {
 
     @PostMapping(path = "postInnovator")
     public ResponseEntity<?> postInnovator(
-        @RequestBody final Innovator innovator,
-        HttpServletRequest request
+        @RequestBody final Innovator innovator
     ) throws Exception {
         try {
-            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            firebaseService.verifyToken(innovator.getIdToken());
             return ResponseEntity.ok(innovatorService.postInnovator(innovator));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

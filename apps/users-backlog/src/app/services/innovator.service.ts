@@ -180,8 +180,8 @@ export class InnovatorService extends Service {
   }
 
   public postInnovator(innovator: Innovator) {
-    const headers = {'ID-TOKEN': this.innovator$.value.idToken};
-    return this._http.post<Innovator>(`${this._serviceURL}postInnovator`, innovator, {headers});
+    innovator.idToken = this.innovator$.value.idToken;
+    return this._http.post<Innovator>(`${this._serviceURL}postInnovator`, innovator);
   }
 
   

@@ -29,14 +29,13 @@ export class IdeaService extends Service {
   }
 
   postIdea(idea: Idea): Observable<Idea> {
-    const headers = {'ID-TOKEN': this._innovatorService.innovator$.value.idToken};
-    const innovator = this._innovatorService.innovator$.value;
-    idea.innovator = innovator;
-    return this._http.post<Idea>(`${this._serviceURL}postIdea`, idea, {headers});
+    idea.idToken = this._innovatorService.innovator$.value.idToken;
+    idea.innovator = this._innovatorService.innovator$.value;
+    return this._http.post<Idea>(`${this._serviceURL}postIdea`, idea);
   }
 
   deleteIdea(id: number) {
-    const headers = {'ID-TOKEN': this._innovatorService.innovator$.value.idToken};
-    return this._http.delete<string>(`${this._serviceURL}deleteIdea?id=${encodeURIComponent(id)}`, {headers});
+    const model = {idToken: this._innovatorService.innovator$.value.idToken};
+    return this._http.post<string>(`${this._serviceURL}deleteIdea?id=${encodeURIComponent(id)}`, model);
   }
 }

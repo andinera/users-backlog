@@ -1,9 +1,6 @@
 package users_backlog.controllers;
 
-import java.util.List;
 import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import users_backlog.models.Idea;
+import users_backlog.models.Model;
 import users_backlog.services.FirebaseService;
 import users_backlog.services.IdeaService;
 
@@ -58,11 +56,10 @@ public class IdeaController {
 
     @PostMapping(path = "postIdea")
     public ResponseEntity<?> postIdea(
-        @RequestBody final Idea idea,
-        HttpServletRequest request
+        @RequestBody final Idea idea
     ) {
         try {
-            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            firebaseService.verifyToken(idea.getIdToken());
             return ResponseEntity.ok(ideaService.postIdea(idea));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -71,13 +68,13 @@ public class IdeaController {
         }
     }
 
-    @DeleteMapping(path = "deleteIdea")
+    @PostMapping(path = "deleteIdea")
     public ResponseEntity<?> deleteIdea(
         @RequestParam final long id,
-        HttpServletRequest request
+        @RequestBody final Model model
     ) {
         try {
-            firebaseService.verifyToken(request.getHeader("ID-TOKEN"));
+            firebaseService.verifyToken(model.getIdToken());
             return ResponseEntity.ok(ideaService.deleteIdea(id));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
