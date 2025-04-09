@@ -25,18 +25,18 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   @ViewChild("newProduct") private newProductDropdown: ElementRef;
 
   implementation: Implementation;
-  
-  recommendationForm: FormGroup;
-  editRecommendationForm: FormGroup;
-  editedRecommendation: Recommendation;
 
   productForm: FormGroup;
   editProductForm: FormGroup;
   editedProduct: Product;
+  
+  recommendationForm: FormGroup;
+  editRecommendationForm: FormGroup;
+  editedRecommendation: Recommendation<Implementation>;
 
   replyForm: FormGroup;
   editReplyForm: FormGroup;
-  editedReply: Reply;
+  editedReply: Reply<Implementation>;
     
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -50,11 +50,11 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.recommendationForm = this._formBuilder.group(new RecommendationForm());
-    this.editRecommendationForm = this._formBuilder.group(new RecommendationForm());
-
     this.productForm = this._formBuilder.group(new ProductForm());
     this.editProductForm = this._formBuilder.group(new ProductForm());
+
+    this.recommendationForm = this._formBuilder.group(new RecommendationForm());
+    this.editRecommendationForm = this._formBuilder.group(new RecommendationForm());
 
     this.replyForm = this._formBuilder.group(new ReplyForm());
     this.editReplyForm = this._formBuilder.group(new ReplyForm());
@@ -64,24 +64,24 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       tap((data: {implementation: Implementation}) => {
         this.implementation = data.implementation;
 
-        let parameters = this._sessionStorageService.retrieveData('postVote');
+        let parameters = this._sessionStorageService.retrieveData('postImplementationVote');
         if (parameters) {
           this.postVote(parameters.up);
         }
     
-        parameters = this._sessionStorageService.retrieveData('postRecommendation');
+        parameters = this._sessionStorageService.retrieveData('postImplementationRecommendation');
         if (parameters) {
           this.recommendationForm.patchValue(parameters.recommendation);
           this.postRecommendation(this.recommendationForm);
         }
     
-        parameters = this._sessionStorageService.retrieveData('postRecommendationVote');
+        parameters = this._sessionStorageService.retrieveData('postImplementationRecommendationVote');
         if (parameters) {
           const recommendation = this.implementation.recommendations.filter(r => r.id = parameters.recommendationId)[0];
           this.postRecommendationVote(recommendation, parameters.up);
         }
     
-        parameters = this._sessionStorageService.retrieveData('postRecommendationReply');
+        parameters = this._sessionStorageService.retrieveData('postImplementationRecommendationReply');
         if (parameters) {
           this.replyForm.patchValue(parameters.reply);
           const recommendation = this.implementation.recommendations.filter(r => r.id = parameters.reply.recommendation.id)[0];
@@ -103,7 +103,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
 
   public editImplementation() {
     this._implementationService.implementationForEditing = this.implementation;
-    this._router.navigate(['edit-implementation']);
+    this._router.navigate(['/edit-implementation']);
   }
 
   public deleteImplementation() {
@@ -111,7 +111,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       first(),
       tap((deleted: boolean) => {
         if(deleted) {
-          this._router.navigate(['/']);
+          this._router.navigate(['/implementations']);
         } else {
           console.log('Failed to delete implementation.');
         }
@@ -185,7 +185,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
   }
 
   public postVote(up: boolean) {
-    this._implementationService.postVote(this.implementation.id, up).pipe(
+    this._implementationService.postVote(this.implementation, up).pipe(
       first(),
       tap((votes: number) => {
         this.implementation.votes = votes;
@@ -205,10 +205,10 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     } else {
       const innovator = this.innovatorService.innovator$.value;
       recommendation.innovator = innovator;
-      recommendation.implementation = this.implementation;
+      recommendation.parent = this.implementation;
       this._implementationService.postRecommendation(recommendation).pipe(
         first(),
-        tap((returnedRecommendation: Recommendation) => {
+        tap((returnedRecommendation: Recommendation<Implementation>) => {
           recommendationForm.reset();
           if (recommendation.id > 0) {
             const filteredRecommendations = this.implementation.recommendations.filter(r => r.id === recommendation.id);
@@ -228,7 +228,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     }
   }
 
-  public deleteRecommendation(recommendation: Recommendation): void {
+  public deleteRecommendation(recommendation: Recommendation<Implementation>): void {
     this._implementationService.deleteRecommendation(recommendation).pipe(
       first(),
       tap((deleted: boolean) => {
@@ -247,8 +247,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     ).subscribe();
   }
 
-  public postRecommendationVote(recommendation: Recommendation, up: boolean) {
-    this._implementationService.postRecommendationVote(recommendation.id, up).pipe(
+  public postRecommendationVote(recommendation: Recommendation<Implementation>, up: boolean) {
+    this._implementationService.postRecommendationVote(recommendation, up).pipe(
       first(),
       tap((votes: number) => {
         recommendation.votes = votes;
@@ -265,12 +265,12 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     this.editedRecommendation = undefined;
   }
 
-  public openRecommendationEdit(recommendation: Recommendation) {
+  public openRecommendationEdit(recommendation: Recommendation<Implementation>) {
     this.editedRecommendation = recommendation;
     this.editRecommendationForm.patchValue(recommendation);
   }
 
-  public postReply(replyForm: FormGroup, recommendation: Recommendation) {
+  public postReply(replyForm: FormGroup, recommendation: Recommendation<Implementation>) {
     const reply = replyForm.value;
     if (!replyForm.controls.message.value) {
       replyForm.markAllAsTouched();
@@ -280,7 +280,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       reply.recommendation = recommendation;
       this._implementationService.postRecommendationReply(reply).pipe(
         first(),
-        tap((returnedReply: Reply) => {
+        tap((returnedReply: Reply<Implementation>) => {
           replyForm.reset();
           if (reply.id > 0) {
             const filteredReplies = recommendation.replies.filter(r => r.id === reply.id);
@@ -303,7 +303,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     }
   }
 
-  public deleteRecommendationReply(reply: Reply, recommendation: Recommendation): void {
+  public deleteRecommendationReply(reply: Reply<Implementation>, recommendation: Recommendation<Implementation>): void {
     this._implementationService.deleteRecommendationReply(reply).pipe(
       first(),
       tap((deleted: boolean) => {

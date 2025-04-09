@@ -1,7 +1,6 @@
 package users_backlog.services;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,18 +8,17 @@ import org.springframework.stereotype.Service;
 import users_backlog.dao.CategoryDAO;
 import users_backlog.dao.IdeaDAO;
 import users_backlog.dao.ImplementationDAO;
-import users_backlog.dao.RecommendationDAO;
 import users_backlog.models.Idea;
+import users_backlog.models.Innovator;
+import users_backlog.models.Recommendation;
+import users_backlog.models.Reply;
 
 @Service
 public class IdeaService {
 
-    private static final Logger log = Logger.getLogger(IdeaService.class.getName());
-
     @Autowired IdeaDAO ideaDAO;
     @Autowired ImplementationDAO implementationDAO;
     @Autowired CategoryDAO categoryDAO;
-    @Autowired RecommendationDAO recommendationDAO;
     @Autowired ElasticSearchService elasticSearchService;
 
     public List<Idea> getIdeas(String categoryName) {
@@ -30,8 +28,8 @@ public class IdeaService {
     public Idea getIdea(final long id) {
         Idea idea = ideaDAO.getIdea(id);
         if (idea != null) {
-            idea.setImplementations(implementationDAO.getImplementations(idea));
             idea.setCategories(categoryDAO.getCategories(idea));
+            // idea.setImplementations(implementationDAO.getImplementations(idea));
         }
         return idea;
     }
@@ -39,9 +37,8 @@ public class IdeaService {
     public Idea getIdea(final String summary) {
         Idea idea = ideaDAO.getIdea(summary);
         if (idea != null) {
-            idea.setImplementations(implementationDAO.getImplementations(idea));
             idea.setCategories(categoryDAO.getCategories(idea));
-            idea.setRecommendations(recommendationDAO.getRecommendations(idea));
+            // idea.setImplementations(implementationDAO.getImplementations(idea));
         }
         return idea;
     }
@@ -54,12 +51,36 @@ public class IdeaService {
         return updatedIdea;
     }
 
-    public boolean deleteIdea(final long id) {
-        boolean deleted = ideaDAO.deleteIdea(id);
+    public boolean deleteIdea(final Idea idea) {
+        boolean deleted = ideaDAO.deleteIdea(idea);
         if (deleted) {
-            // elasticSearchService.delete(idea.getId());
+            elasticSearchService.delete(idea);
         }
         return deleted;
+    }
+
+    public Long postVote(Idea idea, Innovator innovator, Boolean up) {
+        return ideaDAO.postVote(idea, innovator, up);
+    }
+
+    public Recommendation<Idea> postRecommendation(Recommendation<Idea> recommendation) {
+        return ideaDAO.postRecommendation(recommendation);
+    }
+
+    public boolean deleteRecommendation(final Recommendation<Idea> recommendation) {
+        return ideaDAO.deleteRecommendation(recommendation);
+    }
+
+    public Long postRecommendationVote(Recommendation<Idea> recommendation, Innovator innovator, Boolean up) {
+        return ideaDAO.postRecommendationVote(recommendation, innovator, up);
+    }
+
+    public Reply<Idea> postRecommendationReply(Reply<Idea> reply) {
+        return ideaDAO.postRecommendationReply(reply);
+    }
+
+    public boolean deleteRecommendationReply(final Reply<Idea> reply) {
+        return ideaDAO.deleteRecommendationReply(reply);
     }
 
 }

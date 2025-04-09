@@ -1,5 +1,6 @@
 package users_backlog.models;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,17 +15,24 @@ public class Idea extends Model {
     private Innovator innovator;
     private List<Implementation> implementations;
     private List<Category> categories;
-    private List<Recommendation> recommendations;
+    private Long votes;
+    private List<Recommendation<Idea>> recommendations;
 
     public Idea() {
     }
 
     public static Idea fromMap(Map<String, Object> map) {
-        return null;
+        Idea idea = new Idea();
+        idea.setId(Long.parseLong((String)map.get("id")));
+        idea.setSummary((String)map.get("summary"));
+        return idea;
     }
 
     public Map<String, Object> toMap() {
-        return null;
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", String.valueOf(this.getId()));
+        map.put("summary", this.summary);
+        return map;
     }
 
     public String getSummary() {
@@ -67,11 +75,19 @@ public class Idea extends Model {
         this.categories = categories;
     }
 
-    public List<Recommendation> getRecommendations() {
+    public Long getVotes() {
+        return this.votes;
+    }
+
+    public void setVotes(final Long votes) {
+        this.votes = votes;
+    }
+
+    public List<Recommendation<Idea>> getRecommendations() {
         return this.recommendations;
     }
 
-    public void setRecommendations(final List<Recommendation> recommendations) {
+    public void setRecommendations(final List<Recommendation<Idea>> recommendations) {
         this.recommendations = recommendations;
     }
 }

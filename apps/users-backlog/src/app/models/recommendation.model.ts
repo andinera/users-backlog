@@ -1,16 +1,15 @@
 import { Idea } from './idea.model';
 import { Model } from './model.model';
 import { Innovator } from './innovator.model';
-import { Implementation } from './implementation.model';
 import { Reply } from './reply.model';
 
-export interface Recommendation extends Model {
+export interface Recommendation<T> extends Model {
     idea: Idea,
-    implementation: Implementation,
+    parent: T,
     message: string,
     dateTimeCreated: Date,
     dateTimeModified: Date,
     innovator: Innovator,
     votes: number,
-    replies: Reply[]
+    replies: Reply<T>[]
 }

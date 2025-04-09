@@ -32,15 +32,14 @@ const routes: Routes = [
         path: 'ideas',
         component: IdeasComponent,
         resolve: {
-            categories: IdeasResolver
+            ideas: IdeasResolver
         }
     },
     {
         path: 'idea/:summary',
         component: IdeaComponent,
         resolve: {
-            idea: IdeaResolver,
-            categories: CategoriesResolver
+            idea: IdeaResolver
         }
     },
     {
@@ -85,10 +84,9 @@ const routes: Routes = [
         canActivate: [LogInGuard]
     },
     {
-        path: 'edit-idea/:summary',
+        path: 'edit-idea',
         component: NewIdeaComponent,
         resolve: {
-            idea: IdeaResolver,
             categories: CategoriesResolver
         },
         canActivate: [LogInGuard]

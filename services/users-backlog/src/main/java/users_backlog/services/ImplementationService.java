@@ -1,7 +1,6 @@
 package users_backlog.services;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,14 +10,13 @@ import users_backlog.dao.IdeaDAO;
 import users_backlog.dao.ImplementationDAO;
 import users_backlog.dao.ProductDAO;
 import users_backlog.models.Implementation;
+import users_backlog.models.Innovator;
 import users_backlog.models.Product;
 import users_backlog.models.Recommendation;
 import users_backlog.models.Reply;
 
 @Service
 public class ImplementationService {
-
-    private static final Logger log = Logger.getLogger(ImplementationService.class.getName());
 
     @Autowired IdeaDAO ideaDAO;
     @Autowired ImplementationDAO implementationDAO;
@@ -86,27 +84,27 @@ public class ImplementationService {
         return productDAO.deleteProduct(product);
     }
 
-    public Long postVote(Long implementationId, Long innovatorId, Boolean up) {
-        return implementationDAO.postVote(implementationId, innovatorId, up);
+    public Long postVote(Implementation implementation, Innovator innovator, Boolean up) {
+        return implementationDAO.postVote(implementation, innovator, up);
     }
 
-    public Recommendation postRecommendation(Recommendation recommendation) {
+    public Recommendation<Implementation> postRecommendation(Recommendation<Implementation> recommendation) {
         return implementationDAO.postRecommendation(recommendation);
     }
 
-    public boolean deleteRecommendation(final Recommendation recommendation) {
+    public boolean deleteRecommendation(final Recommendation<Implementation> recommendation) {
         return implementationDAO.deleteRecommendation(recommendation);
     }
 
-    public Long postRecommendationVote(Long recommendationId, Long innovatorId, Boolean up) {
-        return implementationDAO.postRecommendationVote(recommendationId, innovatorId, up);
+    public Long postRecommendationVote(Recommendation<Implementation> recommendation, Innovator innovator, Boolean up) {
+        return implementationDAO.postRecommendationVote(recommendation, innovator, up);
     }
 
-    public Reply postRecommendationReply(Reply reply) {
+    public Reply<Implementation> postRecommendationReply(Reply<Implementation> reply) {
         return implementationDAO.postRecommendationReply(reply);
     }
 
-    public boolean deleteRecommendationReply(final Reply reply) {
+    public boolean deleteRecommendationReply(final Reply<Implementation> reply) {
         return implementationDAO.deleteRecommendationReply(reply);
     }
 

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import users_backlog.models.Implementation;
 import users_backlog.models.Innovator;
-import users_backlog.models.Model;
 import users_backlog.models.Product;
 import users_backlog.models.Recommendation;
 import users_backlog.models.Reply;
@@ -129,14 +128,13 @@ public class ImplementationController {
 
     @PostMapping(path = "postVote")
     public ResponseEntity<?> postVote(
-        @RequestParam final Long implementationId,
         @RequestParam final Boolean up,
-        @RequestBody final Model model
+        @RequestBody final Implementation implementation
     ) {
         try {
-            String emailAddress = firebaseService.verifyToken(model.getIdToken());
+            String emailAddress = firebaseService.verifyToken(implementation.getIdToken());
             Innovator innovator = innovatorService.getInnovator(emailAddress);
-            return ResponseEntity.ok(implementationService.postVote(implementationId, innovator.getId(), up));
+            return ResponseEntity.ok(implementationService.postVote(implementation, innovator, up));
         } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
@@ -147,7 +145,7 @@ public class ImplementationController {
 
     @PostMapping(path = "postRecommendation")
     public ResponseEntity<?> postRecommendation(
-        @RequestBody final Recommendation recommendation
+        @RequestBody final Recommendation<Implementation> recommendation
     ) {
         try {
             firebaseService.verifyToken(recommendation.getIdToken());
@@ -162,7 +160,7 @@ public class ImplementationController {
 
     @PostMapping(path = "deleteRecommendation")
     public ResponseEntity<?> deleteRecommendation(
-        @RequestBody final Recommendation recommendation
+        @RequestBody final Recommendation<Implementation> recommendation
     ) {
         try {
             firebaseService.verifyToken(recommendation.getIdToken());
@@ -177,14 +175,13 @@ public class ImplementationController {
 
     @PostMapping(path = "postRecommendationVote")
     public ResponseEntity<?> postRecommendationVote(
-        @RequestParam final Long recommendationId,
         @RequestParam final Boolean up,
-        @RequestBody final Model model
+        @RequestBody final Recommendation<Implementation> recommendation
     ) {
         try {
-            String emailAddress = firebaseService.verifyToken(model.getIdToken());
+            String emailAddress = firebaseService.verifyToken(recommendation.getIdToken());
             Innovator innovator = innovatorService.getInnovator(emailAddress);
-            return ResponseEntity.ok(implementationService.postRecommendationVote(recommendationId, innovator.getId(), up));
+            return ResponseEntity.ok(implementationService.postRecommendationVote(recommendation, innovator, up));
         } catch (SecurityException | IllegalArgumentException | FirebaseAuthException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
@@ -195,7 +192,7 @@ public class ImplementationController {
 
     @PostMapping(path = "postRecommendationReply")
     public ResponseEntity<?> postRecommendationReply(
-        @RequestBody final Reply reply
+        @RequestBody final Reply<Implementation> reply
     ) {
         try {
             firebaseService.verifyToken(reply.getIdToken());
@@ -210,7 +207,7 @@ public class ImplementationController {
 
     @PostMapping(path = "deleteRecommendationReply")
     public ResponseEntity<?> deleteRecommendationReply(
-        @RequestBody final Reply reply
+        @RequestBody final Reply<Implementation> reply
     ) {
         try {
             firebaseService.verifyToken(reply.getIdToken());

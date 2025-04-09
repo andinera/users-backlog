@@ -12,7 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class IdeasComponent implements OnInit, OnDestroy {
   
-  categories = [];
+  ideas = [];
     
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -25,8 +25,8 @@ export class IdeasComponent implements OnInit, OnDestroy {
 
     this._route.data.pipe(
       first(),
-      tap((data: {categories: Idea[]}) => {
-        this.categories = data.categories;
+      tap((data: {ideas: Idea[]}) => {
+        this.ideas = data.ideas;
       }),
       catchError((error: any) => {
         return of(null);

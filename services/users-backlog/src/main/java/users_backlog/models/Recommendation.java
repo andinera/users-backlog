@@ -8,21 +8,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class Recommendation extends Model {
+public class Recommendation<T> extends Model {
 
-    private Idea idea;
-    private Implementation implementation;
+    private T parent;
     private String message;
     private ZonedDateTime dateTimeCreated;
     private ZonedDateTime dateTimeModified;
     private Innovator innovator;
     private Long votes;
-    private List<Reply> replies;
+    private List<Reply<T>> replies;
 
     public Recommendation() {
     }
 
-    public static Recommendation fromMap(Map<String, Object> map) {
+    public static Recommendation<?> fromMap(Map<String, Object> map) {
         return null;
     }
 
@@ -30,20 +29,12 @@ public class Recommendation extends Model {
         return null;
     }
 
-    public Idea getIdea() {
-        return this.idea;
+    public T getParent() {
+        return this.parent;
     }
 
-    public void setIdea(Idea idea) {
-        this.idea = idea;
-    }
-
-    public Implementation getImplementation() {
-        return this.implementation;
-    }
-
-    public void setImplementation(Implementation implementation) {
-        this.implementation = implementation;
+    public void setParent(T parent) {
+        this.parent = parent;
     }
 
     public String getMessage() {
@@ -86,11 +77,11 @@ public class Recommendation extends Model {
         this.votes = votes;
     }
 
-    public List<Reply> getReplies() {
+    public List<Reply<T>> getReplies() {
         return this.replies;
     }
 
-    public void setReplies(final List<Reply> replies) {
+    public void setReplies(final List<Reply<T>> replies) {
         this.replies = replies;
     }
 

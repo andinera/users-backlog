@@ -1,49 +1,293 @@
-<!-- <mat-tab-group [animationDuration]="0" [selectedIndex]="selectedIndex" (selectedTabChange)="onSelectedTabChange($event)">
-
-    <mat-tab [label]="tabLabels[0]">
-        <p>
-            {{idea.description}}
-        </p>
-        <button mat-raised-button type="submit" routerLink="/edit-idea/{{idea.summary}}">Edit Idea</button>
-    </mat-tab>
-
-    <mat-tab [label]="tabLabels[1]">
-        <mat-nav-list>
-            <a mat-list-item *ngFor="let implementation of idea.implementations" routerLink="/implementation/{{implementation.name}}">
-                {{implementation.name}}
-            </a>
-        </mat-nav-list>
-        <mat-accordion>
-            <mat-expansion-panel [disabled]="!(innovatorService.innovator$ | async)">
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        New Implementation
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-            </mat-expansion-panel>
-        </mat-accordion>
-    </mat-tab>
-
-    <mat-tab [label]="tabLabels[2]">
-        <mat-nav-list>
-            <a mat-list-item routerLink="/innovator/{{idea.innovator.emailAddress}}">{{idea.innovator.emailAddress}}</a>
-        </mat-nav-list>
-    </mat-tab>
-
-    <mat-tab [label]="tabLabels[3]">
-        <div *ngFor="let recommendation of idea.recommendations">
-            {{recommendation.message}}<br>
-            {{recommendation.dateTimeCreated}}
-        </div>
-        <form (ngSubmit)="addRecommendation(recommendationForm.value)">
-            <div>
-                <mat-form-field appearance="fill">
-                    <textarea cdkTextareaAutosize matInput required [formControl]="recommendationForm.controls.message"></textarea>
-                </mat-form-field>
+<div class="container">
+    <div *ngIf="(innovatorService.innovator$ | async) && idea.innovator && (innovatorService.innovator$ | async).id === idea.innovator.id" class="row">
+        <div class="col">
+            <div class="float-right" style="margin-top:15px;margin-bottom:15px">
+                <div class="row">
+                    <button class="btn btn-primary" type="button" (click)="editIdea()">Edit Idea</button>
+                </div>
+                <div class="row">
+                    <button class="btn btn-primary" type="button" (click)="deleteIdea()">Delete Idea</button>
+                </div>
             </div>
-            <button mat-raised-button color="primary" type="submit">Add Recommendation</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="name">
+            {{idea.summary}}
+        </div>
+    </div>
+        
+    <div class="row">
+        {{idea.description}}
+    </div>
+
+    <div class="row">
+        <div class="innovator" *ngIf="idea.innovator">
+            <a [routerLink]="['/innovator', idea.innovator.id]">
+                {{idea.innovator.displayName}}
+            </a>
+        </div>
+    </div>
+
+    <!-- <div class="row">
+        <div class="col">
+            <button class="btn btn-primary" data-toggle="collapse" [attr.data-target]="'#addImplementation'">Add Implementation</button>
+        </div>
+    </div>
+    <div class="collapse" #addImplementation [attr.id]="'addImplementation'">
+        <div class="row">
+            <div class="col">
+                <form (ngSubmit)="addImplementation(productForm)">
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>URL</mat-label>
+                        <input matInput [formControl]="productForm.controls.url">
+                        <mat-error *ngIf="productForm.controls.url.hasError('required')">
+                            URL is <strong>required</strong>
+                        </mat-error>
+                        <mat-error *ngIf="!productForm.controls.url.hasError('required') && productForm.controls.url.hasError('invalidURL')">
+                            Invalid URL
+                        </mat-error>
+                    </mat-form-field>
+        
+                    <mat-form-field appearance="fill">
+                        <textarea matInput [formControl]="productForm.controls.description"></textarea>
+                    </mat-form-field>
+        
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
+                    </div>
+        
+                </form>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- <div *ngFor="let product of implementation.products">
+        <div *ngIf="editedProduct !== product">
+            <div class="row">
+                <button class="btn btn-link" style="user-select: text" type="submit" (click)="openProductUrl(product.url)">{{product.url}}</button>
+            </div>
+            <div class="row">
+                {{product.description}}
+            </div>
+            <div class="row" *ngIf="(innovatorService.innovator$ | async) && (innovatorService.innovator$ | async).id === implementation.innovator.id">
+                <div class="col">
+                    <button class="btn btn-light" (click)="openProductEdit(product)">Edit</button>
+                    <button class="btn btn-light float-right" (click)="deleteProduct(product)">Delete</button>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="editedProduct === product">
+            <form (ngSubmit)="postProduct(editProductForm)">
+
+                <mat-form-field appearance="fill">
+                    <mat-label>URL</mat-label>
+                    <input matInput [formControl]="editProductForm.controls.url">
+                    <mat-error *ngIf="editProductForm.controls.url.hasError('required')">
+                        URL is <strong>required</strong>
+                    </mat-error>
+                    <mat-error *ngIf="!editProductForm.controls.url.hasError('required') && editProductForm.controls.url.hasError('invalidURL')">
+                        Invalid URL
+                    </mat-error>
+                </mat-form-field>
+    
+                <mat-form-field appearance="fill">
+                    <textarea matInput [formControl]="editProductForm.controls.description"></textarea>
+                </mat-form-field>
+    
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditProduct()">Cancel</button>
+                    </div>
+                </div>
+    
+            </form>
+        </div>
+    </div> -->
+
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-light" style="text-transform: none;" type="button" (click)="postVote(true)">i++</button>
+        </div>
+        <div class="col">
+            <div class="votes">
+                {{idea.votes}}
+            </div>
+        </div>
+        <div class="col">
+            <button class="btn btn-light" style="text-transform: none;" type="button" (click)="postVote(false)">i--</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <ul class="list-group">
+            <div class="recommendation" *ngFor="let recommendation of idea.recommendations">
+                <div>
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-2 text-center">
+                                <div class="row">
+                                    <div class="col">
+                                        <button class="btn btn-light" (click)="postRecommendationVote(recommendation, true)">i++</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        {{recommendation.votes}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <button class="btn btn-light" (click)="postRecommendationVote(recommendation, false)">i--</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div *ngIf="editedRecommendation !== recommendation">
+                                    <div class="row">
+                                        <div class="col">
+                                            {{recommendation.message}}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-right">
+                                            {{recommendation.dateTimeCreated | date:'medium'}}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-right">
+                                            <a [routerLink]="['/innovator', recommendation.innovator.id]">
+                                                {{recommendation.innovator.displayName}}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="(innovatorService.innovator$ | async) && (innovatorService.innovator$ | async).id === recommendation.innovator.id" class="row">
+                                        <div class="col">
+                                            <button class="btn btn-light" (click)="openRecommendationEdit(recommendation)">Edit</button>
+                                            <button class="btn btn-light float-right" (click)="deleteRecommendation(recommendation)">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="editedRecommendation === recommendation">
+                                    <form (ngSubmit)="postRecommendation(editRecommendationForm)">
+                            
+                                        <mat-form-field appearance="fill">
+                                            <textarea matInput [formControl]="editRecommendationForm.controls.message"></textarea>
+                                        </mat-form-field>
+                            
+                                        <div class="row">
+                                            <div class="col">
+                                                <button class="btn btn-primary" type="submit">Submit</button>
+                                            </div>
+                                            <div class="col">
+                                                <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditRecommendtion()">Cancel</button>
+                                            </div>
+                                        </div>
+                            
+                                    </form>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <button class="btn btn-outline-dark btn-block" data-toggle="collapse" [attr.data-target]="'#replies' + recommendation.id">Replies</button>
+                                    </div>
+                                </div>
+                                <div class="collapse" [attr.id]="'replies' + recommendation.id">
+                                    <div class="reply" *ngFor="let reply of recommendation.replies">
+                                        <div *ngIf="editedReply !== reply">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <hr>
+                                                    {{reply.message}}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col text-right">
+                                                    {{reply.dateTimeCreated | date:'medium'}}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col text-right">
+                                                    <a [routerLink]="['/innovator', reply.innovator.id]">
+                                                        {{reply.innovator.displayName}}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="(innovatorService.innovator$ | async) && (innovatorService.innovator$ | async).id === reply.innovator.id" class="row">
+                                                <div class="col">
+                                                    <button class="btn btn-light" (click)="openReplyEdit(reply)">Edit</button>
+                                                    <button class="btn btn-light float-right" (click)="deleteRecommendationReply(reply, recommendation)">Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="editedReply === reply">
+                                            <form (ngSubmit)="postReply(editReplyForm, recommendation)">
+                                    
+                                                <mat-form-field appearance="fill">
+                                                    <textarea matInput [formControl]="editReplyForm.controls.message"></textarea>
+                                                </mat-form-field>
+                                    
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                                    </div>
+                                                    <div class="col">
+                                                        <button class="btn btn-light" color="secondary" type="button" (click)="cancelEditReply()">Cancel</button>
+                                                    </div>
+                                                </div>
+                                    
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="collapse" [attr.id]="'reply' + recommendation.id">
+                                        <div class="row">
+                                            <div class="col">
+                                                <form (ngSubmit)="postReply(replyForm, recommendation)">
+                                        
+                                                    <mat-form-field appearance="fill">
+                                                        <textarea matInput [formControl]="replyForm.controls.message"></textarea>
+                                                    </mat-form-field>
+                                        
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <button class="btn btn-primary" type="submit" data-toggle="collapse" [attr.data-target]="'#reply' + recommendation.id">Submit</button>
+                                                        </div>
+                                                    </div>
+                                        
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <a class="btn btn-outline-dark" data-toggle="collapse" [attr.data-target]="'#reply' + recommendation.id">Reply</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </div>
+            </div>
+        </ul>
+    </div>
+
+    <div class="row">
+        <form (ngSubmit)="postRecommendation(recommendationForm)">
+
+            <mat-form-field appearance="fill">
+                <textarea matInput [formControl]="recommendationForm.controls.message"></textarea>
+            </mat-form-field>
+
+            <div class="col">
+                <button class="btn btn-primary" type="submit">New Recommendation</button>
+            </div>
+
         </form>
-
-    </mat-tab>
-
-</mat-tab-group> -->
+    </div>
+</div>

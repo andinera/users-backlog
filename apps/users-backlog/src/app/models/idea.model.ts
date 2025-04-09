@@ -10,5 +10,6 @@ export interface Idea extends Model {
     description: string,
     implementations: Implementation[],
     categories: Category[],
-    recommendations: Recommendation[]
+    recommendations: Recommendation<Idea>[],
+    votes: number
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 
 import { Implementation } from '../models/implementation.model';
@@ -30,15 +30,18 @@ export class ImplementationService extends Service {
   }
 
   getImplementations(categoryName?: string): Observable<Implementation[]> {
-    let urlParameters = '';
+    const params = new HttpParams();
     if (categoryName) {
-      urlParameters += `categoryName=${categoryName}`;
+      params.set('categoryName', categoryName);
     }
-    return this._http.get<Implementation[]>(`${this._serviceURL}getImplementations?${urlParameters}`);
+    const options = {params: params};
+    return this._http.get<Implementation[]>(`${this._serviceURL}getImplementations`, options);
   }
 
   getImplementation(name: string): Observable<Implementation> {
-    return this._http.get<Implementation>(`${this._serviceURL}getImplementation?name=${encodeURIComponent(name)}`);
+    const params = new HttpParams().set('name', name);
+    const options = {params: params};
+    return this._http.get<Implementation>(`${this._serviceURL}getImplementation`, options);
   }
 
   postImplementation(implementation: Implementation): Observable<Implementation> {
@@ -61,62 +64,64 @@ export class ImplementationService extends Service {
     return this._http.post<boolean>(`${this._serviceURL}deleteProduct`, product);
   }
 
-  postVote(implementationId: number, up: boolean): Observable<number> {
+  postVote(implementation: Implementation, up: boolean): Observable<number> {
     const innovator = this._innovatorService.innovator$.value;
     if (!innovator) {
-      this._sessionStorageService.storeData('postVote', {implementationId: implementationId, up: up});
+      this._sessionStorageService.storeData('postImplementationVote', {implementationId: implementation.id, up: up});
       this._router.navigate(['/log-in']);
       return throwError('Not logged in.');
     } else {
-      const model = {idToken: innovator.idToken};
-      const parameters = `implementationId=${implementationId}&up=${up}`;
-      return this._http.post<number>(`${this._serviceURL}postVote?${parameters}`, model);
+      implementation.idToken = innovator.idToken;
+      const params = new HttpParams().set('up', String(up));
+      const options = {params: params};
+      return this._http.post<number>(`${this._serviceURL}postVote`, implementation, options);
     }
   }
 
-  postRecommendation(recommendation: Recommendation): Observable<Recommendation> {
+  postRecommendation(recommendation: Recommendation<Implementation>): Observable<Recommendation<Implementation>> {
     const innovator = this._innovatorService.innovator$.value;
     if (!innovator) {
-      this._sessionStorageService.storeData('postRecommendation', {recommendation: recommendation});
+      this._sessionStorageService.storeData('postImplementationRecommendation', {recommendation: recommendation});
       this._router.navigate(['/log-in']);
       return throwError('Not logged in.');
     } else {
       recommendation.idToken = this._innovatorService.innovator$.value.idToken;
-      return this._http.post<Recommendation>(`${this._serviceURL}postRecommendation`, recommendation);
+      return this._http.post<Recommendation<Implementation>>(`${this._serviceURL}postRecommendation`, recommendation);
     }
   }
 
-  deleteRecommendation(recommendation: Recommendation): Observable<boolean> {
+  deleteRecommendation(recommendation: Recommendation<Implementation>): Observable<boolean> {
     recommendation.idToken = this._innovatorService.innovator$.value.idToken;
     return this._http.post<boolean>(`${this._serviceURL}deleteRecommendation`, recommendation);
   }
 
-  postRecommendationVote(recommendationId: number, up: boolean): Observable<number> {
+  postRecommendationVote(recommendation: Recommendation<Implementation>, up: boolean): Observable<number> {
     const innovator = this._innovatorService.innovator$.value;
     if (!innovator) {
-      this._sessionStorageService.storeData('postRecommendationVote', {recommendationId: recommendationId, up: up});
+      this._sessionStorageService.storeData('postImplementationRecommendationVote', {recommendationId: recommendation.id, up: up});
       this._router.navigate(['/log-in']);
       return throwError('Not logged in.');
     } else {
-      const model = {idToken: this._innovatorService.innovator$.value.idToken};
-      const parameters = `recommendationId=${recommendationId}&up=${up}`;
-      return this._http.post<number>(`${this._serviceURL}postRecommendationVote?${parameters}`, model);
+      recommendation.idToken = this._innovatorService.innovator$.value.idToken;
+      const params = new HttpParams().set('up', String(up));
+      const options = {params: params};
+      return this._http.post<number>(`${this._serviceURL}postRecommendationVote`, recommendation, options);
     }
   }
 
-  postRecommendationReply(reply: Reply): Observable<Reply> {
+  postRecommendationReply(reply: Reply<Implementation>): Observable<Reply<Implementation>> {
     const innovator = this._innovatorService.innovator$.value;
     if (!innovator) {
-      this._sessionStorageService.storeData('postRecommendationReply', {reply: reply});
+      this._sessionStorageService.storeData('postImplementationRecommendationReply', {reply: reply});
       this._router.navigate(['/log-in']);
       return throwError('Not logged in.');
     } else {
       reply.idToken = this._innovatorService.innovator$.value.idToken;
-      return this._http.post<Reply>(`${this._serviceURL}postRecommendationReply`, reply);
+      return this._http.post<Reply<Implementation>>(`${this._serviceURL}postRecommendationReply`, reply);
     }
   }
 
-  deleteRecommendationReply(reply: Reply): Observable<boolean> {
+  deleteRecommendationReply(reply: Reply<Implementation>): Observable<boolean> {
     reply.idToken = this._innovatorService.innovator$.value.idToken;
     return this._http.post<boolean>(`${this._serviceURL}deleteRecommendationReply`, reply);
   }

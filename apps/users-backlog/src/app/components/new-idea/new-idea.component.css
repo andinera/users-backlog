@@ -1,3 +1,11 @@
-button {
-    outline: 0;
+form > .col {
+    display: flex;
+}
+
+.col > .mat-form-field {
+    flex: 1;
+}
+
+.col > button {
+    flex: 1;
 }

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
 
     <a class="navbar-brand" routerLink="/implementations">
         <img src="assets/bree-serif-dark.ico" width="30" height="30">
@@ -9,6 +9,11 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
+
+        <div class="navbar-nav">
+            <a class="nav-item nav-link" [routerLinkActive]="['active']" routerLink="/ideas">Ideas</a>
+            <a class="nav-item nav-link" [routerLinkActive]="['active']" routerLink="/implementations">Implementations</a>
+        </div>
 
         <form class="form-inline" (ngSubmit)="onSearch()">
             <input class="form-control" type="search" [formControl]="searchForm.controls.search" aria-label="Search">
@@ -24,7 +29,7 @@
             </div>
             <div *ngIf="innovatorService.innovator$ | async">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         User
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledBy="navbarDropdownMenuLink">

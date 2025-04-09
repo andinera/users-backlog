@@ -54,6 +54,12 @@ export class NewIdeaComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this._destroyed$)
     ).subscribe();
+
+    if (this._ideaService.ideaForEditing) {
+      this.ideaForm.patchValue(this._ideaService.ideaForEditing);
+      this.ideaForm.controls.categories.setValue(this.categoryOptions.filter(category => this._ideaService.ideaForEditing.categories.map(cat => cat.name).includes(category.name)));
+      this._ideaService.ideaForEditing = undefined;
+    }
   }
 
   ngOnDestroy(): void {

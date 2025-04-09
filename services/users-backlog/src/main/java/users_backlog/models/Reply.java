@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class Reply extends Model {
+public class Reply<T> extends Model {
 
-    private Recommendation recommendation;
+    private Recommendation<T> recommendation;
     private String message;
     private ZonedDateTime dateTimeCreated;
     private ZonedDateTime dateTimeModified;
@@ -18,7 +18,7 @@ public class Reply extends Model {
     public Reply() {
     }
 
-    public static Reply fromMap(Map<String, Object> map) {
+    public static Reply<?> fromMap(Map<String, Object> map) {
         return null;
     }
 
@@ -26,11 +26,11 @@ public class Reply extends Model {
         return null;
     }
 
-    public Recommendation getRecommendation() {
+    public Recommendation<T> getRecommendation() {
         return this.recommendation;
     }
 
-    public void setRecommendation(Recommendation recommendation) {
+    public void setRecommendation(Recommendation<T> recommendation) {
         this.recommendation = recommendation;
     }
 

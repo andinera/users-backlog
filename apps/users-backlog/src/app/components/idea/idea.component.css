@@ -1,16 +1,60 @@
-button {
-    outline: 0;
+.name {
+    font-size: 30px;
+    margin-top: 15px;
 }
 
-.list-group-item-container {
-    text-decoration: none;
+.votes {
+    font-size: 15px;
+    margin-top: 5px;
 }
 
-.list-group-item {
-    color: var(--clr-link-color);
+.recommendation {
+    margin-top: 15px;
 }
 
-.list-group-item:hover {
-    background-color: var(--clr-link-color);
-    color: white;
+.list-group {
+    width: 100%;
+}
+
+.left-container {
+    display: inline-block;
+}
+
+.recommendation-votes {
+    text-align: center;
+}
+
+.right-container {
+    display: inline-block;
+    margin-left: 16px;
+}
+
+.message {
+    font-size: 16px;
+}
+
+.recommendation-footer {
+
+}
+
+.date-time-created {
+    display: inline-flex;
+}
+
+.display-name {
+    display: inline-flex;
+    float: right;
+}
+
+.full-width {
+    width: 100%;
+}
+
+form {
+    margin-top: 45px;
+    width: 100%;
+}
+
+form > mat-form-field {
+    width:100%;
 }

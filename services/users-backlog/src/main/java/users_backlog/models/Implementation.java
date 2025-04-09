@@ -18,7 +18,7 @@ public class Implementation extends Model {
     private List<Category> categories;
     private List<Product> products;
     private Long votes;
-    private List<Recommendation> recommendations;
+    private List<Recommendation<Implementation>> recommendations;
 
     public Implementation() {
     }
@@ -27,7 +27,6 @@ public class Implementation extends Model {
         Implementation implementation = new Implementation();
         implementation.setId(Long.parseLong((String)map.get("id")));
         implementation.setName((String)map.get("name"));
-        implementation.setDescription((String)map.get("description"));
         return implementation;
     }
 
@@ -35,7 +34,6 @@ public class Implementation extends Model {
         Map<String, Object> map = new HashMap<>();
         map.put("id", String.valueOf(this.getId()));
         map.put("name", this.name);
-        map.put("description", this.description);
         return map;
     }
 
@@ -95,11 +93,11 @@ public class Implementation extends Model {
         this.votes = votes;
     }
 
-    public List<Recommendation> getRecommendations() {
+    public List<Recommendation<Implementation>> getRecommendations() {
         return this.recommendations;
     }
 
-    public void setRecommendations(List<Recommendation> recommendations) {
+    public void setRecommendations(List<Recommendation<Implementation>> recommendations) {
         this.recommendations = recommendations;
     }
 }

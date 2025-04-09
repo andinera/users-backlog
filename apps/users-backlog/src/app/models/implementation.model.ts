@@ -13,5 +13,5 @@ export interface Implementation extends Model {
     products: Product[],
     categories: Category[],
     votes: number,
-    recommendations: Recommendation[]
+    recommendations: Recommendation<Implementation>[]
 }

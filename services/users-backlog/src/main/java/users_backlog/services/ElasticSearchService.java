@@ -3,20 +3,15 @@ package users_backlog.services;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -45,7 +40,7 @@ public class ElasticSearchService {
                 .id(String.valueOf(model.getId()))
                 .source(model.toMap(), XContentType.JSON);
 
-            IndexResponse indexResponse = client.index(request, RequestOptions.DEFAULT);
+            client.index(request, RequestOptions.DEFAULT);
 
         } catch (IOException e) {
             log.severe(e.getMessage());
@@ -58,9 +53,9 @@ public class ElasticSearchService {
 
     public void get() {
         try {
-            GetRequest getRequest = new GetRequest("implementation");
+            GetRequest getRequest = new GetRequest("implementation", "idea");
 
-            GetResponse getResponse = client.get(getRequest, RequestOptions.DEFAULT);
+            client.get(getRequest, RequestOptions.DEFAULT);
             // String source = getResponse.getSourceAsString();
 
         } catch (IOException e) {
@@ -77,7 +72,7 @@ public class ElasticSearchService {
             DeleteRequest deleteRequest = new DeleteRequest(model.getClassName().toLowerCase())
                 .id(String.valueOf(model.getId()));
 
-            DeleteResponse deleteResponse = client.delete(deleteRequest, RequestOptions.DEFAULT);
+            client.delete(deleteRequest, RequestOptions.DEFAULT);
 
         } catch (IOException e) {
             log.severe(e.getMessage());
@@ -93,7 +88,7 @@ public class ElasticSearchService {
             UpdateRequest updateRequest = new UpdateRequest(model.getClassName(), String.valueOf(model.getId()))
                 .upsert(model.toMap(), XContentType.JSON);
 
-            UpdateResponse updateResponse = client.update(updateRequest, RequestOptions.DEFAULT);
+            client.update(updateRequest, RequestOptions.DEFAULT);
 
         } catch (IOException e) {
             log.severe(e.getMessage());

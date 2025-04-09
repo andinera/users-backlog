@@ -1,7 +1,6 @@
 package users_backlog;
 
 import java.sql.SQLException;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -9,7 +8,6 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
@@ -29,8 +27,6 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @SpringBootApplication
 public class App extends SpringBootServletInitializer {
-
-    private static final Logger log = Logger.getLogger(App.class.getName());
 
     public static void main(final String[] args) {
         SpringApplication.run(App.class, args);
