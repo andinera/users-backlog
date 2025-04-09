@@ -18,7 +18,7 @@ export class URLService {
       pairwise())
     .subscribe((events: RoutesRecognized[]) => {
       this.previousURL = decodeURIComponent(events[0].urlAfterRedirects);
-      this.currentURL = decodeURIComponent(events[0].urlAfterRedirects);
+      this.currentURL = decodeURIComponent(events[1].urlAfterRedirects);
     })
   }
   

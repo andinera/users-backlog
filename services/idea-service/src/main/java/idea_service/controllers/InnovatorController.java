@@ -10,22 +10,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import idea_service.models.Innovator;
-import idea_service.dao.InnovatorDAO;
+import idea_service.services.InnovatorService;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/innovator")
 public class InnovatorController {
 
-    @Autowired InnovatorDAO innovatorDAO;
+    @Autowired InnovatorService innovatorService;
 
     @GetMapping(path="getInnovator")
     public Innovator getInnovator(@RequestParam final String emailAddress) {
-        return innovatorDAO.getInnovator(emailAddress);
+        return innovatorService.getInnovator(emailAddress);
     }
 
     @PostMapping(path = "postInnovator")
     public Innovator postInnovator(@RequestBody final Innovator innovator) {
-        return innovatorDAO.postInnovator(innovator);
+        return innovatorService.postInnovator(innovator);
     }
 }

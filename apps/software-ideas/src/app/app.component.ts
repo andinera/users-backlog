@@ -3,7 +3,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthenticationService } from './services/authentication.service';
 import { Innovator } from './models/innovator';
 import { of, ReplaySubject } from 'rxjs';
-import { first, tap, catchError, takeUntil } from 'rxjs/operators';
+import { tap, catchError, takeUntil } from 'rxjs/operators';
+import { URLService } from './services/url.service';
 
 @Component({
     selector: 'app-root',
@@ -17,7 +18,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
     constructor (
-        private readonly _authenticationService: AuthenticationService
+        private readonly _authenticationService: AuthenticationService,
+        private readonly _urlService: URLService // Required for storing URLs before login is routed.
     ) {
     }
 

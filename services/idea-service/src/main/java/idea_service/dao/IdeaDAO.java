@@ -18,30 +18,45 @@ import idea_service.models.Innovator;
 public class IdeaDAO {
 
     @Autowired DataSource dataSource;
-    @Autowired ImplementationDAO implementationDAO;
 
-    private final String GET_ALL_IDEAS_SQL = "SELECT idea.summary, idea.description, idea.innovator " + "FROM idea";
-    private final String GET_IDEA_SQL = GET_ALL_IDEAS_SQL + " " + "WHERE idea.summary = ?";
-    private final String POST_IDEA_SQL = "INSERT INTO idea (summary, description, innovator) " + "VALUES (?, ?, ?)";
-    private final String DELETE_IDEA_SQL = "DELETE " +
-                                        "FROM idea " +
-                                        "WHERE idea.summary = ?";
+    private final String GET_ALL_IDEAS_SQL = "SELECT idea.summary, idea.description, idea.innovator FROM idea";
+    private final String GET_IDEAS_SQL = GET_ALL_IDEAS_SQL + " WHERE idea.innovator = ?";
+    private final String GET_IDEA_SQL = GET_ALL_IDEAS_SQL + " WHERE idea.summary = ?";
+    private final String POST_IDEA_SQL = "INSERT INTO idea (summary, description, innovator) VALUES (?, ?, ?)";
+    private final String DELETE_IDEA_SQL =  "DELETE FROM idea WHERE idea.summary = ?";
 
     public List<Idea> getAllIdeas() {
-        final List<Idea> ideas = new ArrayList<>();
+        List<Idea> ideas = new ArrayList<>();
         try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_ALL_IDEAS_SQL)) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     final Idea idea = new Idea();
                     idea.setSummary(rs.getString("summary"));
-                    idea.setDescription(rs.getString("description"));
-                    final Innovator innovator = new Innovator();
-                    innovator.setEmailAddress(rs.getString("innovator"));
-                    idea.setInnovator(innovator);
                     ideas.add(idea);
                 }
             }
         } catch (final SQLException e) {
+            ideas = null;
+            System.out.println(e.getMessage());
+        }
+        return ideas;
+    }
+
+    public List<Idea> getIdeas(final Innovator innovator) {
+        List<Idea> ideas = new ArrayList<>();
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IDEAS_SQL)) {
+            int i = 1;
+            ps.setString(i++, innovator.getEmailAddress());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    final Idea idea = new Idea();
+                    idea.setSummary(rs.getString("summary"));
+                    idea.setDescription(rs.getString("description"));
+                    ideas.add(idea);
+                }
+            }
+        } catch (final SQLException e) {
+            ideas = null;
             System.out.println(e.getMessage());
         }
         return ideas;
@@ -60,10 +75,10 @@ public class IdeaDAO {
                     final Innovator innovator = new Innovator();
                     innovator.setEmailAddress(rs.getString("innovator"));
                     idea.setInnovator(innovator);
-                    idea.setImplementations(implementationDAO.getImplementations(summary));
                 }
             }
         } catch (final SQLException e) {
+            idea = null;
             System.out.println(e.getMessage());
         }
         return idea;

@@ -7,6 +7,7 @@
         {{idea.description}}
     </mat-card-content>
     <mat-card-actions>
+        Implementations:
         <div *ngFor="let implementation of idea.implementations">
             <button mat-stroked-button routerLink="/implementation/{{implementation.name}}">{{implementation.name}}</button>
         </div>

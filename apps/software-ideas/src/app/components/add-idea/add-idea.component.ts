@@ -6,6 +6,9 @@ import { of, ReplaySubject } from 'rxjs';
 
 import { IdeaService } from 'src/app/services/idea.service';
 import { Idea } from 'src/app/models/idea';
+import { AuthenticationService } from 'src/app/services/authentication.service';
+import { Innovator } from 'src/app/models/innovator';
+import { URLService } from 'src/app/services/url.service';
 
 @Component({
   selector: 'app-add-idea',
@@ -20,7 +23,10 @@ export class AddIdeaComponent implements OnInit, OnDestroy {
   constructor(
     private readonly _ideaService: IdeaService,
     private readonly _formBuilder: FormBuilder,
-    private readonly _router: Router) {
+    private readonly _router: Router,
+    private readonly _authenticationService: AuthenticationService,
+    private readonly _urlService: URLService
+  ) {
   }
 
   ngOnInit(): void {
@@ -30,6 +36,19 @@ export class AddIdeaComponent implements OnInit, OnDestroy {
       ]),
       description: ''
     });
+
+    this._authenticationService.innovator.pipe(
+      tap((innovator: Innovator) => {
+        if (!innovator) {
+          this._router.navigate([this._urlService.previousURL]);
+        }
+      }),
+      catchError((error: any) => {
+        console.log(error);
+        return of(null);
+      }),
+      takeUntil(this._destroyed$)
+    ).subscribe();
   }
 
   ngOnDestroy(): void {

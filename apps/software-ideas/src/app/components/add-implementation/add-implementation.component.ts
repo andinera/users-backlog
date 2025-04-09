@@ -45,7 +45,7 @@ export class AddImplementationComponent implements OnInit {
     const implementation: Implementation = form.value;
     this._authenticationService.innovator.pipe(
       tap((innovator: Innovator) => {
-        implementation.implementer = innovator;
+        implementation.innovator = innovator;
         implementation.idea = this.idea;
         this._implementationService.postImplementation(implementation).pipe(
           first(),

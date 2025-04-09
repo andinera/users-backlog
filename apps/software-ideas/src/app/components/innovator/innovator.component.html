@@ -4,4 +4,15 @@
             {{innovator.emailAddress}}
         </mat-card-header>
     </mat-card-header>
+    <mat-card-content>
+        Ideas:
+        <div *ngFor="let idea of innovator.ideas">
+            <button mat-stroked-button type="button" routerLink="/idea/{{idea.summary}}">{{idea.summary}}</button>
+        </div>
+        Implementations:
+        <div *ngFor="let implementation of innovator.implementations">
+            <button mat-stroked-button type="button" routerLink="/implementation/{{implementation.name}}">{{implementation.name}}</button>
+            
+        </div>
+    </mat-card-content>
 </mat-card>

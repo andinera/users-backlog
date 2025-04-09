@@ -1,30 +1,29 @@
 
 package idea_service.models;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class Implementation {
-    private String source;
-    private Innovator implementer;
+    
+    private Innovator innovator;
     private Idea idea;
     private String name;
     private String description;
+    private List<Product> products;
 
     public Implementation() {
     }
 
-    public String getSource() {
-        return this.source;
+    public Innovator getInnovator() {
+        return this.innovator;
     }
 
-    public void setSource(final String source) {
-        this.source = source;
-    }
-
-    public Innovator getImplementer() {
-        return this.implementer;
-    }
-
-    public void setImplementer(final Innovator implementer) {
-        this.implementer = implementer;
+    public void setInnovator(final Innovator innovator) {
+        this.innovator = innovator;
     }
 
     public Idea getIdea() {
@@ -49,5 +48,13 @@ public class Implementation {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Product> getProducts() {
+        return this.products;
+    }
+
+    public void setProducts(final List<Product> products) {
+        this.products = products;
     }
 }

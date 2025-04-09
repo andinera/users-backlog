@@ -46,6 +46,10 @@ const routes: Routes = [
         canActivate: [AuthGuard]
     },
     {
+        path: 'login',
+        component: LoginComponent
+    },
+    {
         path: '',
         redirectTo: 'ideas',
         pathMatch: 'full'

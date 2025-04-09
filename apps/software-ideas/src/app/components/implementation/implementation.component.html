@@ -1,11 +1,18 @@
 <mat-card>
     <mat-card-header>
         <mat-card-title>
-            <a href="{{implementation.source}}">{{implementation.name}}</a>
+            {{implementation.name}}
         </mat-card-title>
-        <mat-card-subtitle routerLink="/innovator/{{implementation.implementer.emailAddress}}">{{implementation.implementer.emailAddress}}</mat-card-subtitle>
+        <mat-card-subtitle routerLink="/innovator/{{implementation.innovator.emailAddress}}">{{implementation.innovator.emailAddress}}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
         {{implementation.description}}
     </mat-card-content>
+    <mat-card-actions>
+        Products:
+        <div *ngFor="let product of implementation.products">
+            <a href="{{product.url}}">{{product.url}}</a>
+            <div>{{product.description}}</div>
+        </div>
+    </mat-card-actions>
 </mat-card>

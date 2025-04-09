@@ -7,6 +7,7 @@ import { of, ReplaySubject, pipe } from 'rxjs';
 import { Innovator } from 'src/app/models/innovator';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { InnovatorService } from 'src/app/services/innovator.service';
+import { URLService } from 'src/app/services/url.service';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +27,8 @@ export class LoginComponent implements OnDestroy {
     private readonly _authenticationService: AuthenticationService,
     private readonly _formBuilder: FormBuilder,
     private readonly _router: Router,
-    private readonly _innovatorService: InnovatorService
+    private readonly _innovatorService: InnovatorService,
+    private readonly _urlService: URLService
   ) {
     this.loginForm = this._formBuilder.group({
       emailAddress: new FormControl('', [
@@ -47,7 +49,9 @@ export class LoginComponent implements OnDestroy {
     this._authenticationService.login(innovator.emailAddress).pipe(
       tap((loggedIn: boolean) => {
         if (loggedIn) {
+          let url = ('/login' !== this._urlService.currentURL ? this._urlService.currentURL : this._urlService.previousURL);
           this.loggedIn.emit();
+          this._router.navigate([url]);
         } else {
           this.loginFailed = true;
         }

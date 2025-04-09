@@ -1,3 +1,8 @@
+import { Idea } from './idea';
+import { Implementation } from './implementation';
+
 export interface Innovator {
-    emailAddress: string
+    emailAddress: string,
+    ideas: Idea[],
+    implementations: Implementation[]
 }

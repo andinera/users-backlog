@@ -12,35 +12,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import idea_service.dao.IdeaDAO;
 import idea_service.dao.ImplementationDAO;
 import idea_service.models.Idea;
+import idea_service.services.IdeaService;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/idea")
 public class IdeaController {
 
-    @Autowired IdeaDAO ideaDAO;
+    @Autowired IdeaService ideaService;
     @Autowired ImplementationDAO implementationDAO;
 
     @GetMapping(path="getAllIdeas")
     public List<Idea> getAllIdeas() {
-        return ideaDAO.getAllIdeas();
+        return ideaService.getAllIdeas();
     }
 
     @GetMapping(path = "getIdea")
     public Idea getIdea(@RequestParam final String summary) {
-        return ideaDAO.getIdea(summary);
+        return ideaService.getIdea(summary);
     }
 
     @PostMapping(path = "postIdea")
     public Idea postIdea(@RequestBody final Idea idea) {
-        return ideaDAO.postIdea(idea);
+        return ideaService.postIdea(idea);
     }
 
     @DeleteMapping(path = "deleteIdea")
     public boolean deleteIdea(@RequestParam final String summary) {
-        return ideaDAO.deleteIdea(summary);
+        return ideaService.deleteIdea(summary);
     }
 }

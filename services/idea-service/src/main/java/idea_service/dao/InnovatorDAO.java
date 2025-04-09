@@ -31,6 +31,7 @@ public class InnovatorDAO {
                 }
             }
         } catch (final SQLException e) {
+            innovator = null;
             System.out.println(e.getMessage());
         }
         return innovator;

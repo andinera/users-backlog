@@ -1,10 +1,11 @@
 import { Innovator } from './innovator';
 import { Idea } from './idea';
+import { Product } from './product';
 
 export interface Implementation {
-    source: string,
-    implementer: Innovator,
+    innovator: Innovator,
     idea: Idea,
     name: string,
-    description: string
+    description: string,
+    products: Product[]
 }
