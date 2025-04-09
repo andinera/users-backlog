@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { ReplaySubject, of } from 'rxjs';
 import { takeUntil, tap, first, catchError } from 'rxjs/operators';
@@ -37,7 +38,8 @@ export class IdeaComponent implements OnInit, OnDestroy {
     private readonly _router: Router,
     private readonly _route: ActivatedRoute,
     public readonly innovatorService: InnovatorService,
-    private readonly _formBuilder: FormBuilder
+    private readonly _formBuilder: FormBuilder,
+    private readonly _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -53,7 +55,8 @@ export class IdeaComponent implements OnInit, OnDestroy {
         this.idea = data.idea;
       }),
       catchError((error: any) => {
-        console.log(error);
+        console.error(error);
+        this._snackBar.open('Failed to load ideas.', 'Close');
         return of(null);
       }),
       takeUntil(this._destroyed$)
@@ -77,11 +80,12 @@ export class IdeaComponent implements OnInit, OnDestroy {
         if(deleted) {
           this._router.navigate(['/ideas']);
         } else {
-          console.log('Failed to delete idea.');
+          this._snackBar.open('Failed to delete idea.', 'Close');
         }
       }),
       catchError((error: any) => {
-        console.log(error);
+        console.error(error);
+        this._snackBar.open('Failed to delete idea.', 'Close');
         return of(null);
       }),
       takeUntil(this._destroyed$)
@@ -95,7 +99,8 @@ export class IdeaComponent implements OnInit, OnDestroy {
         this.idea.votes = votes;
       }),
       catchError((error: any) => {
-        console.log(error);
+        console.error(error);
+        this._snackBar.open('Failed to cast vote.', 'Close');
         return of(null);
       }),
       takeUntil(this._destroyed$)
@@ -123,7 +128,8 @@ export class IdeaComponent implements OnInit, OnDestroy {
         }),
         takeUntil(this._destroyed$),
         catchError((e: any) => {
-          console.log(e);
+          console.error(e);
+          this._snackBar.open('Failed to post recommendation.', 'Close');
           return of(null);
         })
       ).subscribe();
@@ -138,12 +144,13 @@ export class IdeaComponent implements OnInit, OnDestroy {
           const recommendations = this.idea.recommendations.filter(r => r.id !== recommendation.id);
           this.idea.recommendations = recommendations;
         } else {
-          console.log('Failed to delete recommendation.');
+          this._snackBar.open('Failed to delete recommendation.', 'Close');
         }
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {
-        console.log(e);
+        console.error(e);
+        this._snackBar.open('Failed to delete recommendation.', 'Close');
         return of(null);
       })
     ).subscribe();
@@ -157,7 +164,8 @@ export class IdeaComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {
-        console.log(e);
+        console.error(e);
+        this._snackBar.open('Failed to cast vote.', 'Close');
         return of(null);
       })
     ).subscribe();
@@ -196,7 +204,8 @@ export class IdeaComponent implements OnInit, OnDestroy {
         }),
         takeUntil(this._destroyed$),
         catchError((e: any) => {
-          console.log(e);
+          console.error(e);
+          this._snackBar.open('Failed to post reply.', 'Close');
           return of(null);
         })
       ).subscribe();
@@ -211,12 +220,13 @@ export class IdeaComponent implements OnInit, OnDestroy {
           const replies = recommendation.replies.filter(r => r.id !== reply.id);
           recommendation.replies = replies;
         } else {
-          console.log('Failed to delete reply.');
+          this._snackBar.open('Failed to delete reply.', 'Close');
         }
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {
-        console.log(e);
+        console.error(e);
+        this._snackBar.open('Failed to delete reply.', 'Close');
         return of(null);
       })
     ).subscribe();

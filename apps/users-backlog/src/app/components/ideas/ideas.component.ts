@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { tap, takeUntil, catchError, first } from 'rxjs/operators';
 import { ReplaySubject, of } from 'rxjs';
 
@@ -17,7 +18,8 @@ export class IdeasComponent implements OnInit, OnDestroy {
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor (
-    private readonly _route: ActivatedRoute
+    private readonly _route: ActivatedRoute,
+    private readonly _snackBar: MatSnackBar
   ) {
   }
 
@@ -29,6 +31,8 @@ export class IdeasComponent implements OnInit, OnDestroy {
         this.ideas = data.ideas;
       }),
       catchError((error: any) => {
+        console.error(error);
+        this._snackBar.open('Failed to load ideas.', 'Close');
         return of(null);
       }),
       takeUntil(this._destroyed$)

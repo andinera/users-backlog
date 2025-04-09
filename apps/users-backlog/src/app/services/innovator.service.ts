@@ -1,5 +1,6 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, of, ReplaySubject, BehaviorSubject, from } from 'rxjs';
 import { tap, catchError, takeUntil, mergeMap } from 'rxjs/operators';
 
@@ -27,7 +28,8 @@ export class InnovatorService extends Service implements OnDestroy {
   constructor(
     private readonly _http: HttpClient,
     private readonly _ngZone: NgZone,
-    private readonly _sessionStorageService: SessionStorageService
+    private readonly _sessionStorageService: SessionStorageService,
+    private readonly _snackBar: MatSnackBar
   ) {
     super();
 
@@ -82,7 +84,8 @@ export class InnovatorService extends Service implements OnDestroy {
                 this.innovator$.next(postedInnovator);
               }),
               catchError((error: any) => {
-                console.log(error);
+                console.error(error);
+                this._snackBar.open('Failed to post innovator.', 'Close');
                 return of(null);
               }),
               takeUntil(this._destroyed$)
@@ -90,7 +93,8 @@ export class InnovatorService extends Service implements OnDestroy {
           }
         }),
         catchError((error: any) => {
-          console.log(error);
+          console.error(error);
+          this._snackBar.open('Failed to load innovator.', 'Close');
           return of(null);
         }),
         takeUntil(this._destroyed$)
@@ -111,8 +115,9 @@ export class InnovatorService extends Service implements OnDestroy {
         }).then((response: any) => {
           console.log("Google API Initialized");
         }, (reason: any) => {
-          console.log("Google API Not Initialized");
-          console.log(reason);
+          console.error("Google API Not Initialized");
+          console.error(reason);
+          this._snackBar.open('Failed to initialize Google API.', 'Close');
         });
       });
     });
@@ -128,6 +133,8 @@ export class InnovatorService extends Service implements OnDestroy {
         }).then(innovator => {
           resolve("Account created. A verification email has been sent to your email address.");
         }).catch(error => {
+          console.error(error);
+          this._snackBar.open('Failed to create user.', 'Close');
           reject(error.message);
         });
       });
@@ -141,13 +148,16 @@ export class InnovatorService extends Service implements OnDestroy {
         firebase.auth().signInWithEmailAndPassword(emailAddress, password)
         .then(credential => {
           if (!credential || !credential.user) {
-            reject("Unknown credential.");
+            this._snackBar.open('Unknown credentials.', 'Close');
+            reject("Unknown credentials.");
           } else if (!credential.user.emailVerified) {
+            this._snackBar.open('Email address has not been verified.', 'Close');
             reject("Email address has not been verified.");
           }
           resolve("");
         }).catch(error => {
-          console.log(error);
+          console.error(error);
+          this._snackBar.open('Invalid email address or password.', 'Close');
           reject("Invalid email address or password.");
         });
       });
@@ -171,15 +181,16 @@ export class InnovatorService extends Service implements OnDestroy {
   }
 
   public getInnovator(id?: string, emailAddress?: string): Observable<Innovator> {
-    let parameters: string;
+    let params = new HttpParams();
     if (id) {
-      parameters = `getInnovator?id=${encodeURIComponent(id)}`;
+      params = params.set('id', id);
     } else if (emailAddress) {
-      parameters = `getInnovator?emailAddress=${encodeURIComponent(emailAddress)}`;
+      params = params.set('emailAddress', emailAddress);
     } else {
       return of(null);
     }
-    return this._http.get<Innovator>(`${this._serviceURL}${parameters}`);
+    const options = {params: params};
+    return this._http.get<Innovator>(`${this._serviceURL}getInnovator`, options);
   }
 
   public postInnovator(innovator: Innovator): Observable<Innovator> {

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, ReplaySubject } from 'rxjs';
 import { first, tap, catchError, takeUntil } from 'rxjs/operators';
 
@@ -17,7 +18,8 @@ export class InnovatorComponent implements OnInit, OnDestroy {
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
-    private readonly _route: ActivatedRoute
+    private readonly _route: ActivatedRoute,
+    private readonly _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -27,7 +29,8 @@ export class InnovatorComponent implements OnInit, OnDestroy {
         this.innovator = data.innovator;
       }),
       catchError((error: any) => {
-        console.log(error);
+        console.error(error);
+        this._snackBar.open('Failed to load innovator.', 'Close');
         return of(null);
       }),
       takeUntil(this._destroyed$)

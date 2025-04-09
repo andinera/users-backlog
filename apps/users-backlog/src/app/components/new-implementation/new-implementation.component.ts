@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { first, tap, takeUntil, catchError } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
 
@@ -30,7 +31,8 @@ export class NewImplementationComponent implements OnInit {
     private readonly _implementationService: ImplementationService,
     private readonly _innovatorService: InnovatorService,
     private readonly _route: ActivatedRoute,
-    private readonly _router: Router
+    private readonly _router: Router,
+    private readonly _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -44,7 +46,8 @@ export class NewImplementationComponent implements OnInit {
         this.categoryOptions = data.categories;
       }),
       catchError((error: any) => {
-        console.log(error);
+        console.error(error);
+        this._snackBar.open('Failed to load categories.', 'Close');
         return of(null);
       }),
       takeUntil(this._destroyed$)
@@ -80,7 +83,8 @@ export class NewImplementationComponent implements OnInit {
         }),
         takeUntil(this._destroyed$),
         catchError((e: any) => {
-          console.log(e);
+          console.error(e);
+          this._snackBar.open('Failed to create implementation.', 'Close');
           return of(null);
         })
       ).subscribe();

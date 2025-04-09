@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { tap, catchError, first, takeUntil } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
 
@@ -28,7 +29,8 @@ export class NewIdeaComponent implements OnInit, OnDestroy {
     private readonly _ideaService: IdeaService,
     private readonly _formBuilder: FormBuilder,
     private readonly _router: Router,
-    private readonly _route: ActivatedRoute
+    private readonly _route: ActivatedRoute,
+    private readonly _snackBar: MatSnackBar
   ) {
   }
 
@@ -49,7 +51,8 @@ export class NewIdeaComponent implements OnInit, OnDestroy {
         }
       }),
       catchError((error: any) => {
-        console.log(error);
+        console.error(error);
+        this._snackBar.open('Failed to load categories.', 'Close');
         return of(null);
       }),
       takeUntil(this._destroyed$)
@@ -80,7 +83,8 @@ export class NewIdeaComponent implements OnInit, OnDestroy {
         }),
         takeUntil(this._destroyed$),
         catchError((e: any) => {
-          console.log(e);
+          console.error(e);
+          this._snackBar.open('Failed to create idea.', 'Close');
           return of(null);
         })
       ).subscribe();

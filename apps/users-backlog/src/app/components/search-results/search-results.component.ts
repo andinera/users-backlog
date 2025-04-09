@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { first, tap, catchError, takeUntil } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
 
@@ -17,7 +18,8 @@ export class SearchResultsComponent implements OnInit {
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
-    private readonly _route: ActivatedRoute
+    private readonly _route: ActivatedRoute,
+    private readonly _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -27,6 +29,8 @@ export class SearchResultsComponent implements OnInit {
         this.implementations = data.searchResults.filter(sr => sr.className === 'implementation');
       }),
       catchError((error: any) => {
+        console.error(error);
+        this._snackBar.open('Failed to load search results.', 'Close');
         return of(null);
       }),
       takeUntil(this._destroyed$)

@@ -7,12 +7,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LayoutModule } from '@angular/cdk/layout';
 
-import { tap } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -61,6 +62,7 @@ import { HomepageComponent } from './components/homepage/homepage.component';
     MatIconModule,
     MatInputModule,
     MatSelectModule,
+    MatSnackBarModule,
     MatFormFieldModule,
     ReactiveFormsModule,
     LayoutModule,
@@ -85,6 +87,10 @@ export function appInitFactory(innovatorService: InnovatorService, urlService: U
           resolve(true);
           observable.unsubscribe();
         }
+      }),
+      catchError((error: any) => {
+        console.error(error);
+        return null;
       })
     ).subscribe();
   });

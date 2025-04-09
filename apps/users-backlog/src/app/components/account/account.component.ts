@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, ReplaySubject } from 'rxjs';
-import { catchError, takeUntil, first } from 'rxjs/operators';
+import { catchError, takeUntil, first, tap } from 'rxjs/operators';
 
 import { InnovatorService } from 'src/app/services/innovator.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -19,7 +20,8 @@ export class AccountComponent {
 
   constructor(
     public readonly innovatorService: InnovatorService,
-    private readonly _formBuilder: FormBuilder
+    private readonly _formBuilder: FormBuilder,
+    private readonly _snackBar: MatSnackBar
   ) {
     this.accountForm = this._formBuilder.group(new AccountForm());
     this.accountForm.patchValue(innovatorService.innovator$.value);
@@ -40,9 +42,13 @@ export class AccountComponent {
       innovator.displayName = this.accountForm.controls.displayName.value;
       this.innovatorService.postInnovator(innovator).pipe(
         first(),
+        tap(() => {
+          this._snackBar.open('Account updated.', 'Close');
+        }),
         takeUntil(this._destroyed$),
-        catchError((e: any) => {
-          console.log(e);
+        catchError((error: any) => {
+          console.error(error);
+          this._snackBar.open('Failed to claim ownership.', 'Close');
           return of(null);
         })
       ).subscribe();

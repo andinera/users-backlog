@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { tap, first, catchError, takeUntil } from 'rxjs/operators';
 import { of, ReplaySubject } from 'rxjs';
 
@@ -53,7 +54,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
     private readonly _formBuilder: FormBuilder,
     public readonly innovatorService: InnovatorService,
     private readonly _sessionStorageService: SessionStorageService,
-    private readonly _searchService: SearchService
+    private readonly _searchService: SearchService,
+    private readonly _snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -70,7 +72,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
               this.ideaOptions = ideas.filter(idea => !this.implementation.ideas.map(i => i.id).includes(idea.id));
             }),
             catchError((error: any) => {
-              console.log(error);
+              console.error(error);
+              this._snackBar.open('Failed to search for ideas.', 'Close');
               return of(null);
             }),
             takeUntil(this._destroyed$)
@@ -80,7 +83,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         }
       }),
       catchError((error: any) => {
-        console.log(error);
+        console.error(error);
         return of(null);
       }),
       takeUntil(this._destroyed$)
@@ -122,7 +125,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         }
       }),
       catchError((error: any) => {
-        console.log(error);
+        console.error(error);
+        this._snackBar.open('Failed to load implementation.', 'Close');
         return of(null);
       }),
       takeUntil(this._destroyed$)
@@ -154,11 +158,12 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         if(deleted) {
           this._router.navigate(['/implementations']);
         } else {
-          console.log('Failed to delete implementation.');
+          this._snackBar.open('Failed to delete implementation.', 'Close');
         }
       }),
       catchError((error: any) => {
-        console.log(error);
+        console.error(error);
+        this._snackBar.open('Failed to delete implementation.', 'Close');
         return of(null);
       }),
       takeUntil(this._destroyed$)
@@ -180,7 +185,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
           this.newProductDropdown.nativeElement.classList.remove('show');
         }),
         catchError((error: any) => {
-          console.log(error);
+          console.error(error);
+          this._snackBar.open('Failed to post product.', 'Close');
           return of(null);
         }),
         takeUntil(this._destroyed$)
@@ -196,12 +202,13 @@ export class ImplementationComponent implements OnInit, OnDestroy {
           const products = this.implementation.products.filter(p => p.id !== product.id);
           this.implementation.products = products;
         } else {
-          console.log('Failed to delete product.');
+          this._snackBar.open('Failed to delete product.', 'Close');
         }
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {
-        console.log(e);
+        console.error(e);
+        this._snackBar.open('Failed to delete product.', 'Close');
         return of(null);
       })
     ).subscribe();
@@ -212,7 +219,7 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       const parsedURL = new URL(url);
       window.open(parsedURL.href, '_blank');
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -240,7 +247,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {
-        console.log(e);
+        console.error(e);
+        this._snackBar.open('Failed to associate with idea.', 'Close');
         return of(null);
       })
     ).subscribe();
@@ -256,7 +264,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {
-        console.log(e);
+        console.error(e);
+        this._snackBar.open('Failed to disassociate with idea.', 'Close');
         return of(null);
       })
     ).subscribe();
@@ -269,7 +278,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         this.implementation.votes = votes;
       }),
       catchError((error: any) => {
-        console.log(error);
+        console.error(error);
+        this._snackBar.open('Failed to cast vote.', 'Close');
         return of(null);
       }),
       takeUntil(this._destroyed$)
@@ -297,7 +307,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         }),
         takeUntil(this._destroyed$),
         catchError((e: any) => {
-          console.log(e);
+          console.error(e);
+          this._snackBar.open('Failed to post recommendation.', 'Close');
           return of(null);
         })
       ).subscribe();
@@ -312,12 +323,13 @@ export class ImplementationComponent implements OnInit, OnDestroy {
           const recommendations = this.implementation.recommendations.filter(r => r.id !== recommendation.id);
           this.implementation.recommendations = recommendations;
         } else {
-          console.log('Failed to delete recommendation.');
+          this._snackBar.open('Failed to delete recommendation.', 'Close');
         }
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {
-        console.log(e);
+        console.error(e);
+        this._snackBar.open('Failed to delete recommendation.', 'Close');
         return of(null);
       })
     ).subscribe();
@@ -331,7 +343,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {
-        console.log(e);
+        console.error(e);
+        this._snackBar.open('Failed to cast vote.', 'Close');
         return of(null);
       })
     ).subscribe();
@@ -370,7 +383,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
         }),
         takeUntil(this._destroyed$),
         catchError((e: any) => {
-          console.log(e);
+          console.error(e);
+          this._snackBar.open('Failed to post reply.', 'Close');
           return of(null);
         })
       ).subscribe();
@@ -385,12 +399,13 @@ export class ImplementationComponent implements OnInit, OnDestroy {
           const replies = recommendation.replies.filter(r => r.id !== reply.id);
           recommendation.replies = replies;
         } else {
-          console.log('Failed to delete reply.');
+          this._snackBar.open('Failed to delete reply.', 'Close');
         }
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {
-        console.log(e);
+        console.error(e);
+        this._snackBar.open('Failed to delete reply.', 'Close');
         return of(null);
       })
     ).subscribe();
@@ -415,7 +430,8 @@ export class ImplementationComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this._destroyed$),
       catchError((e: any) => {
-        console.log(e);
+        console.error(e);
+        this._snackBar.open('Failed to claim ownership.', 'Close');
         return of(null);
       })
     ).subscribe();
