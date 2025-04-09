@@ -8,6 +8,7 @@
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
   </system-properties>
   <env-variables>
-    <env-var name="GOOGLE_APPLICATION_CREDENTIALS" value ="resources/users-backlog-firebase-adminsdk-8gka7-8520f0deb8.json"/>
+    <env-var name="GOOGLE_APPLICATION_CREDENTIALS" value ="WEB-INF/users-backlog-firebase-adminsdk-8gka7-8520f0deb8.json"/>
   </env-variables>
+  <sessions-enabled>true</sessions-enabled>
 </appengine-web-app>

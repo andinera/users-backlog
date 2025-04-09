@@ -19,7 +19,6 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @SpringBootApplication
 public class App extends SpringBootServletInitializer {
-// public class App {
 
     private static final Logger log = Logger.getLogger(App.class.getName());
 

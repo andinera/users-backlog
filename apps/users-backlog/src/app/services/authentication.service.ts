@@ -67,7 +67,10 @@ export class AuthenticationService implements OnDestroy {
       this._innovatorService.getInnovator(undefined, user.email).pipe(
         tap((innovator: Innovator) => {
           if (innovator) {
-            this._innovator$.next(innovator);
+                user.getIdToken().then(idToken => {
+                innovator.idToken = idToken;
+                this._innovator$.next(innovator);
+                });
           } else {
             const innovator = {
               emailAddress: user.email,
@@ -75,7 +78,10 @@ export class AuthenticationService implements OnDestroy {
             } as Innovator;
             this._innovatorService.postInnovator(innovator).pipe(
               tap((postedInnovator: Innovator) => {
-                this._innovator$.next(postedInnovator);
+                user.getIdToken().then(idToken => {
+                  postedInnovator.idToken = idToken;
+                  this._innovator$.next(postedInnovator);
+                });
               }),
               catchError((error: any) => {
                 console.log(error);

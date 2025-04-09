@@ -58,12 +58,12 @@ import { URLService } from './services/url.service';
     LayoutModule,
   ],
   providers: [
-    // {
-    //   provide: APP_INITIALIZER,
-    //   useFactory: appInitFactory,
-    //   deps: [AuthenticationService],
-    //   multi: true
-    // }
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appInitFactory,
+      deps: [AuthenticationService],
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })
@@ -71,8 +71,8 @@ export class AppModule { }
 
 export function appInitFactory(authenticationService: AuthenticationService, urlService: URLService): () => Promise<any> {
   return () => new Promise((resolve, reject) => {
-    // authenticationService.innovator.pipe(first()).subscribe((innovator) => {
-    //   resolve(true);
-    // });
+    authenticationService.innovator.pipe(first()).subscribe((innovator) => {
+      resolve(true);
+    });
   });
 }
