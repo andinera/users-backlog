@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +21,6 @@ import users_backlog.models.Recommendation;
 import users_backlog.models.Reply;
 import users_backlog.services.ImplementationService;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/implementation")
 public class ImplementationController {
@@ -29,12 +30,11 @@ public class ImplementationController {
     @Autowired ImplementationService implementationService;
 
     @GetMapping(path="getImplementations")
-    public List<Implementation> getImplementations(
+    public ResponseEntity<List<Implementation>> getImplementations(
         @RequestParam(required = false) final String categoryName
     ) {
-        System.out.println("test1");
-        log.info("test2");
-        return implementationService.getImplementations(categoryName);
+        List<Implementation> implementations = implementationService.getImplementations(categoryName);
+        return new ResponseEntity<List<Implementation>>(implementations, HttpStatus.OK);
     }
 
     @GetMapping(path= "getImplementation")

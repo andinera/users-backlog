@@ -7,19 +7,19 @@ import javax.sql.DataSource;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-// import org.springframework.boot.builder.SpringApplicationBuilder;
-// import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-// import org.springframework.web.servlet.config.annotation.CorsRegistry;
-// import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 // import com.zaxxer.hikari.HikariConfig;
 // import com.zaxxer.hikari.HikariDataSource;
 
 @SpringBootApplication
-// public class App extends SpringBootServletInitializer {
-public class App {
+public class App extends SpringBootServletInitializer {
+// public class App {
 
     private static final Logger log = Logger.getLogger(App.class.getName());
 
@@ -27,30 +27,35 @@ public class App {
         SpringApplication.run(App.class, args);
     }
 
-    // @Override
-    // protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-    //     return application.sources(App.class);
-    // }
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(App.class);
+    }
 
-    // @Bean
-    // public WebMvcConfigurer corsConfigurer() {
-    //     return new WebMvcConfigurer() {
-    //         @Override
-    //         public void addCorsMappings(CorsRegistry registry) {
-    //             registry.addMapping("/**")
-    //                     // .allowedOrigins("https://usersbacklog.com", "http://localhost:4200");
-    //                     .allowedOrigins("*");
-    //         }
-    //     };
-    // }
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("https://usersbacklog.com", "http://localhost:4200");
+            }
+        };
+    }
 
     @Bean
     DataSource dataSource() throws SQLException {
+
+        log.info("######################");
+        log.info(System.getenv("LOCAL"));
+        log.info(System.getenv("local"));
+        log.info(System.getProperty("LOCAL"));
+        log.info(System.getProperty("local"));
         
         final MysqlDataSource dataSource = new MysqlDataSource();
         dataSource.setUser("root");
         dataSource.setPassword("Go0b3r@#Drowsap3@1");
-        dataSource.setDatabaseName("users-backlog");
+        dataSource.setDatabaseName("iequals");
         return dataSource;
 
 

@@ -1,44 +1,57 @@
-// buildscript {
-//     repositories {
-// 	    mavenCentral()
-//     }
-//     dependencies {
-//         classpath 'com.google.cloud.tools:appengine-gradle-plugin:2.3.0'
-//     }
-// }
+buildscript {
+    repositories {
+	    mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.cloud.tools:appengine-gradle-plugin:2.3.0'
+    }
+}
 
 plugins {
     id 'java'
     id 'org.springframework.boot' version '2.2.0.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-    // id 'war'
+    id 'war'
 }
 
-// apply plugin: 'com.google.cloud.tools.appengine'
+// def environment = ''
+// if (System.getProperty('local') != null) {
+//     environment = 'local'
+// } else {
+//     environment = 'cloud'
+// }
+
+apply plugin: 'com.google.cloud.tools.appengine'
 
 repositories {
 	mavenCentral()
-    mavenLocal()
 }
 
 dependencies {
+    
     implementation 'org.springframework.boot:spring-boot-dependencies:2.0.5.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-web', {
-        // exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
     }
-    // implementation 'org.springframework.cloud:spring-cloud-gcp-starter-sql-mysql:1.0.0.RELEASE'
-    implementation 'mysql:mysql-connector-java:8.0.20'
-    // implementation 'com.google.cloud:google-cloud-logging:1.101.2'
+    
+    implementation 'org.springframework.cloud:spring-cloud-gcp-starter-sql-mysql:1.0.0.RELEASE'
+
+    // implementation 'com.google.cloud:google-cloud-logging:1.101.2', {
+        // exclude group: 'javax.annotation', module: 'javax.annotation-api'
+    // }
     // implementation 'com.google.firebase:firebase-admin:6.14.0'
 
-    // compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+    compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
 }
 
-// appengine {
-//      deploy {   
-//         stopPreviousVersion = true  
-//         promote = true    
-//         projectId = 'users-backlog'
-//         version = 'GCLOUD_CONFIG'
-//     }
-// }
+appengine {
+    run {
+        
+    }
+    deploy {
+        stopPreviousVersion = true  
+        promote = true    
+        projectId = 'users-backlog'
+        version = 'GCLOUD_CONFIG'
+    }
+}

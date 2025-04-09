@@ -4,10 +4,10 @@
   <threadsafe>true</threadsafe>
   <runtime>java8</runtime>
   <service>service</service>
-  <!-- <system-properties>
-    <property name="java.util.logging.config.file" value="WEB_INF/logging.properties"/>
-  </system-properties> -->
-  <!-- <env-variables>
+  <system-properties>
+    <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
+  </system-properties>
+  <env-variables>
     <env-var name="GOOGLE_APPLICATION_CREDENTIALS" value ="resources/users-backlog-firebase-adminsdk-8gka7-8520f0deb8.json"/>
-  </env-variables> -->
+  </env-variables>
 </appengine-web-app>
