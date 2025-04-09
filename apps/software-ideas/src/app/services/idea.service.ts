@@ -12,27 +12,27 @@ import { Innovator } from '../models/innovator';
 })
 export class IdeaService {
 
-  private serviceURL = "http://localhost:8080/idea/";
+  private _serviceURL = "http://localhost:8080/idea/";
 
   constructor(
-    private readonly http: HttpClient,
-    private readonly authenticationService: AuthenticationService
+    private readonly _http: HttpClient,
+    private readonly _authenticationService: AuthenticationService
   ) { }
 
   getAllIdeas(): Observable<Idea[]> {
-    return this.http.get<Idea[]>(`${this.serviceURL}getAllIdeas`);
+    return this._http.get<Idea[]>(`${this._serviceURL}getAllIdeas`);
   }
 
   getIdea(summary: string): Observable<Idea> {
-    return this.http.get<Idea>(`${this.serviceURL}getIdea?summary=${encodeURIComponent(summary)}`);
+    return this._http.get<Idea>(`${this._serviceURL}getIdea?summary=${encodeURIComponent(summary)}`);
   }
 
   postIdea(idea: Idea): Observable<Idea> {
-    return this.authenticationService.innovator.pipe(
+    return this._authenticationService.innovator.pipe(
       flatMap((innovator: Innovator) => {
         if (innovator) {
           idea.innovator = innovator;
-          return this.http.post<Idea>(`${this.serviceURL}postIdea`, idea);
+          return this._http.post<Idea>(`${this._serviceURL}postIdea`, idea);
         } else {
           return of(null);
         }
@@ -41,6 +41,6 @@ export class IdeaService {
   }
 
   deleteIdea(summary: string) {
-    return this.http.delete<string>(`${this.serviceURL}deleteIdea?summary=${encodeURIComponent(summary)}`);
+    return this._http.delete<string>(`${this._serviceURL}deleteIdea?summary=${encodeURIComponent(summary)}`);
   }
 }

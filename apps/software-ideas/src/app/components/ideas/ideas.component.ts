@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { tap, takeUntil, catchError } from 'rxjs/operators';
+import { tap, takeUntil, catchError, first } from 'rxjs/operators';
 
 import { Idea } from '../../models/idea';
 import { IdeaService } from '../../services/idea.service';
@@ -10,23 +10,23 @@ import { ReplaySubject, of } from 'rxjs';
   templateUrl: './ideas.component.html'
 })
 export class IdeasComponent implements OnInit, OnDestroy {
-    
-  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   
   title = 'project-ideas';
   count = 0;
   ideas: Idea[];
+    
+  private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-
-  constructor (private readonly ideaService: IdeaService) {
+  constructor (private readonly _ideaService: IdeaService) {
   }
 
   ngOnInit() {
-    this.ideaService.getAllIdeas().pipe(
+    this._ideaService.getAllIdeas().pipe(
+      first(),
       tap((ideas: Idea[]) => {
         this.ideas = ideas;
       }),
-      takeUntil(this.destroyed$),
+      takeUntil(this._destroyed$),
       catchError((e: any) => {
         console.log(e);
         return of(null);
@@ -35,7 +35,7 @@ export class IdeasComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroyed$.next(true);
-    this.destroyed$.complete();
+    this._destroyed$.next(true);
+    this._destroyed$.complete();
   }
 }

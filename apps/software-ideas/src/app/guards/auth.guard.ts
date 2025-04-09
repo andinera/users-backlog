@@ -12,8 +12,8 @@ import { Innovator } from '../models/innovator';
 export class AuthGuard implements CanActivate {
 
   constructor(
-    private readonly authenticationService: AuthenticationService,
-    private readonly router: Router
+    private readonly _authenticationService: AuthenticationService,
+    private readonly _router: Router
   ) {
 
   }
@@ -22,12 +22,12 @@ export class AuthGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-      return this.authenticationService.innovator.pipe(
+      return this._authenticationService.innovator.pipe(
         map((innovator: Innovator) => {
           if (innovator) {
             return true;
           } else {
-            this.router.navigate(['/login']);
+            this._router.navigate(['/login']);
           }
       }))
     }

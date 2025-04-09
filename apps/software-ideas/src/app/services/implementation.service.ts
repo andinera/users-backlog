@@ -9,17 +9,17 @@ import { Implementation } from '../models/implementation';
 })
 export class ImplementationService {
 
-  private serviceURL = "http://localhost:8080/implementation/";
+  private _serviceURL = "http://localhost:8080/implementation/";
 
   constructor(
-    private readonly http: HttpClient
+    private readonly _http: HttpClient
   ) { }
 
   getImplementation(name: string): Observable<Implementation> {
-    return this.http.get<Implementation>(`${this.serviceURL}getImplementation?name=${encodeURIComponent(name)}`);
+    return this._http.get<Implementation>(`${this._serviceURL}getImplementation?name=${encodeURIComponent(name)}`);
   }
 
   postImplementation(implementation: Implementation): Observable<Implementation> {
-    return this.http.post<Implementation>(`${this.serviceURL}postImplementation`, implementation);
+    return this._http.post<Implementation>(`${this._serviceURL}postImplementation`, implementation);
   }
 }

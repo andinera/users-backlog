@@ -19,16 +19,16 @@ export class AddImplementationComponent implements OnInit {
 
   implementationForm: FormGroup;
 
-  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+  private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly implementationService: ImplementationService,
-    private readonly authenticationService: AuthenticationService
+    private readonly _formBuilder: FormBuilder,
+    private readonly _implementationService: ImplementationService,
+    private readonly _authenticationService: AuthenticationService
   ) { }
 
   ngOnInit(): void {
-    this.implementationForm = this.formBuilder.group({
+    this.implementationForm = this._formBuilder.group({
       source: new FormControl(''),
       name: new FormControl('', [
         Validators.required
@@ -37,30 +37,35 @@ export class AddImplementationComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.destroyed$.next(true);
-    this.destroyed$.complete();
+    this._destroyed$.next(true);
+    this._destroyed$.complete();
   }
 
   addImplementation(form: any): void {
     const implementation: Implementation = form.value;
-    this.authenticationService.innovator.pipe(
+    this._authenticationService.innovator.pipe(
       tap((innovator: Innovator) => {
         implementation.implementer = innovator;
         implementation.idea = this.idea;
-        this.implementationService.postImplementation(implementation).pipe(
+        this._implementationService.postImplementation(implementation).pipe(
           first(),
-          tap((implementation: Implementation) => {
-            if (implementation) {
-              this.idea.implementations.push(implementation);
+          tap((newImplementation: Implementation) => {
+            if (newImplementation) {
+              this.idea.implementations.push(newImplementation);
             }
           }),
-          takeUntil(this.destroyed$),
+          takeUntil(this._destroyed$),
           catchError((e: any) => {
             console.log(e);
             return of(null);
           })
         ).subscribe();
-      })
+      }),
+      catchError((error: any) => {
+        console.log(error);
+        return of(null);
+      }),
+      takeUntil(this._destroyed$)
     );
   }
 

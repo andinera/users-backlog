@@ -13,19 +13,19 @@ import { InnovatorService } from '../services/innovator.service';
 export class InnovatorResolver implements Resolve<Innovator> {
 
   constructor(
-    private readonly innovatorService: InnovatorService,
-    private readonly urlService: URLService,
-    private readonly router: Router
+    private readonly _innovatorService: InnovatorService,
+    private readonly _urlService: URLService,
+    private readonly _router: Router
   ) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Innovator> | Observable<never> {
-    return this.innovatorService.getInnovator(route.paramMap.get('emailAddress')).pipe(
+    return this._innovatorService.getInnovator(route.paramMap.get('emailAddress')).pipe(
       first(),
       mergeMap((innovator: Innovator) => {
         if (innovator) {
           return of(innovator);
         } else {
-          this.router.navigate([this.urlService.previousURL]);
+          this._router.navigate([this._urlService.previousURL]);
           return EMPTY;
         }
       })

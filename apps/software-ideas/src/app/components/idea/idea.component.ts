@@ -20,18 +20,18 @@ export class IdeaComponent implements OnInit, OnDestroy {
   implementationForm: FormGroup;
   addImplementationDisabled = true;
 
-  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+  private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
-    private readonly ideaService: IdeaService,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly authenticationService: AuthenticationService,
-    private readonly formBuilder: FormBuilder
+    private readonly _ideaService: IdeaService,
+    private readonly _router: Router,
+    private readonly _route: ActivatedRoute,
+    private readonly _authenticationService: AuthenticationService,
+    private readonly _formBuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
-    this.implementationForm = this.formBuilder.group({
+    this.implementationForm = this._formBuilder.group({
       source: new FormControl('', [
         Validators.required
       ]),
@@ -40,33 +40,51 @@ export class IdeaComponent implements OnInit, OnDestroy {
       ])
     });
 
-    this.route.data.subscribe((data: {idea: Idea}) => {
-      this.idea = data.idea;
-      this.authenticationService.innovator.subscribe((innovator: Innovator) => {
-        this.deleteDisabled = (JSON.stringify(this.idea.innovator) !== JSON.stringify(innovator));
-        this.addImplementationDisabled = (innovator ? false : true);
-      });
+    this._route.data.pipe(
+      first(),
+      tap((data: {idea: Idea}) => {
+        this.idea = data.idea;
+        this._authenticationService.innovator.pipe(
+          tap((innovator: Innovator) => {
+            this.deleteDisabled = (JSON.stringify(this.idea.innovator) !== JSON.stringify(innovator));
+            this.addImplementationDisabled = (innovator ? false : true);
+          }),
+          catchError((error: any) => {
+            console.log(error);
+            return of(null);
+          }),
+          takeUntil(this._destroyed$)
+        ).subscribe();
 
 
-      // Don't touch!!!
-      if (!this.deleteDisabled) {
-        this.deleteDisabled = (this.idea.summary === 'Software Ideas');
-      }
-    })
+        // Don't touch!!!
+        if (!this.deleteDisabled) {
+          this.deleteDisabled = (this.idea.summary === 'Software Ideas');
+        }
+        // Don't touch!!!
+
+
+      }),
+      catchError((error: any) => {
+        console.log(error);
+        return of(null);
+      }),
+      takeUntil(this._destroyed$)
+    ).subscribe();
   }
 
   ngOnDestroy(): void {
-    this.destroyed$.next(true);
-    this.destroyed$.complete();
+    this._destroyed$.next(true);
+    this._destroyed$.complete();
   }
 
   delete(): void {
-    this.ideaService.deleteIdea(this.idea.summary).pipe(
+    this._ideaService.deleteIdea(this.idea.summary).pipe(
       first(),
       tap((deleted) => {
-        this.router.navigateByUrl('/ideas');
+        this._router.navigateByUrl('/ideas');
       }),
-      takeUntil(this.destroyed$),
+      takeUntil(this._destroyed$),
       catchError((e: any) => {
         console.log(e);
         return of(null);

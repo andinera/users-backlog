@@ -8,7 +8,6 @@ import { ImplementationComponent } from './components/implementation/implementat
 import { ImplementationResolver } from './resolvers/implementation.resolver';
 import { InnovatorComponent } from './components/innovator/innovator.component';
 import { InnovatorResolver } from './resolvers/innovator.resolver';
-import { AddInnovatorComponent } from './components/add-innovator/add-innovator.component';
 import { AddIdeaComponent } from './components/add-idea/add-idea.component';
 import { AuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './components/login/login.component';
@@ -42,18 +41,9 @@ const routes: Routes = [
         }
     },
     {
-        path: 'addInnovator',
-        component: AddInnovatorComponent
-    },
-    {
         path: 'addIdea',
         component: AddIdeaComponent,
         canActivate: [AuthGuard]
-    },
-    {
-        path: 'login',
-        component: LoginComponent,
-        outlet: 'login'
     },
     {
         path: '',

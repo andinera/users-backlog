@@ -13,19 +13,19 @@ import { URLService } from '../services/url.service';
 export class ImplementationResolver implements Resolve<Implementation> {
 
   constructor(
-    private readonly implementationService: ImplementationService,
-    private readonly urlService: URLService,
-    private readonly router: Router
+    private readonly _implementationService: ImplementationService,
+    private readonly _urlService: URLService,
+    private readonly _router: Router
   ) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Implementation> | Observable<never> {
-    return this.implementationService.getImplementation(route.paramMap.get('name')).pipe(
+    return this._implementationService.getImplementation(route.paramMap.get('name')).pipe(
       first(),
       mergeMap((implementation: Implementation) => {
         if (implementation) {
           return of(implementation);
         } else {
-          this.router.navigate([this.urlService.previousURL]);
+          this._router.navigate([this._urlService.previousURL]);
           return EMPTY;
         }
       })

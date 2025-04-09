@@ -9,15 +9,15 @@ import { Innovator } from '../models/innovator';
 })
 export class InnovatorService {
 
-  private serviceURL = "http://localhost:8080/innovator/";
+  private _serviceURL = "http://localhost:8080/innovator/";
 
-  constructor(private readonly http: HttpClient) { }
+  constructor(private readonly _http: HttpClient) { }
 
   getInnovator(emailAddress: string): Observable<Innovator> {
-    return this.http.get<Innovator>(`${this.serviceURL}getInnovator?emailAddress=${encodeURIComponent(emailAddress)}`);
+    return this._http.get<Innovator>(`${this._serviceURL}getInnovator?emailAddress=${encodeURIComponent(emailAddress)}`);
   }
 
   postInnovator(innovator: Innovator) {
-    return this.http.post<Innovator>(`${this.serviceURL}postInnovator`, innovator);
+    return this._http.post<Innovator>(`${this._serviceURL}postInnovator`, innovator);
   }
 }

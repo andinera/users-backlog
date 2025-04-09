@@ -11,9 +11,9 @@ export class URLService {
   public currentURL = '';
 
   constructor(
-    private readonly router: Router
+    private readonly _router: Router
   ) {
-    this.router.events.pipe(
+    this._router.events.pipe(
       filter((evt: any) => evt instanceof RoutesRecognized),
       pairwise())
     .subscribe((events: RoutesRecognized[]) => {

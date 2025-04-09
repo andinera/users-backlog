@@ -20,7 +20,6 @@ import { LoginComponent } from './components/login/login.component';
 import { ImplementationComponent } from './components/implementation/implementation.component';
 import { InnovatorComponent } from './components/innovator/innovator.component';
 import { AddImplementationComponent } from './components/add-implementation/add-implementation.component';
-import { AddInnovatorComponent } from './components/add-innovator/add-innovator.component';
 
 @NgModule({
   declarations: [
@@ -32,8 +31,7 @@ import { AddInnovatorComponent } from './components/add-innovator/add-innovator.
     LoginComponent,
     ImplementationComponent,
     InnovatorComponent,
-    AddImplementationComponent,
-    AddInnovatorComponent
+    AddImplementationComponent
   ],
   imports: [
     BrowserModule,

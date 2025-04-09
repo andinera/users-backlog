@@ -12,19 +12,19 @@ import { Idea } from 'src/app/models/idea';
   templateUrl: './add-idea.component.html'
 })
 export class AddIdeaComponent implements OnInit, OnDestroy {
-    
-  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   
   ideaForm: FormGroup;
+    
+  private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
-    private readonly ideaService: IdeaService,
-    private readonly formBuilder: FormBuilder,
-    private readonly router: Router) {
+    private readonly _ideaService: IdeaService,
+    private readonly _formBuilder: FormBuilder,
+    private readonly _router: Router) {
   }
 
   ngOnInit(): void {
-    this.ideaForm = this.formBuilder.group({
+    this.ideaForm = this._formBuilder.group({
       summary: new FormControl('', [
         Validators.required
       ]),
@@ -33,20 +33,20 @@ export class AddIdeaComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroyed$.next(true);
-    this.destroyed$.complete();
+    this._destroyed$.next(true);
+    this._destroyed$.complete();
   }
 
   onSubmit(ideaForm: FormGroup) {
     const idea: Idea = ideaForm.value;
-    this.ideaService.postIdea(idea).pipe(
+    this._ideaService.postIdea(idea).pipe(
       first(),
-      tap((idea: Idea) => {
-        if (idea) {
-          this.router.navigateByUrl('/ideas');
+      tap((newIdea: Idea) => {
+        if (newIdea) {
+          this._router.navigateByUrl('/ideas');
         }
       }),
-      takeUntil(this.destroyed$),
+      takeUntil(this._destroyed$),
       catchError((e: any) => {
         console.log(e);
         return of(null);

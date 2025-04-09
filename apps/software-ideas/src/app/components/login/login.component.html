@@ -19,9 +19,11 @@
             <div>
                 <button mat-stroked-button type="submit" [disabled]="loginForm.invalid">Login</button>
                 <button mat-stroked-button type="button" [disabled]="loginForm.invalid" (click)="createAccount(loginForm)">Create Account</button>
-                <button mat-stroked-button type="button" (click)="closeRoute()">Cancel</button>
                 <mat-error *ngIf="loginFailed">
                     Invalid email address
+                </mat-error>
+                <mat-error *ngIf="createAccountFailed">
+                    Email address already exists
                 </mat-error>
             </div>
         </form>
