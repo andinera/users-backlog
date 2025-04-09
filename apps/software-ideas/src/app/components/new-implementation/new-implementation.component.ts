@@ -8,6 +8,10 @@ import { ImplementationService } from 'src/app/services/implementation.service';
 import { Idea } from 'src/app/models/idea.model';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { Innovator } from 'src/app/models/innovator.model';
+import { Category } from 'src/app/models/category.model';
+import { ImplementationForm } from 'src/app/models/forms/implementation.form';
+import { CategoryForm } from 'src/app/models/forms/category.form';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-new-implementation [idea]',
@@ -19,6 +23,8 @@ export class NewImplementationComponent implements OnInit {
   @Input() idea: Idea;
 
   implementationForm: FormGroup;
+  categoryForm: FormGroup;
+  categoryOptions: Category[];
   loggedIn = false;
 
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
@@ -26,16 +32,26 @@ export class NewImplementationComponent implements OnInit {
   constructor(
     private readonly _formBuilder: FormBuilder,
     private readonly _implementationService: ImplementationService,
-    private readonly authenticationService: AuthenticationService
+    private readonly authenticationService: AuthenticationService,
+    private readonly _route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
-    this.implementationForm = this._formBuilder.group({
-      source: new FormControl(''),
-      name: new FormControl('', [
-        Validators.required
-      ])
-    });
+    this.implementationForm = this._formBuilder.group(new ImplementationForm())
+    this.categoryForm = this._formBuilder.group(new CategoryForm());
+
+    // Gather data from resolver
+    this._route.data.pipe(
+      first(),
+      tap((data: {categories: Category[]}) => {
+        this.categoryOptions = data.categories;
+      }),
+      catchError((error: any) => {
+        console.log(error);
+        return of(null);
+      }),
+      takeUntil(this._destroyed$)
+    ).subscribe();
   }
 
   ngOnDestroy(): void {
@@ -72,6 +88,30 @@ export class NewImplementationComponent implements OnInit {
         takeUntil(this._destroyed$)
       ).subscribe();
     }
+  }
+
+  newCategoryIsValid() {
+    const categoryOptionsNames = this.categoryOptions.map(category => category.name);
+    if (!this.categoryForm.controls.name.value ||
+        categoryOptionsNames.includes(this.categoryForm.controls.name.value)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  addCategory(category: Category) {
+    const categoryOptionsNames = this.categoryOptions.map(category => category.name);
+    if (!categoryOptionsNames.includes(category.name)) {
+      this.categoryOptions.push(category);
+    }
+    const selectedCategoryNames = this.implementationForm.value.categories.map(category => category.name);
+    if (!selectedCategoryNames.includes(category.name)) {
+      const selectedCategories = this.implementationForm.controls.categories.value;
+      selectedCategories.push(category);
+      this.implementationForm.controls.categories.setValue(selectedCategories);
+    }
+    this.categoryForm.reset();
   }
 
 }

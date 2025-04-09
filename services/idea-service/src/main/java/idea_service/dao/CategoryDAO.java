@@ -5,18 +5,14 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import idea_service.models.Category;
 import idea_service.models.Idea;
+import idea_service.models.Implementation;
 
 @Repository
-public class CategoryDAO {
-
-    @Autowired DataSource dataSource;
+public class CategoryDAO extends DAO {
 
     private final String GET_ALL_CATEGORIES = 
         "SELECT " +
@@ -50,6 +46,29 @@ public class CategoryDAO {
         List<Category> categories = new ArrayList<>();
         try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_CATEGORIES_BY_IDEA)) {
             ps.setLong(1, idea.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    categories.add(categoryMapper(rs));
+                }
+            }
+        } catch (final Exception e) {
+            categories = null;
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return categories;
+    }
+
+    private final String GET_CATEGORIES_BY_IMPLEMENTATION = 
+        GET_ALL_CATEGORIES + " " +
+        "INNER JOIN implementation_category ic " +
+            "ON (ic.category_id = category.id " +
+            "AND ic.implementation_id = ?)";
+
+    public List<Category> getCategories(final Implementation implementation) {
+        List<Category> categories = new ArrayList<>();
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_CATEGORIES_BY_IMPLEMENTATION)) {
+            ps.setLong(1, implementation.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     categories.add(categoryMapper(rs));

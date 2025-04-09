@@ -36,7 +36,6 @@ export class NewIdeaComponent implements OnInit, OnDestroy {
     this.categoryForm = this._formBuilder.group(new CategoryForm());
     this.ideaForm = this._formBuilder.group(new IdeaForm());
 
-    
     // Gather data from resolver
     this._route.data.pipe(
       first(),

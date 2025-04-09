@@ -5,17 +5,15 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import idea_service.models.Category;
 import idea_service.models.Idea;
 import idea_service.models.Implementation;
 import idea_service.models.Innovator;
 
 @Repository
-public class ImplementationDAO {
+public class ImplementationDAO extends DAO {
 
     private final String GET_ALL_IMPLEMENTATIONS = 
         "SELECT " +
@@ -27,7 +25,31 @@ public class ImplementationDAO {
         "INNER JOIN innovator inv " +
             "ON inv.id = impl.innovator_id";
 
-    @Autowired DataSource dataSource;
+    private final String GET_IMPLEMENTATIONS_BY_CATEGORY = 
+        GET_ALL_IMPLEMENTATIONS + " " +
+        "INNER JOIN implementation_category ic " +
+            "INNER JOIN category cat " +
+                "ON (cat.id = ic.category_id " +
+                    "AND cat.name = ?) " +
+            "ON ic.implementation_id = impl.id";
+
+    public List<Implementation> getImplementations(final String categoryName) {
+        List<Implementation> implementations = new ArrayList<>();
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(GET_IMPLEMENTATIONS_BY_CATEGORY)) {
+            ps.setString(1, categoryName);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    final Implementation implementation = implementationMapper(rs);
+                    implementations.add(implementation);
+                }
+            }
+        } catch (final Exception e) {
+            implementations = null;
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return implementations;
+    }
 
     private final String GET_IMPLEMENTATION_BY_NAME = 
         GET_ALL_IMPLEMENTATIONS + " " +
@@ -121,32 +143,72 @@ public class ImplementationDAO {
         "VALUES (?, ?)";
 
     public Implementation postImplementation(final Implementation implementation) {
-        Implementation updatedImplementation = null;
+        disassociateCategoriesWithImplementation(implementation);
+
         try (PreparedStatement ps = dataSource.getConnection().prepareStatement(POST_IMPLEMENTATION)) {
             int i = 1;
             ps.setLong(i++, implementation.getInnovator().getId());
             ps.setString(i++, implementation.getName());
-            if (ps.executeUpdate() == 0) {
-                updatedImplementation = implementation;
-            }
+            ps.executeUpdate();
         } catch (final Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
-        return associateImplementatioWithIdea(updatedImplementation);
+
+        implementation.setId(this.getImplementation(implementation.getName()).getId());
+        associateCategoriesWithImplementation(implementation);
+        return associateImplementationWithIdea(implementation);
+    }
+
+    private final String DISASSOCIATE_IMPLEMENTATION_WITH_CATEGORY =
+        "DELETE " +
+        "FROM implementation_category ic " +
+        "WHERE ic.implementation_id = ?";
+
+    private boolean disassociateCategoriesWithImplementation(final Implementation implementation) {
+        boolean deleted = false;
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(DISASSOCIATE_IMPLEMENTATION_WITH_CATEGORY)) {
+            ps.setLong(1, implementation.getId());
+            deleted = (ps.executeUpdate() != 0);
+        } catch (final Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return deleted;
+    }
+
+    private final String ASSOCIATE_IMPLEMENTATION_WITH_CATEGORY =
+        "INSERT " +
+        "INTO implementation_category (implementation_id, category_id) " +
+        "VALUES (?, ?)";
+
+    private Implementation associateCategoriesWithImplementation(final Implementation implementation) {
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(ASSOCIATE_IMPLEMENTATION_WITH_CATEGORY)) {
+            for (Category category : implementation.getCategories()) {
+                int i = 1;
+                ps.setLong(i++, implementation.getId());
+                ps.setLong(i++, category.getId());
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        } catch (final Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return implementation;
     }
 
     private final String ASSOCIATE_IMPLEMENTATION_WITH_IDEA =
         "INSERT " +
-        "INTO idea_implementation (idea_summary, implementation_id) " +
+        "INTO idea_implementation (idea_id, implementation_id) " +
         "VALUES (?, ?)";
 
-    private Implementation associateImplementatioWithIdea(final Implementation implementation) {
+    private Implementation associateImplementationWithIdea(final Implementation implementation) {
         List<Idea> updatedIdeas = null;
         try (PreparedStatement ps = dataSource.getConnection().prepareStatement(ASSOCIATE_IMPLEMENTATION_WITH_IDEA)) {
             for (Idea idea : implementation.getIdeas()) {
                 int i = 1;
-                ps.setString(i++, idea.getSummary());
+                ps.setLong(i++, idea.getId());
                 ps.setLong(i++, implementation.getId());
                 ps.addBatch();
             }

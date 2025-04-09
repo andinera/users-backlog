@@ -13,6 +13,7 @@ public class Implementation extends Model {
     private List<Idea> ideas;
     private String name;
     private String description;
+    private List<Category> categories;
     private List<Product> products;
 
     public Implementation() {
@@ -48,6 +49,14 @@ public class Implementation extends Model {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Category> getCategories() {
+        return this.categories;
+    }
+
+    public void setCategories(final List<Category> categories) {
+        this.categories = categories;
     }
 
     public List<Product> getProducts() {

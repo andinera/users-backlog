@@ -12,7 +12,6 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class IdeasComponent implements OnInit, OnDestroy {
   
-  title = 'project-ideas';
   categories = [];
     
   private _destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);

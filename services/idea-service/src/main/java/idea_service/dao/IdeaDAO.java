@@ -5,9 +5,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import idea_service.models.Category;
@@ -16,9 +13,7 @@ import idea_service.models.Implementation;
 import idea_service.models.Innovator;
 
 @Repository
-public class IdeaDAO {
-
-    @Autowired DataSource dataSource;
+public class IdeaDAO extends DAO {
 
     private final String GET_ALL_IDEAS = 
         "SELECT " +
@@ -182,8 +177,8 @@ public class IdeaDAO {
 
     private final String DISASSOCIATE_IDEA_WITH_CATEGORY =
         "DELETE " +
-        "FROM idea_category " +
-        "WHERE idea_category.idea_id = ?";
+        "FROM idea_category ic " +
+        "WHERE ic.idea_id = ?";
 
     private boolean disassociateCategoriesWithIdea(final Idea idea) {
         boolean deleted = false;

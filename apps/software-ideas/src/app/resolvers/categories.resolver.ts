@@ -22,6 +22,7 @@ export class CategoriesResolver implements Resolve<Category[]> {
     return this._categoryService.getAllCategories().pipe(
       first(),
       map((categories: Category[]) => {
+        console.log(categories);
         if (categories) {
           return categories;
         } else {

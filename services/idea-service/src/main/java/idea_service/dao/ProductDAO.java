@@ -5,16 +5,13 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import idea_service.models.Implementation;
 import idea_service.models.Product;
 
 @Repository
-public class ProductDAO {
+public class ProductDAO extends DAO {
     
     private final String GET_PRODUCTS = 
         "SELECT " +
@@ -22,8 +19,6 @@ public class ProductDAO {
             "p.url, " +
             "p.description " +
         "FROM product p";
-
-    @Autowired DataSource dataSource;
 
     private final String GET_PRODUCTS_BY_IMPLEMENTATION = 
         GET_PRODUCTS + " " +

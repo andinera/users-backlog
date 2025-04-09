@@ -14,6 +14,8 @@ import { CategoriesResolver } from './resolvers/categories.resolver';
 import { IdeasResolver } from './resolvers/ideas.resolver';
 import { NewIdeaGuard } from './guards/new-idea.guard';
 import { LoginComponent } from './components/login/login.component';
+import { ImplementationsComponent } from './components/implementations/implementations.component';
+import { ImplementationsResolver } from './resolvers/implementations.resolver';
 
 
 const extraOptions = {
@@ -32,7 +34,15 @@ const routes: Routes = [
         path: 'Idea/:summary',
         component: IdeaComponent,
         resolve: {
-            idea: IdeaResolver
+            idea: IdeaResolver,
+            categories: CategoriesResolver
+        }
+    },
+    {
+        path: 'Implementations',
+        component: ImplementationsComponent,
+        resolve: {
+            categories: ImplementationsResolver
         }
     },
     {
@@ -76,7 +86,7 @@ const routes: Routes = [
     },
     {
         path: '',
-        redirectTo: 'Ideas',
+        redirectTo: 'Implementations',
         pathMatch: 'full'
     },
     {

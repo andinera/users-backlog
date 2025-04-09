@@ -3,23 +3,18 @@ package idea_service.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import idea_service.models.Innovator;
 
 @Repository
-public class InnovatorDAO {
+public class InnovatorDAO extends DAO {
 
     final private String GET_ALL_INNOVATORS = 
         "SELECT " +
             "inv.id, " +
             "inv.email_address " +
         "FROM innovator inv";
-
-    @Autowired DataSource dataSource;
 
     final private String GET_INNOVATOR_BY_ID = 
         GET_ALL_INNOVATORS + " " +

@@ -10,9 +10,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import idea_service.models.Recommendation;
@@ -20,9 +17,7 @@ import idea_service.models.Idea;
 import idea_service.models.Innovator;
 
 @Repository
-public class RecommendationDAO {
-
-    @Autowired DataSource dataSource;
+public class RecommendationDAO extends DAO {
 
     private final String GET_ALL_RECOMMENDATIONS = 
         "SELECT " +

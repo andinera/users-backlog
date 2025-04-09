@@ -30,6 +30,7 @@ import { ImplementationComponent } from './components/implementation/implementat
 import { InnovatorComponent } from './components/innovator/innovator.component';
 import { NewImplementationComponent } from './components/new-implementation/new-implementation.component';
 import { RecommendationComponent } from './components/recommendation/recommendation.component';
+import { ImplementationsComponent } from './components/implementations/implementations.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { RecommendationComponent } from './components/recommendation/recommendat
     ImplementationComponent,
     InnovatorComponent,
     NewImplementationComponent,
-    RecommendationComponent
+    RecommendationComponent,
+    ImplementationsComponent
   ],
   imports: [
     AppRoutingModule,

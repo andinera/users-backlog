@@ -1,6 +1,8 @@
 
 package idea_service.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,11 @@ import idea_service.services.ImplementationService;
 public class ImplementationController {
 
     @Autowired ImplementationService implementationService;
+
+    @GetMapping(path="getImplementations")
+    public List<Implementation> getIdeas(@RequestParam final String categoryName) {
+        return implementationService.getImplementations(categoryName);
+    }
 
     @GetMapping(path= "getImplementation")
     public Implementation getImplementation(

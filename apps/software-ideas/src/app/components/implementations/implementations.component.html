@@ -1,0 +1,9 @@
+<mat-tab-group [animationDuration]="0">
+    <mat-tab *ngFor="let category of categories" [label]="category.name">
+        <mat-nav-list>
+            <a mat-list-item *ngFor="let implementation of category.implementations" routerLink="/Implementation/{{implementation.name}}">
+                {{implementation.name}}
+            </a>
+        </mat-nav-list>
+    </mat-tab>
+</mat-tab-group>

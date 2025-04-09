@@ -15,6 +15,10 @@ export class ImplementationService {
     private readonly _http: HttpClient
   ) { }
 
+  getImplementations(categoryName: string): Observable<Implementation[]> {
+    return this._http.get<Implementation[]>(`${this._serviceURL}getImplementations?categoryName=${categoryName}`);
+  }
+
   getImplementation(name: string): Observable<Implementation> {
     return this._http.get<Implementation>(`${this._serviceURL}getImplementation?name=${encodeURIComponent(name)}`);
   }
